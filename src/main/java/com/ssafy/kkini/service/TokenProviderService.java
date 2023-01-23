@@ -53,6 +53,32 @@ public class TokenProviderService {
                 .compact();
     }
 
+    public String createToken(int userId, String role) {
+
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + appProperties.getAuth().getTokenExpirationMsec());
+
+        return Jwts.builder()
+                .setHeaderParam("typ", "JWT")
+                .setSubject(Integer.toString(userId))
+                .claim("role", role)
+                .setExpiration(expiryDate)
+                .signWith(SignatureAlgorithm.HS512, appProperties.getAuth().getTokenSecret())
+                .compact();
+    }
+
+    public String createToken() {
+
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + appProperties.getAuth().getRefreshTokenExpiry());
+
+        return Jwts.builder()
+                .setHeaderParam("typ", "JWT")
+                .setExpiration(expiryDate)
+                .signWith(SignatureAlgorithm.HS512, appProperties.getAuth().getTokenSecret())
+                .compact();
+    }
+
     public Claims getTokenClaims(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(appProperties.getAuth().getTokenSecret())
