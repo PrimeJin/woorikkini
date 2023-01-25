@@ -23,16 +23,15 @@ public class RefreshToken {
 
     @Column(name = "user_id")
     @NotNull
-    private int userId;
+    private Long userId;
 
     @Column(name = "refresh_token", length = 256)
-    @NotNull
     @Size(max = 256)
     private String refreshToken;
 
     public RefreshToken(
-            @NotNull int userId,
-            @NotNull @Size(max = 256) String refreshToken
+            @NotNull Long userId,
+            @Size(max = 256) String refreshToken
     ) {
         this.userId = userId;
         this.refreshToken = refreshToken;

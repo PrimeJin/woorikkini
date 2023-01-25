@@ -2,8 +2,10 @@ package com.ssafy.kkini.service;
 
 import com.ssafy.kkini.config.AppProperties;
 import com.ssafy.kkini.dto.UserPrincipalDto;
+import com.ssafy.kkini.entity.RefreshToken;
 import com.ssafy.kkini.entity.User;
 import com.ssafy.kkini.exception.TokenValidFailedException;
+import com.ssafy.kkini.repository.RefreshTokenRepository;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,14 +29,24 @@ public class TokenProviderService {
 
     private static final Logger logger = LoggerFactory.getLogger(TokenProviderService.class);
 
+
     private AppProperties appProperties;
+    @Autowired
+    private RefreshTokenRepository refreshTokenRepository;
 
     @Autowired
     UserDetailsService userDetailsService;
     public TokenProviderService(AppProperties appProperties) {
         this.appProperties = appProperties;
     }
-    
+
+    /**
+     * 소셜 로그인 토큰 생성
+     * @author 나유현
+     * @param authentication
+     * @return
+     *
+     */
     //토큰 생성
     public String createToken(Authentication authentication) {
 
@@ -45,7 +57,7 @@ public class TokenProviderService {
 
         return Jwts.builder()
                 .setHeaderParam("typ", "JWT")
-                .setSubject(Integer.toString(userPrincipal.getUser().getId()))
+                .setSubject(Long.toString(userPrincipal.getUser().getId()))
                 .claim("role", userPrincipal.getUser().getRole())
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
@@ -53,20 +65,32 @@ public class TokenProviderService {
                 .compact();
     }
 
-    public String createToken(int userId, String role) {
+    /**
+     * 일반 로그인 토큰 생성
+     * @author 나유현
+     * @param userId
+     * @param role
+     * @return
+     */
+    public String createToken(Long userId, String role) {
 
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + appProperties.getAuth().getTokenExpirationMsec());
 
         return Jwts.builder()
                 .setHeaderParam("typ", "JWT")
-                .setSubject(Integer.toString(userId))
+                .setSubject(Long.toString(userId))
                 .claim("role", role)
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, appProperties.getAuth().getTokenSecret())
                 .compact();
     }
 
+    /**
+     * @author 나유현
+     * Refresh 토큰 생성
+     * @return
+     */
     public String createToken() {
 
         Date now = new Date();
@@ -77,6 +101,31 @@ public class TokenProviderService {
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, appProperties.getAuth().getTokenSecret())
                 .compact();
+    }
+
+    /**
+     * refresh token DB에 저장
+     * @param userId
+     * @param refreshToken
+     */
+    public void saveRefreshToken(Long userId, String refreshToken){
+
+        RefreshToken oldRefreshToken = refreshTokenRepository.findByUserId(userId);
+        if(oldRefreshToken == null) System.out.println("null");
+
+        if(oldRefreshToken != null){
+            oldRefreshToken.setRefreshToken(refreshToken);
+        }else{
+            oldRefreshToken = new RefreshToken(userId,refreshToken);
+            refreshTokenRepository.saveAndFlush(oldRefreshToken);
+        }
+    }
+
+    public void deleteRefreshToken(Long userId){
+        RefreshToken refreshToken = refreshTokenRepository.findByUserId(userId);
+        refreshToken.setRefreshToken(null);
+        refreshTokenRepository.save(refreshToken);
+
     }
 
     public Claims getTokenClaims(String token) {

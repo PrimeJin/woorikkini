@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -14,6 +15,7 @@ import java.sql.Timestamp;
 @Builder
 @Data
 @Entity
+@DynamicInsert
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "USER"
@@ -24,13 +26,12 @@ public class User {
     @Id // primary key
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private int id;
+    private Long id;
 
     @Column(name = "user_name", length = 30)
     private String name;
 
     @Column(name = "user_email", length = 30)
-    @NotNull
     private String email;
 
     @Column(name = "user_password", length = 100)
@@ -40,7 +41,6 @@ public class User {
     private String role;
 
     @Column(name = "user_nickname", length = 30)
-    @NotNull
     private String nickname;
 
     @Column(name = "user_birth_year", length = 10)
@@ -51,12 +51,10 @@ public class User {
 
     @CreationTimestamp
     @Column(name = "user_activation")
-    @NotNull
     private Timestamp activation;
 
     @CreationTimestamp
     @Column(name = "user_join_date")
-    @NotNull
     private Timestamp joinDate;
 
     @Column(name = "user_provider", length = 20)

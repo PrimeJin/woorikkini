@@ -27,7 +27,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Transactional
     public UserDetails loadUserByUsername(String userId)
             throws UsernameNotFoundException {
-        User user = userRepository.findAllById(Integer.valueOf(userId))
+        User user = userRepository.findAllById(Long.valueOf(userId))
                 .orElseThrow(() ->
                         new UsernameNotFoundException("User not found with user_id : " + userId)
         );
