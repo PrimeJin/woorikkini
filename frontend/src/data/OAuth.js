@@ -1,4 +1,5 @@
 //클라이언트 ID, URL 등 통합관리
+export const BASE_URL = '70.12.247.235'; //베이스 도메인
 
 //카카오
 const KAKAO_CLIENT_ID = 'c4a8764384feb504350529d1cafff37b'; //REST_API_KEY
@@ -10,4 +11,4 @@ export const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id
 const NAVER_CLIENT_ID = 'qGn2ZQGASVLomgGTnNxG'; //클라이언트 ID
 const NAVER_CALLBACK_URL = 'http://localhost:3000/oauth/callback/naver'; //콜백 URL
 
-export const NAVER_AUTH_URL = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${NAVER_CLIENT_ID}&state=test&redirect_uri=${NAVER_CALLBACK_URL}`;
+export const NAVER_AUTH_URL = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${NAVER_CLIENT_ID}&state=secretKey&redirect_uri=${NAVER_CALLBACK_URL}`;
