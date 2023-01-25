@@ -1,0 +1,167 @@
+@import url('http://cdn.rawgit.com/innks/NanumSquareRound/master/nanumsquareround.min.css');
+
+.logo-top {
+  text-align: center;
+  font-family: 'NanumSquareRound';
+  justify-content: center;
+  display: flex;
+  flex-flow: row nowrap;
+}
+
+.Signup-all {
+  text-align: center;
+  font-family: 'NanumSquareRound';
+  justify-content: center;
+  display: flex;
+  flex-flow: row nowrap;
+}
+
+.woori-logo {
+  margin-top: 5%;
+  width: 100px;
+  height: 110px;
+  justify-content: center;
+  display: flex;
+}
+
+.text-type {
+  font-weight: 900;
+  font-size: 22px;
+  padding-top: 3%;
+  padding-bottom: 5%;
+  color: #090936;
+}
+
+form {
+  /* Rectangle 27 */
+
+  width: 330px;
+  height: 580px;
+
+  justify-content: center;
+
+  background: #fefaef;
+  mix-blend-mode: normal;
+  box-shadow: 0px 100px 80px rgba(0, 0, 0, 0.07), 0px 50.0488px 40.0391px rgba(0, 0, 0, 0.0532233),
+    0px 30.1471px 24.1177px rgba(0, 0, 0, 0.0456112), 0px 19.3198px 15.4559px rgba(0, 0, 0, 0.0399626),
+    0px 12.5216px 10.0172px rgba(0, 0, 0, 0.035), 0px 7.88218px 6.30574px rgba(0, 0, 0, 0.0300374),
+    0px 4.5288px 3.62304px rgba(0, 0, 0, 0.0243888), 0px 1.99324px 1.59459px rgba(0, 0, 0, 0.0167767);
+  border-radius: 30px;
+  margin-bottom: 3%;
+  margin-top: 3%;
+}
+
+form text {
+  /* text-align: left; */
+  justify-content: left;
+  display: flex;
+  font-weight: 100;
+  font-size: 2px;
+  color: red;
+}
+
+.input-form-top {
+  border: none;
+  /* Rectangle 28 */
+
+  width: 220px;
+  height: 33px;
+  align-items: center;
+  justify-items: center;
+  background: #ffffff;
+  border-radius: 5px;
+  /* margin-bottom: 3%; */
+  position: relative;
+}
+
+.input-form {
+  border: none;
+  /* Rectangle 28 */
+
+  width: 220px;
+  height: 33px;
+
+  background: #ffffff;
+  border-radius: 5px;
+
+  font-family: 'NanumSquareRound';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 27px;
+
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.check-box {
+  width: 220px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  margin-left: 16%;
+  display: flex;
+  justify-content: space-between;
+  margin-right: 10%;
+}
+
+.gender {
+  font-weight: 700;
+  font-size: 17px;
+  color: #090936;
+  display: flex;
+  align-items: center;
+  text-align: center;
+}
+
+fieldset {
+  border: none;
+  display: flex;
+  align-items: center;
+  padding: 0 0 0 0;
+  justify-content: right;
+}
+
+label {
+  font-weight: 500;
+  font-size: 13px;
+  color: #090936;
+  /* display: flex;
+  vertical-align: middle; */
+  appearance: none;
+}
+
+.accept {
+  /* Rectangle 19 */
+  border: none;
+  background: #d6ebfc;
+  border-radius: 10px;
+  width: 222px;
+  height: 40px;
+  font-weight: 900;
+  font-size: 18px;
+  color: #090936;
+  align-items: center;
+  text-align: center;
+  flex-flow: row nowrap;
+  font-family: 'NanumSquareRound';
+  margin-bottom: 0%;
+  margin-top: 3%;
+}
+
+.check-btn {
+  align-items: center;
+  border: none;
+  position: absolute;
+  /* Rectangle 32 */
+
+  width: 60px;
+  height: 27px;
+
+  background: #d6ebfc;
+  border-radius: 15px;
+  font-weight: 900;
+  font-size: 7px;
+  font-family: 'NanumSquareRound';
+  justify-content: center;
+  color: #090936;
+}
