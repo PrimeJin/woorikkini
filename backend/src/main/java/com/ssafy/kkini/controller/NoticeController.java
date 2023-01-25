@@ -1,0 +1,99 @@
+package com.ssafy.kkini.controller;
+
+import com.ssafy.kkini.dto.NoticeCreateFormDto;
+import com.ssafy.kkini.dto.NoticeUpdateFormDto;
+import com.ssafy.kkini.entity.Notice;
+import com.ssafy.kkini.service.NoticeService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/notice")
+@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE})
+public class NoticeController {
+    private NoticeService noticeService;
+
+    public NoticeController(NoticeService noticeService) {
+        this.noticeService = noticeService;
+    }
+
+    //공지사항 목록
+    @ApiOperation(value = "공지사항 목록", notes = "공지사항 목록 페이징", response = Page.class)
+    @GetMapping("/")
+    public ResponseEntity<Map<String, Object>> getNoticeList(@RequestParam(value = "page", defaultValue = "0") int page,
+                                                      @RequestParam(value = "limit", defaultValue = "10") int limit) {
+        Map<String, Object> map = new HashMap<>();
+        Page<Notice> noticeList = noticeService.getNoticeList(page, limit);
+        map.put("noticeList", noticeList);
+
+        return new ResponseEntity<Map<String, Object>>(map, HttpStatus.ACCEPTED);
+    }
+
+    //공지사항 등록
+    @ApiOperation(value = "공지사항 등록", notes = "새로운 공지사항 등록, DB입력 성공여부에 따라 'success' 또는 'fail' 반환")
+    @PostMapping("/")
+    public ResponseEntity<?> writeNotice(@RequestBody @ApiParam(value = "새 공지사항 정보 담은 dto") NoticeCreateFormDto noticeCreateFormDto) {
+        Map<String, Object> map = new HashMap<>();
+
+        if(noticeService.writeNotice(noticeCreateFormDto) != null) {
+            map.put("message", "success");
+            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.CREATED);
+        } else {
+            map.put("message", "fail");
+            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    //공지사항 조회
+    @ApiOperation(value = "공지사항 조회", notes = "공지사항 번호에 해당하는 공지사항 정보 반환")
+    @GetMapping("/{noticeId}")
+    public ResponseEntity<?> getNotice(@PathVariable @ApiParam(value = "조회할 공지사항 번호", example = "0") int noticeId) {
+        Map<String, Object> map = new HashMap<>();
+        if(noticeService.getNotice(noticeId) != null) {
+            map.put("message", "success");
+            map.put("notice", noticeService.getNotice(noticeId));
+            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.ACCEPTED);
+        } else {
+            map.put("message", "fail");
+            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    //공지사항 수정
+    @ApiOperation(value = "공지사항 글 수정", notes = "수정할 공지사항 정보 입력")
+    @PutMapping("/{noticeId}")
+    public ResponseEntity<?> updateNotice(@RequestBody @ApiParam(value = "수정 글 정보 담은 dto") NoticeUpdateFormDto noticeUpdateFormDto) {
+        Map<String, Object> map = new HashMap<>();
+
+        Notice updatedNotice = noticeService.updateNotice(noticeUpdateFormDto);
+        if(updatedNotice != null) {
+            map.put("message", "success");
+            map.put("notice", updatedNotice);
+            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.ACCEPTED);
+        } else {
+            map.put("message", "fail");
+            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    //공지사항 삭제
+    @ApiOperation(value = "공지사항 삭제", notes = "공지사항 번호에 해당하는 공지사항 정보 삭제, DB에서 삭제 여부에 따라 'success' 또는 'fail' 반환")
+    @DeleteMapping("/{noticeId}")
+    public ResponseEntity<?> deleteNotice(@PathVariable @ApiParam(value = "삭제할 공지사항 번호", example = "0") int noticeId) {
+        Map<String, Object> map = new HashMap<>();
+        if(noticeService.deleteNotice(noticeId) == 1) {
+            map.put("message", "success");
+            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.ACCEPTED);
+        } else {
+            map.put("message", "fail");
+            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
+        }
+    }
+}
