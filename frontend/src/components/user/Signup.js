@@ -1,12 +1,13 @@
 import './Signup.css';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import mainlogo from '../../assets/우리끼니로고.png';
 
 // 회원가입 페이지 로고
 function Logo() {
   return (
     <div className="logo-top">
-      <img className="woori-logo" src={'./assets/우리끼니로고.png'} />
+      <img className="woori-logo" src={mainlogo} />
     </div>
   );
 }
@@ -18,9 +19,11 @@ function Form() {
   const [Code, setCode] = useState('');
   const [Password, setPassword] = useState('');
   const [ConfirmPassword, setConfirmPassword] = useState('');
-  const [visible, setVisible] = useState(false);
+  const [pwVisible, setPwVisible] = useState(false);
+  const [pwcheckVisible, setPwcheckVisible] = useState(false);
   const [Name, setName] = useState('');
   const [Nickname, setNickname] = useState('');
+  const [nickVisible, setNickVisible] = useState(false);
   const [possible, setPossible] = useState(false);
   const [impossible, setImpossible] = useState(false);
   const [Date, setDate] = useState('');
@@ -88,18 +91,21 @@ function Form() {
   const onPassword = (event) => {
     const pwCurrent = event.currentTarget.value;
     setPassword(pwCurrent);
-    // const pwRegex = /^[a-zA-z0-9]{4,12}$/;
-    // if (!pwRegex.test(pwCurrent)) {
-    // }
+    const pwRegex = /^[a-zA-z0-9]{8,12}$/;
+    if (!pwRegex.test(pwCurrent)) {
+      setPwVisible(true);
+    } else {
+      setPwVisible(false);
+    }
   };
   // 비밀번호 확인
   const onConfirmPassword = (event) => {
     const passwordCurrent = event.currentTarget.value;
     setConfirmPassword(passwordCurrent);
     if (Password === passwordCurrent) {
-      setVisible(false);
+      setPwcheckVisible(false);
     } else {
-      setVisible(true);
+      setPwcheckVisible(true);
     }
   };
   // 이름 입력
@@ -108,7 +114,13 @@ function Form() {
   };
   // 닉네임 입력
   const onNickname = (event) => {
-    setNickname(event.currentTarget.value);
+    const nickCurrent = event.currentTarget.value;
+    setNickname(nickCurrent);
+    if (nickCurrent.length > 11) {
+      setNickVisible(true);
+    } else {
+      setNickVisible(false);
+    }
   };
   // 닉네임 중복 확인
   const onNickCheck = (event) => {
@@ -173,13 +185,13 @@ function Form() {
   return (
     <form>
       <p className="text-type">회원가입</p>
-      <input type="email" value={Email} onChange={onEmail} className="input-form-top" placeholder="이메일" />
+      <input type="email" value={Email} onChange={onEmail} className="input-form-top" placeholder="이메일" required />
       <button type="click" className="check-btn" onClick={onEmailClick}>
         코드 전송
       </button>
       <p></p>
 
-      <input type="code" value={Code} onChange={onCode} className="input-form" placeholder="인증코드" />
+      <input type="code" value={Code} onChange={onCode} className="input-form" placeholder="인증코드" required />
       <button className="check-btn" onClick={onCodeClick}>
         인증하기
       </button>
@@ -187,29 +199,29 @@ function Form() {
       <p></p>
       <input
         type="password"
-        required
-        pattern="/^[a-zA-z0-9]{8,12}$/"
-        title="영어 대소문자 및 숫자 8 ~ 12자 입력하세요."
         value={Password}
         onChange={onPassword}
         className="input-form"
         placeholder="비밀번호"
+        required
       />
-      <p></p>
+      {pwVisible ? <text>* 8 ~ 12자의 비밀번호를 입력해야 합니다.</text> : <p></p>}
       <input
         type="password"
         value={ConfirmPassword}
         onChange={onConfirmPassword}
         className="input-form"
         placeholder="비밀번호 확인"
+        required
       />
-      {visible ? <text>* 비밀번호가 일치하지 않습니다.</text> : <p></p>}
-      <input type="text" value={Name} onChange={onName} className="input-form" placeholder="이름" />
+      {pwcheckVisible ? <text>* 비밀번호가 일치하지 않습니다.</text> : <p></p>}
+      <input type="text" value={Name} onChange={onName} className="input-form" placeholder="이름" required />
       <p></p>
-      <input type="text" value={Nickname} onChange={onNickname} className="input-form" placeholder="닉네임" />
+      <input type="text" value={Nickname} onChange={onNickname} className="input-form" placeholder="닉네임" required />
       <button className="check-btn" onClick={onNickCheck}>
         중복 확인
       </button>
+      {nickVisible ? <text>* 최대 10자의 닉네임을 사용할 수 있습니다.</text> : <p></p>}
       {possible && <text>* 사용할 수 있는 닉네임 입니다.</text>}
       {impossible && <text>* 중복되는 닉네임 입니다.</text>}
       <p></p>
@@ -219,7 +231,8 @@ function Form() {
         onChange={onDate}
         className="input-form"
         placeholder="생년월일"
-        style={{ display: 0 }}
+        required
+        // style={{ display: 0 }}
       />
       <p></p>
       <div className="check-box">
