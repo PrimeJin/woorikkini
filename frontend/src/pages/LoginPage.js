@@ -17,6 +17,7 @@ import { SET_TOKEN } from '../store/Auth';
 
 import KakaoButton from '../component/KakaoButton';
 import NaverButton from '../component/NaverButton';
+import GoogleButton from '../component/GoogleButton';
 
 const LoginPage = () => {
   //React Hooks
@@ -94,6 +95,7 @@ const LoginPage = () => {
       <div className="socialLoginForm">
         <NaverButton />
         <KakaoButton />
+        <GoogleButton />
       </div>
     </div>
   );
