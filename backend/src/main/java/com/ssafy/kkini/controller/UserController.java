@@ -2,15 +2,14 @@ package com.ssafy.kkini.controller;
 
 
 
-import com.ssafy.kkini.dto.UserJoinFormDto;
-import com.ssafy.kkini.dto.UserLoginFormDto;
-import com.ssafy.kkini.dto.UserPrincipalDto;
+import com.ssafy.kkini.dto.*;
 import com.ssafy.kkini.entity.User;
 import com.ssafy.kkini.repository.UserRepository;
 import com.ssafy.kkini.service.TokenProviderService;
 import com.ssafy.kkini.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -139,4 +138,53 @@ public class UserController {
         }
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
     }
+
+    @ApiOperation(value = "닉네임 수정", notes = "회원의 닉네임을 수정한다.", response = Map.class)
+    @PatchMapping("/{userid}/nickname")
+    public ResponseEntity<Map<String,Object>> nicknameModify(@PathVariable("userid") @ApiParam(value = "수정할 회원정보(아이디)", required = true, example = "0") Long userid,
+                                                             @RequestBody @ApiParam(value = "수정할 회원정보(변경할 닉네임, 아이디)", required = true, example  = "0") UserNicknameModifyFormDto userNicknameModifyFormDto){
+        Map<String, Object> resultMap = new HashMap<>();
+        HttpStatus status = null;
+
+        try {
+            User user = userService.nicknameModify(userNicknameModifyFormDto);
+            if(user != null){
+                resultMap.put("messsage" , SUCCESS);
+                resultMap.put("userNickname", user.getNickname());
+                status = HttpStatus.ACCEPTED;
+            } else {
+                resultMap.put("message", FAIL);
+                status = HttpStatus.ACCEPTED;
+            }
+        }catch (Exception e){
+            resultMap.put("message",FAIL);
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+        return new ResponseEntity<Map<String, Object>>(resultMap, status);
+    }
+
+    @ApiOperation(value = "비밀번호 수정", notes = "회원의 닉네임을 수정한다.", response = Map.class)
+    @PatchMapping("/{userid}/password")
+    public ResponseEntity<Map<String, Object>> passwordModify(@PathVariable("userid") @ApiParam(value = "수정할 회원정보(아이디)",required = true, example = "0") Long userid,
+                                                              @RequestBody @ApiParam(value = "수정할 회원정보(변겨할 패스원드, 아이디", required = true, example = "0")UserPasswordModifyFormDto userPasswordModifyFormDto){
+        Map<String,Object> resultMap = new HashMap<>();
+        HttpStatus status = null;
+        try{
+            User user = userService.passwordModify(userPasswordModifyFormDto);
+            if(user != null){
+                resultMap.put("messsage" , SUCCESS);
+                status = HttpStatus.ACCEPTED;
+            } else {
+                resultMap.put("message", FAIL);
+                status = HttpStatus.ACCEPTED;
+            }
+
+        }catch (Exception e){
+            resultMap.put("message",FAIL);
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        }
+        return new ResponseEntity<Map<String, Object>>(resultMap, status);
+    }
+
 }
