@@ -25,13 +25,14 @@ public class UserService {
     @Transactional
     public User join(UserJoinFormDto userJoinFormDto){
 //        User user = new User.UserBuilder(userJoinFormDto).build();
-        User user = User.builder().email(userJoinFormDto.getUserEmail())
-                .gender(userJoinFormDto.getUserGender())
-                .name(userJoinFormDto.getUserName())
-                .nickname(userJoinFormDto.getUserNickname())
-                .password(userJoinFormDto.getUserPassword())
-                .role("ROLE_USER")
-                .build();
+        User user = userJoinFormDto.toEntity();
+//                User.builder().email(userJoinFormDto.getUserEmail())
+//                .gender(userJoinFormDto.getUserGender())
+//                .name(userJoinFormDto.getUserName())
+//                .nickname(userJoinFormDto.getUserNickname())
+//                .password(userJoinFormDto.getUserPassword())
+//                .role("ROLE_USER")
+//                .build();
 
         return userRepository.save(user);
     }
@@ -59,7 +60,7 @@ public class UserService {
     public User nicknameModify(UserNicknameModifyFormDto userNicknameModifyFormDto) {
         User user = userRepository.findById(userNicknameModifyFormDto.getUserId()).get();
         if(user != null) {
-            user.setNickname(userNicknameModifyFormDto.getUserNickname());
+            user.changeNickname(userNicknameModifyFormDto.getUserNickname());
             return userRepository.save(user);
         }else return null;
     }
@@ -68,7 +69,7 @@ public class UserService {
     public User passwordModify(UserPasswordModifyFormDto userPasswordModifyFormDto) {
         User user = userRepository.findById(userPasswordModifyFormDto.getUserId()).get();
         if(user != null) {
-            user.setPassword(userPasswordModifyFormDto.getUserPassword());
+            user.changePassword(userPasswordModifyFormDto.getUserPassword());
             return userRepository.save(user);
         }else return null;
     }

@@ -20,5 +20,16 @@ public class UserJoinFormDto {
     private String userPassword;
     private String userNickname;
     private String userGender;
+    private int userBirth;
+
+    public User toEntity(){
+//        return new User(this.userEmail, this.userName,this.userPassword,this.userNickname,this.userGender);
+        return User.builder().email(this.userEmail)
+                .password(this.userPassword)
+                .name(this.userName)
+                .nickname(this.userNickname)
+                .gender(this.userGender)
+                .birthYear(this.userBirth).build();
+    }
 
 }

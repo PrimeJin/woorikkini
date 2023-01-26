@@ -35,19 +35,22 @@ class UserServiceTest {
             @Test
             @DisplayName("회원가입")
             void successJoin(){
-                UserJoinFormDto userJoinFormDto = UserJoinFormDto.builder()
-                        .userName("여민지")
-                        .userEmail("minji@naver.com")
-                        .userNickname("밍")
-                        .userPassword("1234")
-                        .userGender("F")
-                        .build();
+                //given
+                UserJoinFormDto userJoinFormDto = new UserJoinFormDto(
+                        "여민지"
+                        ,"minji@naver.com"
+                        ,"1234"
+                        ,"밍"
+                        ,"F"
+                ,19980901);
+                User user = userJoinFormDto.toEntity();
+                when(userRepository.save(any())).thenReturn(user);
 
-                when(userRepository.save(any(User.class))).thenReturn(new User());
+                //when
                 User result = userService.join(userJoinFormDto);
-                System.out.println(result.getEmail());
 
-                Assertions.assertThat(result.getEmail()).isEqualTo(userJoinFormDto.getUserEmail());
+                //then
+                Assertions.assertThat(user.getEmail()).isEqualTo(result.getEmail());
             }
         }
 
