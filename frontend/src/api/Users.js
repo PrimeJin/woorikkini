@@ -9,6 +9,10 @@
  * LoginPage.js에서 Login버튼을 누르면 userEmail, userPassword를 받아
  * 여기로 보낸 다음 응답을 Backend로 보냅니다
  */
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { SET_TOKEN, DELETE_TOKEN } from '../store/Auth';
+
 const BASE_URL = 'http://localhost:3001'; //API 테스트용 프록시 URL
 
 //Promise 요청 타임아웃 시간 설정
@@ -40,13 +44,13 @@ const getPromise = async (url, option) => {
 };
 
 //Backend로 로그인 요청
-export const loginUser = async (credentials) => {
+export const loginUser = async (code) => {
   const option = {
     method: 'POST', //POST 요청
     headers: {
       'Content-Type': 'application/json;charset=UTF-8', //헤더
     },
-    body: JSON.stringify(credentials),
+    body: JSON.stringify(code),
   };
 
   //Promise 객체로 응답을 받을거면 이쪽으로
@@ -55,7 +59,7 @@ export const loginUser = async (credentials) => {
   });
 
   //URL로 토큰이 담겨져서 오면 이쪽으로
-  let code = new URL(window.location.href).searchParams.get('code');
+  // let code = new URL(window.location.href).searchParams.get('code');
 
   //200번대 response(성공)
   //백엔드에서 넘어오는 data를 어떻게 가공할것인지

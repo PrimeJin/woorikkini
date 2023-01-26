@@ -6,6 +6,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { KakaoLogin } from '../api/KakaoLogin';
+
 const Kakao = (props) => {
   const dispatch = useDispatch();
 
@@ -19,6 +20,7 @@ const Kakao = (props) => {
   // }, []);
   React.useEffect(() => {
     async function fetchData() {
+      // await dispatch(KakaoLogin(code));
       await dispatch(KakaoLogin(code));
     }
     fetchData();

@@ -27,7 +27,7 @@ export const CheckToken = (key) => {
         if (authenticated && new Date().getTime() < expireTime) {
           setIsAuth('인증 성공');
         } else {
-          //Refresh Token을 활용해서 Access Token 재발급
+          //Refresh Token을 활용해서 Access Token 재발급 요청
           const response = await requestToken(refreshToken);
 
           if (response.status) {
