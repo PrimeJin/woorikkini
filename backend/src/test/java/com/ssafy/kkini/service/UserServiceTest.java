@@ -57,6 +57,13 @@ class UserServiceTest {
             @Test
             @DisplayName("회원가입")
             void failJoin(){
+                UserJoinFormDto userJoinFormDto = UserJoinFormDto.builder()
+                        .userName("여민지")
+                        .userEmail("minji@naver.com")
+                        .userNickname("밍")
+                        .userPassword("1234")
+                        .userGender("F")
+                        .build();
 
             }
         }
