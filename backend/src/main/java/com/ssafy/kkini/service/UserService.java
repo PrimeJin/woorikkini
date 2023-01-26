@@ -55,6 +55,7 @@ public class UserService {
         return 0;
     }
 
+    @Transactional
     public User nicknameModify(UserNicknameModifyFormDto userNicknameModifyFormDto) {
         User user = userRepository.findById(userNicknameModifyFormDto.getUserId()).get();
         if(user != null) {
@@ -63,6 +64,7 @@ public class UserService {
         }else return null;
     }
 
+    @Transactional
     public User passwordModify(UserPasswordModifyFormDto userPasswordModifyFormDto) {
         User user = userRepository.findById(userPasswordModifyFormDto.getUserId()).get();
         if(user != null) {
