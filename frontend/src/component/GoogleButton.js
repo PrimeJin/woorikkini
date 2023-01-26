@@ -8,7 +8,7 @@ const GoogleButton = () => {
         window.open(GOOGLE_AUTH_URL);
       }}
     >
-      네이버 로그인
+      <span>구글 로그인</span>
     </button>
   );
 };

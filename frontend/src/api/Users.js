@@ -49,9 +49,13 @@ export const loginUser = async (credentials) => {
     body: JSON.stringify(credentials),
   };
 
+  //Promise 객체로 응답을 받을거면 이쪽으로
   const data = await getPromise(`${BASE_URL}/login`, option).catch(() => {
     return statusError;
   });
+
+  //URL로 토큰이 담겨져서 오면 이쪽으로
+  let code = new URL(window.location.href).searchParams.get('code');
 
   //200번대 response(성공)
   //백엔드에서 넘어오는 data를 어떻게 가공할것인지
