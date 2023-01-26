@@ -110,7 +110,7 @@ public class UserController {
             resultMap.put("message", SUCCESS);
             status = HttpStatus.ACCEPTED;
         } catch (Exception e) {
-            resultMap.put("message", e.getMessage());
+            resultMap.put("message", FAIL);
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
@@ -118,7 +118,7 @@ public class UserController {
     }
 
     @ApiOperation(value = "회원탈퇴", notes = "Access-token해제와 회원탈퇴 결과 메세지를 반환한다.", response = Map.class)
-    @GetMapping("/{userid}")
+    @DeleteMapping("/{userid}")
     public ResponseEntity<Map<String, Object>> delete(
             @PathVariable("userid") @ApiParam(value = "탈퇴할 회원정보(아이디).", required = true, example  = "0") Long userid) {
         Map<String, Object> resultMap = new HashMap<>();
@@ -126,13 +126,7 @@ public class UserController {
 
         try {
             if (userService.delete(userid) > 0) {
-//                String accessToken = jwtService.createAccessToken("userid", loginUser.getUserid());// key, data
-//                String refreshToken = jwtService.createRefreshToken("userid", loginUser.getUserid());// key, data
-//                memberService.saveRefreshToken(memberDto.getUserid(), refreshToken);
-//                logger.debug("로그인 accessToken 정보 : {}", accessToken);
-//                logger.debug("로그인 refreshToken 정보 : {}", refreshToken);
-//                resultMap.put("access-token", accessToken);
-//                resultMap.put("refresh-token", refreshToken);
+                tokenProviderService.deleteRefreshToken(userid);
                 resultMap.put("message", SUCCESS);
                 status = HttpStatus.ACCEPTED;
             } else {
@@ -140,8 +134,7 @@ public class UserController {
                 status = HttpStatus.ACCEPTED;
             }
         } catch (Exception e) {
-//            logger.error("로그인 실패 : {}", e);
-            resultMap.put("message", e.getMessage());
+            resultMap.put("message", FAIL);
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
