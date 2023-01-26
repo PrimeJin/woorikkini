@@ -9,8 +9,9 @@ import { createSlice } from '@reduxjs/toolkit';
 export const TOKEN_TIME_OUT = 600 * 1000;
 
 export const tokenSlice = createSlice({
-  name: 'token',
+  name: 'token', //접근할때 state.token으로 접근하면 되는것
   //초기 상태(initial state)
+  //Access Token을 여기에 저장
   initialState: {
     authenticated: false,
     accessToken: null,

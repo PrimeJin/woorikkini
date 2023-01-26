@@ -5,10 +5,11 @@
 /* eslint-disable no-else-return */
 /* eslint-disable spaced-comment */
 /**
- * 로그인/로그아웃 정보통신을 위한 상세기능 구현 API
+ * 프론트엔드 <-> 백엔드 정보통신을 위한 상세기능 구현 API
  * LoginPage.js에서 Login버튼을 누르면 userEmail, userPassword를 받아
  * 여기로 보낸 다음 응답을 Backend로 보냅니다
  */
+const BASE_URL = 'http://localhost:3001'; //API 테스트용 프록시 URL
 
 //Promise 요청 타임아웃 시간 설정
 const TIME_OUT = 300 * 1000;
@@ -22,7 +23,6 @@ const statusError = {
 };
 
 //Backend로 요청할 Promise객체
-//그냥 fetch를 쓰는것과 똑같지만 코드의 가독성을 위해
 const requestPromise = (url, option) => {
   return fetch(url, option);
 };
@@ -46,19 +46,22 @@ export const loginUser = async (credentials) => {
     headers: {
       'Content-Type': 'application/json;charset=UTF-8', //헤더
     },
-    body: JSON.stringify(credentials), //credentials 인자를 JSON으로 처리해서 싣어보냄
+    body: JSON.stringify(credentials),
   };
 
-  const data = await getPromise('/user/login', option).catch(() => {
+  const data = await getPromise(`${BASE_URL}/login`, option).catch(() => {
     return statusError;
   });
 
   //200번대 response(성공)
+  //백엔드에서 넘어오는 data를 어떻게 가공할것인지
   if (parseInt(Number(data.status) / 100) === 2) {
-    const status = data.ok;
-    const code = data.status;
-    const text = await data.text();
-    const json = text.length ? JSON.parse(text) : '';
+    console.log(data);
+    const status = data.ok; //통신이 성공했는지 여부
+    const code = data.status; //응답 코드
+    const text = await data.text(); //응답 데이터 전문
+    const json = text.length ? JSON.parse(text) : ''; //응답 데이터를 JSON으로
+    // const json = data.json();
 
     return {
       status,
@@ -82,7 +85,7 @@ export const logoutUser = async (credentials, accessToken) => {
     body: JSON.stringify(credentials),
   };
 
-  const data = await getPromise('/logout', option).catch(() => {
+  const data = await getPromise(`${BASE_URL}/logout`, option).catch(() => {
     return statusError;
   });
 
@@ -111,7 +114,7 @@ export const requestToken = async (refreshToken) => {
     body: JSON.stringify({ refresh_token: refreshToken }),
   };
 
-  const data = await getPromise('/user/login', option).catch(() => {
+  const data = await getPromise(`${BASE_URL}/login`, option).catch(() => {
     return statusError;
   });
 

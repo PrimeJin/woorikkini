@@ -14,10 +14,6 @@ const Google = (props) => {
   let code = new URL(window.location.href).searchParams.get('code');
 
   //인가코드를 받아오면 백엔드로 넘기기
-  // v 이렇게 쓰지말래
-  // React.useEffect(async () => {
-  //   await dispatch(kakaoLogin(code));
-  // }, []);
   React.useEffect(() => {
     async function fetchData() {
       await dispatch(GoogleLogin(code));

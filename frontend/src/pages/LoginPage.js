@@ -12,7 +12,7 @@ import { useForm } from 'react-hook-form';
 import { setRefreshToken } from '../storage/Cookies';
 import { Link } from 'react-router-dom';
 
-import { loginUser } from '../api/Users';
+import { loginUser, loginUser_Axios } from '../api/Users';
 import { SET_TOKEN } from '../store/Auth';
 
 import KakaoButton from '../component/KakaoButton';
@@ -37,8 +37,10 @@ const LoginPage = () => {
     //참고: /api/Users.js
     const response = await loginUser({ userEmail, userPassword });
 
-    //요청 응답이 오면
+    //요청 응답이 오면 응답상태를 체크
+    //response.status가 true면 응답이 200번대(성공)
     if (response.status) {
+      console.log(response);
       //Cookie에 Refresh Token 저장
       setRefreshToken(response.json.refresh_token);
       //store에 Access Token 저장하도록 Action Dispatch
