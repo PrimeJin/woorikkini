@@ -29,11 +29,6 @@ public class NoticeService {
     }
 
     public NoticeInfoDto getNotice(int noticeId) {
-//        Optional<Notice> noticeWrapper = noticeRepository.findById(noticeId);
-//        Notice notice = noticeWrapper.get();
-//        return new NoticeDto(notice);
-
-//        Notice notice = noticeRepository.findById(noticeId).orElseThrow(() -> new IllegalArgumentException("해당 글이 없습니다."));
         Optional<Notice> notice = noticeRepository.findById(noticeId);
         if(notice.isPresent()) {
             return new NoticeInfoDto(notice.get());
@@ -50,12 +45,9 @@ public class NoticeService {
 
     @Transactional
     public Notice updateNotice(NoticeUpdateFormDto noticeUpdateFormDto) {
-//        Optional<Notice> notice = noticeRepository.findById(noticeUpdateFormDto.getNoticeId());
-//        notice.get().update(noticeFormDto.getNoticeTitle(), noticeFormDto.getNoticeContent());
         Notice updatedNotice = noticeUpdateFormDto.toEntity();
         return noticeRepository.save(updatedNotice);
     }
-
 
     @Transactional
     public int deleteNotice(int noticeId) {

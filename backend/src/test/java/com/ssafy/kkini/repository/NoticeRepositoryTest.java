@@ -6,18 +6,20 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.TestPropertySource;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
+//@TestPropertySource(locations="classpath:application-test.properties")
 class NoticeRepositoryTest {
 
     @Autowired
     NoticeRepository noticeRepository;
 
     @Test
-    @DisplayName("공지사항 생성 테스트")
+    @DisplayName("공지사항 생성 repository 테스트")
     public void createNoticeTest() {
         //given
         Notice notice1 = Notice.builder().noticeTitle("제목1").noticeContent("내용1").build();
@@ -31,7 +33,7 @@ class NoticeRepositoryTest {
     }
 
     @Test
-    @DisplayName("공지사항 목록(리스트) 반환 테스트")
+    @DisplayName("공지사항 목록(리스트) 반환 repository 테스트")
     public void getNoticeList() {
         //given
         Notice notice1 = Notice.builder().noticeTitle("제목1").noticeContent("내용1").build();

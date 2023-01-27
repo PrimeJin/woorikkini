@@ -1,10 +1,7 @@
 package com.ssafy.kkini.dto;
 
 import com.ssafy.kkini.entity.Notice;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -12,6 +9,7 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @ToString
 public class NoticeUpdateFormDto {
     private int noticeId;
