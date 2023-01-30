@@ -19,8 +19,7 @@ import java.sql.Timestamp;
 public class User {
     @Id // primary key
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long id;
+    private Long userId;
 
     @Column(name = "user_name", length = 30)
     private String name;
