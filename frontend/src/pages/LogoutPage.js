@@ -2,7 +2,7 @@
  * 로그아웃 누르면 호출될 페이지
  * 상세기능 구현은 /api/Users.js 참고
  */
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';

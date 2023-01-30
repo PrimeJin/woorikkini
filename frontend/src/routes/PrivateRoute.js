@@ -1,6 +1,7 @@
 /**
  * 인증받은 사용자만 접근할 수 있도록 하는 PrivateRoute
  */
+import React from 'react';
 import { Outlet, Navigate } from 'react-router';
 import { useLocation } from 'react-router-dom';
 
