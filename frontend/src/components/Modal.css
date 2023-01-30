@@ -1,0 +1,126 @@
+@import url('http://cdn.rawgit.com/innks/NanumSquareRound/master/nanumsquareround.min.css');
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 99;
+  background-color: rgba(0, 0, 0, 0.6);
+  margin-top: 0;
+}
+.register {
+  outline: none;
+  cursor: pointer;
+  border: 0;
+  background-color: #d6ebfc;
+}
+.close {
+  outline: none;
+  cursor: pointer;
+  border: 0;
+  background-color: #ff8d89;
+}
+.modal > section {
+  width: 400px;
+  height: 600px;
+  width: 90%;
+  max-width: 450px;
+  margin: 0 auto;
+  border-radius: 0.3rem;
+  background-color: #fff;
+  /* 팝업이 열릴때 스르륵 열리는 효과 */
+  animation: modal-show 0.3s;
+  overflow: hidden;
+  text-align: center;
+  display: inline-block;
+}
+.modal > section > header {
+  position: relative;
+  padding: 16px 64px 16px 16px;
+  background-color: #f1f1f1;
+  font-weight: 700;
+}
+.modal > section > header button {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 30px;
+  font-size: 21px;
+  font-weight: 700;
+  text-align: center;
+  color: #999;
+  background-color: transparent;
+}
+.modal > section > main {
+  padding: 16px;
+  border-bottom: 1px solid #dee2e6;
+  border-top: 1px solid #dee2e6;
+}
+.modal > section > footer {
+  padding: 12px 16px;
+  text-align: center;
+}
+.register {
+  padding: 6px 12px;
+  color: #fff;
+  background-color: #d6ebfc;
+  height: 30px;
+  width: 80px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-family: 'NanumSquareRound';
+  font-style: normal;
+  font-weight: 900;
+  color: #090936;
+}
+.close {
+  padding: 6px 12px;
+  color: #fff;
+  background-color: #ff8d89;
+  height: 30px;
+  width: 80px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-family: 'NanumSquareRound';
+  font-style: normal;
+  font-weight: 900;
+  color: #090936;
+}
+
+.modal.openModal {
+  display: flex;
+  align-items: center;
+  /* 팝업이 열릴때 스르륵 열리는 효과 */
+  animation: modal-bg-show 0.3s;
+  /* Rectangle 18 */
+
+  /* position: absolute; */
+  /* width: 428px;
+  height: 709px;
+  left: 156.5px;
+  top: -101px;
+
+  background: #fefaef;
+  border-radius: 50px; */
+}
+@keyframes modal-show {
+  from {
+    opacity: 0;
+    margin-top: -50px;
+  }
+  to {
+    opacity: 1;
+    margin-top: 0;
+  }
+}
+@keyframes modal-bg-show {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

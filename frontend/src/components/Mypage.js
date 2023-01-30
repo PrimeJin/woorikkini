@@ -1,73 +1,98 @@
 import './Mypage.css';
 import React from 'react';
+import Logo from './PageLogo';
+import NoticeIcon from './NoticeIcon';
+import Nav from './Navbar';
+import CardContainer from './CardContainer';
 
-function Logo() {
-  return (
-    <div className="mypage-logo-top">
-      <img className="mypage-logo" src={'img/우리끼니로고.png'} />
+// import axios from 'axios';
+
+// function CardContainer() {
+// const [memoryData, setMemoryData] = useState([{
+//   idx: '',
+//   photo: '',
+//   date: '',
+//   title: '',
+//   content: ''
+// }])
+
+// useEffect(async() => {
+//   try{
+//     const res = await axios.get('/profile/')
+//     const _memoryData = await res.data.map((rowData) => (
+//       setLast
+//     ))
+//   }
+// })
+//   return (
+//     <div className="cardlist-top">
+//       <Card></Card>
+//       <Card></Card>
+//       <CreateCard></CreateCard>
+//     </div>
+//   );
+// }
+
+// function CreateCard() {
+//   // useState를 사용하여 open상태를 변경한다. (open일때 true로 만들어 열리는 방식)
+//   const [modalOpen, setModalOpen] = useState(false);
+
+//   const openModal = () => {
+//     setModalOpen(true);
+//   };
+//   const closeModal = () => {
+//     setModalOpen(false);
+//   };
+
+//   return (
+//     <React.Fragment>
+//       {/* //header 부분에 텍스트를 입력한다. */}
+//       <div className="create-card">
+//         <div onClick={openModal}>
+//           <p>+</p>
+//           <p>추가하기</p>
+//         </div>
+//       </div>
+//       <Modal open={modalOpen} close={closeModal} header="기록하기">
+//         {/* // Modal.js <main> {props.children} </main>에 내용이 입력된다.  */}
+//         <div className="memory">
+//           <div className="photo">
+//             <button>사진 업로드</button>
+//           </div>
+//           <input style={{ width: 300 }} placeholder="제목을 입력하세요."></input>
+//           <br />
+//           <textarea style={{ width: 300, height: 100 }} placeholder="내용을 입력하세요."></textarea>
+//         </div>
+//       </Modal>
+//     </React.Fragment>
+//   );
+// }
+
+// function CreateCard() {
+//   const [modal, setModal] = useState(false);
+//   const addCard = () => {
+//     console.log(modal);
+//     setModal(!modal);
+//   };
+//   return (
+
+/* <div>
+  {modal === true ? (
+    <div className="modal" value={modal}>
+      <h4>기록하기</h4>
+      <div>사진 업로드</div>
+      <p>제목</p>
+      <p>내용</p>
+      <div>
+        <button>등록하기</button>
+        <button>취소하기</button>
+      </div>
     </div>
-  );
-}
+  ) : null}
+</div>; */
 
-function Nav(props) {
-  return (
-    <nav className="navbar">
-      <div>nickname</div>
-      <button
-        className="logout-btn"
-        onClick={(event) => {
-          event.preventDefault();
-          props.onChangeMode();
-        }}
-      >
-        LOGOUT
-      </button>
-    </nav>
-  );
-}
-
-function CardListContainer() {
-  return (
-    <div className="cardlist-top">
-      <Card></Card>
-      <Card></Card>
-      <CreateCard></CreateCard>
-    </div>
-  );
-}
-
-function Card() {
-  return (
-    <div className="card">
-      <div style={{ width: 291, height: 300, position: 'relative' }}>이미지 들어갈 자리</div>
-      {/* <div style={{ position: 'absolute' }}> */}
-      <button>수정</button>
-      <button>삭제</button>
-      {/* </div> */}
-      <p>날짜</p>
-      <h3>제목을 입력하세요.</h3>
-      <div>내용을 입력하세요.</div>
-    </div>
-  );
-}
-
-function CreateCard() {
-  return (
-    <div className="create-card">
-      <p>추가하기</p>
-      <p>+</p>
-    </div>
-  );
-}
-
-function NoticeIcon() {
-  return (
-    <div className="notice" style={{ margin: 20 }}>
-      <img className="notice-icon" src={'img/공지사항_아이콘.png'}></img>
-      <p style={{ margin: 0 }}>공지사항</p>
-    </div>
-  );
-}
+//   );
+// }
 
 function Mypage() {
   return (
@@ -79,13 +104,9 @@ function Mypage() {
           <br />
           <p style={{ marginTop: 0 }}>내가 기록하고 싶은 순간들이야!</p>
         </div>
-        <Nav
-          onChangeMode={() => {
-            alert('로그아웃 되었습니다.');
-          }}
-        ></Nav>
+        <Nav></Nav>
       </div>
-      <CardListContainer></CardListContainer>
+      <CardContainer></CardContainer>
       <NoticeIcon></NoticeIcon>
     </div>
   );
