@@ -20,17 +20,10 @@
     "redux-actions": "^2.6.5",
     "redux-devtools-extension": "^2.13.9",
     "web-vitals": "^2.1.0",
-    "yarn": "^1.22.19"
-  },
-  "devDependencies": {
+    "yarn": "^1.22.19",
     "@reduxjs/toolkit": "^1.9.1",
     "immer": "^9.0.18",
-    "prettier": "^2.8.3",
-    "react-redux": "^8.0.5",
-    "react-router-dom": "^6.6.2",
-    "redux": "^4.2.0",
-    "redux-actions": "^2.6.5",
-    "redux-devtools-extension": "^2.13.9"
+    "prettier": "^2.8.3"
   },
   "scripts": {
     "start": "react-scripts --openssl-legacy-provider start",
