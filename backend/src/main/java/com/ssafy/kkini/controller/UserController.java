@@ -79,13 +79,13 @@ public class UserController {
         try {
             User loginUser= userService.login(userLoginFormDto);
             if (loginUser != null) {
-                String accessToken = tokenProviderService.createToken(loginUser.getId(), loginUser.getRole());// key, data
+                String accessToken = tokenProviderService.createToken(loginUser.getUserId(), loginUser.getUserRole());// key, data
                 String refreshToken = tokenProviderService.createToken();
-                tokenProviderService.saveRefreshToken(loginUser.getId(), refreshToken);
+                tokenProviderService.saveRefreshToken(loginUser.getUserId(), refreshToken);
                 resultMap.put("access-token", accessToken);
                 resultMap.put("refresh-token", refreshToken);
-                resultMap.put("userNickname",loginUser.getNickname());
-                resultMap.put("userId", loginUser.getId());
+                resultMap.put("userNickname",loginUser.getUserNickname());
+                resultMap.put("userId", loginUser.getUserId());
                 resultMap.put("message", SUCCESS);
                 status = HttpStatus.ACCEPTED;
             } else {
@@ -150,7 +150,7 @@ public class UserController {
             User user = userService.nicknameModify(userNicknameModifyFormDto);
             if(user != null){
                 resultMap.put("messsage" , SUCCESS);
-                resultMap.put("userNickname", user.getNickname());
+                resultMap.put("userNickname", user.getUserNickname());
                 status = HttpStatus.ACCEPTED;
             } else {
                 resultMap.put("message", FAIL);

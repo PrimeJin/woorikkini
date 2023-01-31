@@ -55,12 +55,12 @@ public class UserPrincipalDto implements UserDetails, OAuth2User, OidcUser {
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return user.getUserPassword();
     }
 
     @Override
     public String getUsername() {
-        return user.getEmail();
+        return user.getUserEmail();
     }
 
     @Override
@@ -85,7 +85,7 @@ public class UserPrincipalDto implements UserDetails, OAuth2User, OidcUser {
 
     @Override
     public String getName() {
-        return user.getName();
+        return user.getUserName();
     }
 
     @Override

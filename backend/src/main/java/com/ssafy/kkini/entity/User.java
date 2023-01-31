@@ -19,66 +19,55 @@ import java.sql.Timestamp;
 public class User {
     @Id // primary key
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(columnDefinition = "INT UNSIGNED")
     private Long userId;
 
-    @Column(name = "user_name", length = 30)
-    private String name;
+    private String userName;
 
-    @Column(name = "user_email", length = 30)
-    private String email;
+    private String userEmail;
 
-    @Column(name = "user_password", length = 100)
-    private String password;
+    private String userPassword;
 
-    @Column(name = "user_role", length = 10)
-    private String role;
+    private String userRole;
 
-    @Column(name = "user_nickname", length = 30)
-    private String nickname;
+    private String userNickname;
 
-    @Column(name = "user_birth_year", length = 10)
-    private int birthYear;
+    private int userBirthYear;
 
-    @Column(name = "user_gender", length = 5)
-    private String gender;
+    private String userGender;
 
     @CreationTimestamp
-    @Column(name = "user_activation")
-    private Timestamp activation;
+    private Timestamp userActivation;
 
     @CreationTimestamp
-    @Column(name = "user_join_date")
-    private Timestamp joinDate;
+    private Timestamp userJoinDate;
 
-    @Column(name = "user_provider", length = 20)
     @Enumerated(EnumType.STRING)
-    private AuthProvider provider;
-    @Column(name = "user_provider_id")
-    private String providerId;
+    private AuthProvider userProvider;
+    private String userProviderId;
 
-    @Column(name = "user_reported")
     @ColumnDefault("0")
-    private int reported;
+    private int userReported;
 
     @Builder
     public User(String email, String name, String password,String nickname,String gender, int birthYear,AuthProvider provider,String providerId){
-        this.email = email;
-        this.name = name;
-        this.password = password;
-        this.nickname = nickname;
-        this.gender = gender;
-        this.role = "ROLE_USER";
-        this.birthYear = birthYear;
-        this.provider = provider;
-        this.providerId = providerId;
+        this.userEmail = email;
+        this.userName = name;
+        this.userPassword = password;
+        this.userNickname = nickname;
+        this.userGender = gender;
+        this.userRole = "ROLE_USER";
+        this.userBirthYear = birthYear;
+        this.userProvider = provider;
+        this.userProviderId = providerId;
     }
 
 
     public void changeNickname(String nickname) {
-        this.nickname = nickname;
+        this.userNickname = nickname;
     }
 
     public void changePassword(String password){
-        this.password = password;
+        this.userPassword = password;
     }
 }

@@ -31,8 +31,8 @@ public class UserService {
 
     public User login(UserLoginFormDto userLoginFormDto) {
         if (userLoginFormDto.getUserEmail() == null || userLoginFormDto.getUserPassword() == null) return null;
-        Optional<User> user = userRepository.findByEmail(userLoginFormDto.getUserEmail());
-        if(!user.isPresent() && user.get().getPassword() != userLoginFormDto.getUserPassword()) return null;
+        Optional<User> user = userRepository.findByUserEmail(userLoginFormDto.getUserEmail());
+        if(!user.isPresent() && user.get().getUserPassword() != userLoginFormDto.getUserPassword()) return null;
         else return user.get();
 //        System.out.println(userLoginFormDto.getUserEmail() + " + " + userLoginFormDto.getUserPassword());
 //        return userRepository.login(userLoginFormDto.getUserEmail(), userLoginFormDto.getUserPassword());

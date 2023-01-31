@@ -50,13 +50,13 @@ public class CommonOAuth2UserService {
             throw new OAuth2AuthenticationProcessingException("Email not found from OAuth2 provider");
         }
 
-        Optional<User> userOptional = userRepository.findByEmailAndProviderId(oAuth2UserInfo.getEmail(), oAuth2UserInfo.getProviderId());
+        Optional<User> userOptional = userRepository.findByUserEmailAndUserProviderId(oAuth2UserInfo.getEmail(), oAuth2UserInfo.getProviderId());
         User user = null;
         if(userOptional.isPresent()) {
             user = userOptional.get();
-            if(!user.getProvider().equals(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()))) {
+            if(!user.getUserProvider().equals(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()))) {
                 throw new OAuth2AuthenticationProcessingException("Looks like you're signed up with " +
-                        user.getProvider() + " account. Please use your " + user.getProvider() +
+                        user.getUserProviderId() + " account. Please use your " + user.getUserProviderId() +
                         " account to login.");
             }
 //            user = updateExistingUser(user, oAuth2UserInfo);

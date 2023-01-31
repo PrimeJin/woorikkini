@@ -67,11 +67,11 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String newRefreshToken = tokenProvider.createToken();
 
         // DB 저장
-        RefreshToken oldRefreshToken = refreshTokenRepository.findByUserId(userPrincipalDto.getUser().getId());
+        RefreshToken oldRefreshToken = refreshTokenRepository.findByUserId(userPrincipalDto.getUser().getUserId());
         if (oldRefreshToken != null) {
             oldRefreshToken.setRefreshToken(newRefreshToken);
         } else {
-            oldRefreshToken = new RefreshToken(userPrincipalDto.getUser().getId(), newRefreshToken);
+            oldRefreshToken = new RefreshToken(userPrincipalDto.getUser().getUserId(), newRefreshToken);
             refreshTokenRepository.saveAndFlush(oldRefreshToken);
         }
 

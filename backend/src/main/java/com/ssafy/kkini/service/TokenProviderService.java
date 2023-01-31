@@ -57,8 +57,8 @@ public class TokenProviderService {
 
         return Jwts.builder()
                 .setHeaderParam("typ", "JWT")
-                .setSubject(Long.toString(userPrincipal.getUser().getId()))
-                .claim("role", userPrincipal.getUser().getRole())
+                .setSubject(Long.toString(userPrincipal.getUser().getUserId()))
+                .claim("role", userPrincipal.getUser().getUserRole())
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, appProperties.getAuth().getTokenSecret())
