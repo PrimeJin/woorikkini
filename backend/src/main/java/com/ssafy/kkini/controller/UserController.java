@@ -1,7 +1,5 @@
 package com.ssafy.kkini.controller;
 
-
-
 import com.ssafy.kkini.dto.*;
 import com.ssafy.kkini.entity.User;
 import com.ssafy.kkini.repository.UserRepository;
@@ -9,6 +7,7 @@ import com.ssafy.kkini.service.TokenProviderService;
 import com.ssafy.kkini.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,9 +16,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -47,10 +48,11 @@ public class UserController {
 
     @ApiOperation(value = "회원가입", notes = "회원가입", response = UserJoinFormDto.class)
     @PostMapping()
-    public ResponseEntity<Map<String, Object>> join(@RequestBody @ApiParam(value = "회원가입 정보들", required = true, example  = "0") UserJoinFormDto userJoinFormDto, HttpServletResponse response ) {
+    public ResponseEntity<Map<String, Object>> join(@Valid @RequestBody @ApiParam(value = "회원가입 정보들", required = true, example  = "0")
+                                                    UserJoinFormDto userJoinFormDto) {
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
-        User joinUser=null;
+        User joinUser = null;
 
         try {
             joinUser = userService.join(userJoinFormDto);
