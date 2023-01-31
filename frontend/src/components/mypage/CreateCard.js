@@ -22,13 +22,16 @@ function CreateCard({ addCard }) {
 
   const onFile = (event) => {
     // console.log('?', event.target.files);
-    setFileData([...fileData, event.target.value]);
     // console.log('@', imgRef.current.files[0]);
     const file = imgRef.current.files[0];
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onloadend = () => {
-      setImgFile(reader.result);
+      const imageFile = reader.result;
+      // 이미지 띄울 수 있게 변경한 값 넣기
+      setImgFile(imageFile);
+      // 리스트에 추가하기
+      setFileData([...fileData, imageFile]);
     };
   };
   const onTitle = (event) => {
@@ -41,8 +44,10 @@ function CreateCard({ addCard }) {
   const memoryRegister = (event) => {
     event.preventDefault();
     // const formData = { img: fileData, title: titleData, content: contentData };
-    const formData = [imgFile, titleData, contentData];
+    console.log('얍!');
+    const formData = { img: fileData, title: titleData, content: contentData };
     addCard(formData);
+    console.log('욥!');
     console.log('@@', formData);
     setImgFile('');
     setFileData([]);
@@ -90,6 +95,7 @@ function CreateCard({ addCard }) {
       <Modal open={modalOpen} close={closeModal} register={memoryRegister} header="기록하기">
         {/* // Modal.js <main> {props.children} </main>에 내용이 입력된다.  */}
         <form className="memory">
+          {/* <p>{fileData}</p>  */}
           <input
             // value={fileData}
             type="file"

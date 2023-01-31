@@ -3,6 +3,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import SwipeCore, { Navigation, Pagination, Autoplay } from 'swiper';
 import React, { useState } from 'react';
 import CreateCard from './CreateCard';
+import UpdateCard from './UpdateCard';
 
 // import { useState, useRef, useEffect } from "react";
 
@@ -10,43 +11,42 @@ import 'swiper/swiper.min.css';
 import 'swiper/components/navigation/navigation.min.css';
 import 'swiper/components/pagination/pagination.min.css';
 
-// const items = [
-//   {
-//     src: 'https://images.unsplash.com/photo-1498307833015-e7b400441eb8?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2600&q=80',
-//   },
-//   {
-//     src: 'https://images.unsplash.com/photo-1491900177661-4e1cd2d7cce2?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2250&q=80',
-//   },
-// ];
-
 const SwiperContainer = () => {
   SwipeCore.use([Navigation, Pagination, Autoplay]);
-  const [cardList, setCardList] = useState([
-    // {
-    //   img:
-    // 'https://images.unsplash.com/photo-1498307833015-e7b400441eb8?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2600&q=80',
-    // //     'https://images.unsplash.com/photo-1491900177661-4e1cd2d7cce2?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2250&q=80',
-    // '제목 1',
-    // '내용 1',
-    // },
-  ]);
+  const [cardList, setCardList] = useState([]);
 
   const addCard = (event) => {
-    // const newCard = {
-    //   img: [event.data[0]],
-    //   title: event.data[1],
-    //   content: event.data[2],
-    // };
-    const newCard = event;
-    setCardList([...cardList, newCard]);
-    // console.log('$', event[0]);
-    // console.log('**', newCard);
-  };
-  console.log('^^^', cardList);
+    console.log('$', event);
 
-  const cardDelete = (event) => {
-    console.log('#', event);
+    //새롭게 배열 데이터를 추가하는 함수
+    const newCard = {
+      id: cardList.length + 1,
+      img: event.img,
+      title: event.title,
+      content: event.content,
+    };
+    setCardList([...cardList, newCard]);
   };
+
+  const cardDelete = (id) => {
+    // card.id 가 매개변수로 작성하지 않는 데이터들만 추출해서 새로운 배열을 만듬
+    // = card.id 가 id 인 것을 제거함
+    setCardList(cardList.filter((card) => card.id !== id));
+    console.log('!!', id);
+  };
+
+  const [update, setUpdate] = useState(false);
+  const [currentCard, setCurrentCard] = useState({});
+  const cardUpdate = (data) => {
+    console.log('수정할래');
+    console.log('뭘', data);
+    setUpdate(true);
+    setCurrentCard(data);
+    console.log('보낼거1', update);
+    console.log('보낼거2', currentCard);
+  };
+
+  console.log('^^^', cardList);
 
   return (
     <>
@@ -69,15 +69,15 @@ const SwiperContainer = () => {
               >
                 <div className="swiper-wrapper">
                   <div className="card swiper-slide">
-                    {/* {data[0].img.map((item, id) => {
+                    {data.img.map((item, id) => {
                       return (
+                        <SwiperSlide>
+                          {/* 이미지 들어갈 자리 */}
+                          {/* <p>{item}</p> */}
+                          <img key={id} src={item} className="slider-image-wrapper" alt="SliderImg" />
+                        </SwiperSlide>
                       );
-                    })} */}
-                    <SwiperSlide>
-                      {/* 이미지 들어갈 자리 */}
-                      <img src={data[0]} className="slider-image-wrapper" alt="SliderImg" />
-                    </SwiperSlide>
-                    ;
+                    })}
                   </div>
 
                   <div className="slider-buttons">
@@ -87,21 +87,14 @@ const SwiperContainer = () => {
                 </div>
               </Swiper>
               <div>
-                <button>수정</button>
-                <button onClick={cardDelete} key={idx}>
-                  삭제
-                </button>
+                <button onClick={() => cardUpdate(data)}>수정</button>
+                {update ? <UpdateCard currentCard={currentCard} update={update}></UpdateCard> : <div></div>}
+                <button onClick={() => cardDelete(data.id)}>삭제</button>
                 <div>날짜</div>
-                <div>{data[1]}</div>
-                <div>{data[2]}</div>
+                <div>{data.title}</div>
+                <div>{data.content}</div>
               </div>
             </div>
-
-            // <div  style={{ margin: 30, width: 200, height: 300 }}>
-            //   <img style={{ width: 200, height: 200 }} />
-            //   <p></p>
-            //   <p></p>
-            // </div>
           );
         })}
         <CreateCard addCard={addCard}></CreateCard>
