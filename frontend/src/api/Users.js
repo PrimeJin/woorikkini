@@ -9,9 +9,9 @@
  * LoginPage.js에서 Login버튼을 누르면 userEmail, userPassword를 받아
  * 여기로 보낸 다음 응답을 Backend로 보냅니다
  */
-import { useState } from 'react';
+
 import { useSelector } from 'react-redux';
-import { SET_TOKEN, DELETE_TOKEN } from '../store/Auth';
+import { useNavigate } from 'react-router-dom';
 
 const BASE_URL = 'http://localhost:3001'; //API 테스트용 프록시 URL
 
@@ -138,4 +138,29 @@ export const requestToken = async (refreshToken) => {
       json,
     };
   } else return statusError;
+};
+
+//회원탈퇴
+export const DeleteUser = (userId) => {
+  const url = `${BASE_URL}/${userId}`;
+  const accessToken = useSelector((state) => state.accessToken);
+  const navigate = useNavigate();
+  //useSelector는 React 함수나 Custom Hook 내부에 있어야 하는데
+  //함수명을 대문자로 하지 않으면 react에서 react 함수로 인식하지를 않는다
+  //use로 시작하지 않으면 react에서 custom hook으로 인식하지 않는다 그래서 오류가 생겼던것
+
+  fetch(url, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json; charset=UTF-8',
+      authorization: `Bearer ${accessToken}`,
+    },
+  })
+    .then(() => {
+      alert('그동안 이용해주셔서 감사합니다.');
+      navigate('/'); //메인화면으로 보내기
+    })
+    .catch((e) => {
+      console.log(e);
+    });
 };
