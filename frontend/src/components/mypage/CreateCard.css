@@ -40,6 +40,6 @@
 
 .memory {
   height: 450px;
-  text-align: center;
+  /* text-align: center; */
   display: inline-block;
 }

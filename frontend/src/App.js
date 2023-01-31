@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import React from 'react';
 import Signup from './components/user/Signup';
-import Mypage from './components/Mypage';
+import Mypage from './components/mypage/Mypage';
 
 function App() {
   return (

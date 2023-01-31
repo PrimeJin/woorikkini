@@ -1,16 +1,7 @@
 import './Signup.css';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import mainlogo from '../../assets/우리끼니로고.png';
-
-// 회원가입 페이지 로고
-function Logo() {
-  return (
-    <div className="logo-top">
-      <img className="woori-logo" src={mainlogo} />
-    </div>
-  );
-}
+import Logo from './UserPagesLogo';
 
 // 회원가입 폼
 function Form() {
@@ -183,7 +174,7 @@ function Form() {
   };
 
   return (
-    <form>
+    <form className="signup-form">
       <p className="text-type">회원가입</p>
       <input type="email" value={Email} onChange={onEmail} className="input-form-top" placeholder="이메일" required />
       <button type="click" className="check-btn" onClick={onEmailClick}>
