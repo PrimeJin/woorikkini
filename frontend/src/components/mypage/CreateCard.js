@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import './CreateCard.css';
-// import axios from 'axios';
+import axios from 'axios';
 import Modal from '../Modal';
 
 function CreateCard({ addCard }) {
@@ -20,7 +20,6 @@ function CreateCard({ addCard }) {
   };
 
   const [fileData, setFileData] = useState([]);
-  // const [imgFile, setImgFile] = useState('');
   const imgRef = useRef();
   const [titleData, setTitleData] = useState('');
   const [contentData, setContentData] = useState('');
@@ -30,19 +29,15 @@ function CreateCard({ addCard }) {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onloadend = () => {
-      const imageFile = reader.result;
       // 이미지 띄울 수 있게 변경한 값 넣기
-      // setImgFile(imageFile);
+      const imageFile = reader.result;
       // 리스트에 추가하기
       setFileData([...fileData, imageFile]);
     };
   };
 
   const deleteImg = (id) => {
-    // console.log('>', id);
-    // console.log('>>', fileData);
     setFileData(fileData.filter((img) => fileData.indexOf(img) !== id));
-    // console.log('>>>', fileData[id]);
   };
 
   const onTitle = (event) => {
@@ -54,44 +49,32 @@ function CreateCard({ addCard }) {
 
   const memoryRegister = (event) => {
     event.preventDefault();
+
     // const formData = { img: fileData, title: titleData, content: contentData };
-    console.log('얍!');
-    const formData = { img: fileData, title: titleData, content: contentData };
-    addCard(formData);
-    console.log('욥!');
-    console.log('@@', formData);
-    // setImgFile('');
-    setFileData([]);
-    setTitleData('');
-    setContentData('');
-    setModalOpen(false);
-    // fetch('http:// /memory', {
-    //   method: 'POST',
-    //   body: {
-    //     fileData,
-    //     titleData,
-    //     contentData,
-    //   },
-    // })
+    // addCard(formData);
+    // setFileData([]);
+    // setTitleData('');
+    // setContentData('');
+    // setModalOpen(false);
 
     // 서버로 전달
-    // axios
-    //   .post('http:// /memory', {
-    //     headers: {},
-    //     data: {
-    //       img: fileData,
-    //       title: titleData,
-    //       content: contentData,
-    //     },
-    //   })
-    //   .then(() => {
-    //     setModalOpen(false);
-    //     alert('새로운 추억이 등록되었습니다.');
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //     alert('다시 시도해주시기 바랍니다.');
-    //   });
+    axios
+      .post('http:// /memory', {
+        headers: {},
+        data: {
+          img: fileData,
+          title: titleData,
+          content: contentData,
+        },
+      })
+      .then(() => {
+        setModalOpen(false);
+        alert('새로운 추억이 등록되었습니다.');
+      })
+      .catch((err) => {
+        console.log(err);
+        alert('다시 시도해주시기 바랍니다.');
+      });
   };
 
   return (

@@ -14,34 +14,29 @@ import 'swiper/components/pagination/pagination.min.css';
 // 카드
 const SwiperContainer = () => {
   SwipeCore.use([Navigation, Pagination, Autoplay]);
+  const [cardList, setCardList] = useState([{}]);
 
-  const [inputData, setInputData] = useState([
-    {
-      id: '',
-      img: '',
-      title: '',
-      content: '',
-    },
-  ]);
-
-  useEffect(async () => {
+  // 전체 카드 목록 보여주기
+  const getCardList = async () => {
     try {
-      const res = await axios.get('https://jsonplaceholder.typicode.com/photos');
-      const _inputData = await res.data.map((rowData) => ({
-        id: rowData.id,
-        img: rowData.url,
-        title: rowData.title,
-        content: rowData.thumnailUrl,
+      const res = await axios.get('https://.../memory/');
+      const inputData = res.data.map((rowData) => ({
+        id: rowData.memory_id,
+        img: rowData.save_filename,
+        date: rowData.memory_reg_date,
+        title: rowData.memory_title,
+        content: rowData.memory_content,
       }));
-      setInputData(inputData.concat(_inputData));
-      // axios.get('https://jsonplaceholder.typicode.com/photos').then((res) => console.log('!!!', res));
+      setCardList(cardList.concat(inputData));
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
-  }, []);
-  console.log('!!!', inputData);
+  };
 
-  const [cardList, setCardList] = useState([]);
+  // 페이지 실행 시 바로 진행
+  useEffect(() => {
+    getCardList();
+  }, []);
 
   // 카드 추가하기
   const addCard = (event) => {
@@ -61,8 +56,22 @@ const SwiperContainer = () => {
   const cardDelete = (id) => {
     // card.id 가 매개변수로 작성하지 않는 데이터들만 추출해서 새로운 배열을 만듬
     // = card.id 가 id 인 것을 제거함
-    setCardList(cardList.filter((card) => card.id !== id));
-    console.log('!!', id);
+    // setCardList(cardList.filter((card) => card.id !== id));
+
+    axios
+      .delete(`http://.../memory/${id}`, {
+        data: {
+          id,
+        },
+      })
+      .then(() => {
+        setModalOpen(false);
+        alert('추억이 삭제되었습니다.');
+      })
+      .catch((err) => {
+        console.log(err);
+        alert('다시 시도해주시기 바랍니다.');
+      });
   };
 
   // 카드 수정하기
@@ -105,14 +114,19 @@ const SwiperContainer = () => {
               >
                 <div className="swiper-wrapper">
                   <div className="card swiper-slide">
+                    <SwiperSlide>
+                      {/* 이미지 들어갈 자리 */}
+                      <img src={data.img} className="slider-image-wrapper" alt="SliderImg" />
+                    </SwiperSlide>
+                    {/* 
                     {data.img.map((item, id) => {
                       return (
-                        <SwiperSlide key={id}>
-                          {/* 이미지 들어갈 자리 */}
-                          <img src={item} className="slider-image-wrapper" alt="SliderImg" />
+                        <SwiperSlide key={id}> */}
+                    {/* 이미지 들어갈 자리 */}
+                    {/* <img src={item} className="slider-image-wrapper" alt="SliderImg" />
                         </SwiperSlide>
                       );
-                    })}
+                    })} */}
                   </div>
 
                   <div className="slider-buttons">
@@ -133,7 +147,7 @@ const SwiperContainer = () => {
                   <div></div>
                 )}
                 <button onClick={() => cardDelete(data.id)}>삭제</button>
-                <div>날짜</div>
+                <div>{data.date}</div>
                 <div>{data.title}</div>
                 <div>{data.content}</div>
               </div>
