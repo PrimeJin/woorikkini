@@ -1,10 +1,15 @@
 import React, { useRef, useState } from 'react';
+import PropTypes from 'prop-types';
 import './CreateCard.css';
 // import axios from 'axios';
 import Modal from '../Modal';
 
 function CreateCard({ addCard }) {
   // useState를 사용하여 open상태를 변경한다. (open일때 true로 만들어 열리는 방식)
+  CreateCard.propsTypes = {
+    addCard: PropTypes.node.isRequired,
+  };
+
   const [modalOpen, setModalOpen] = useState(false);
 
   const openModal = () => {
@@ -15,25 +20,31 @@ function CreateCard({ addCard }) {
   };
 
   const [fileData, setFileData] = useState([]);
-  const [imgFile, setImgFile] = useState('');
+  // const [imgFile, setImgFile] = useState('');
   const imgRef = useRef();
   const [titleData, setTitleData] = useState('');
   const [contentData, setContentData] = useState('');
 
-  const onFile = (event) => {
-    // console.log('?', event.target.files);
-    // console.log('@', imgRef.current.files[0]);
+  const onFile = () => {
     const file = imgRef.current.files[0];
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onloadend = () => {
       const imageFile = reader.result;
       // 이미지 띄울 수 있게 변경한 값 넣기
-      setImgFile(imageFile);
+      // setImgFile(imageFile);
       // 리스트에 추가하기
       setFileData([...fileData, imageFile]);
     };
   };
+
+  const deleteImg = (id) => {
+    // console.log('>', id);
+    // console.log('>>', fileData);
+    setFileData(fileData.filter((img) => fileData.indexOf(img) !== id));
+    // console.log('>>>', fileData[id]);
+  };
+
   const onTitle = (event) => {
     setTitleData(event.currentTarget.value);
   };
@@ -49,7 +60,7 @@ function CreateCard({ addCard }) {
     addCard(formData);
     console.log('욥!');
     console.log('@@', formData);
-    setImgFile('');
+    // setImgFile('');
     setFileData([]);
     setTitleData('');
     setContentData('');
@@ -106,7 +117,16 @@ function CreateCard({ addCard }) {
             ref={imgRef}
           />
           <div className="photo">
-            {imgFile ? <img src={imgFile} style={{ width: 250, height: 300 }} /> : <div></div>}
+            {/* {imgFile ?  */}
+            {fileData.map((item, id) => {
+              return (
+                <div key={id} style={{ width: 80, height: 60 }}>
+                  <img src={item} style={{ width: 50, height: 60 }} />
+                  <div onClick={() => deleteImg(id)}>X</div>
+                </div>
+              );
+            })}
+            {/* : <div></div>} */}
           </div>
           <input value={titleData} onChange={onTitle} style={{ width: 300 }} placeholder="제목을 입력하세요."></input>
           <br />
