@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,10 +45,10 @@ public class NoticeController {
     //공지사항 등록
     @ApiOperation(value = "공지사항 등록", notes = "새로운 공지사항 등록, DB입력 성공여부에 따라 'success' 또는 'fail' 반환")
     @PostMapping("/")
-    public ResponseEntity<Map<String, Object>> writeNotice(@RequestBody @ApiParam(value = "새 공지사항 정보 담은 dto") NoticeCreateFormDto noticeCreateFormDto) {
+    public ResponseEntity<Map<String, Object>> writeNotice(@Valid @RequestBody @ApiParam (value = "새 공지사항 정보 담은 dto") NoticeCreateFormDto noticeCreateFormDto) {
         Map<String, Object> map = new HashMap<>();
 
-        if(noticeService.writeNotice(noticeCreateFormDto) != null) {
+        if(noticeService.createNotice(noticeCreateFormDto) != null) {
             map.put("message", "success");
             return new ResponseEntity<Map<String, Object>>(map, HttpStatus.CREATED);
         } else {
@@ -75,7 +76,7 @@ public class NoticeController {
     @ApiOperation(value = "공지사항 글 수정", notes = "수정할 공지사항 정보 입력")
     @PutMapping("/{noticeId}")
     public ResponseEntity<Map<String, Object>> updateNotice(@PathVariable int noticeId,
-                                                            @RequestBody @ApiParam(value = "수정 글 정보 담은 dto") NoticeUpdateFormDto noticeUpdateFormDto) {
+                                                            @Valid @RequestBody @ApiParam(value = "수정 글 정보 담은 dto") NoticeUpdateFormDto noticeUpdateFormDto) {
         Map<String, Object> map = new HashMap<>();
 
         Notice updatedNotice = noticeService.updateNotice(noticeUpdateFormDto);

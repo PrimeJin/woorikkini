@@ -46,7 +46,7 @@ class NoticeServiceTest {
         Notice givenNotice = createFormDto.toEntity();
         when(noticeRepository.save(any())).thenReturn(createFormDto.toEntity());
         //when
-        Notice compareNotice = noticeService.writeNotice(createFormDto);
+        Notice compareNotice = noticeService.createNotice(createFormDto);
         //then
         Assertions.assertThat(givenNotice.getNoticeTitle()).isEqualTo(compareNotice.getNoticeTitle());
     }
@@ -91,5 +91,18 @@ class NoticeServiceTest {
         logger.info("수정 전 공지사항(givenNotice) 제목: " + givenNotice.getNoticeTitle());
         logger.info("수정 후 공지사항(compareNotice) 제목: " + compareNotice.getNoticeTitle());
         Assertions.assertThat(givenNotice.getNoticeTitle()).isNotEqualTo(compareNotice.getNoticeTitle());
+    }
+
+    @Test
+    @DisplayName("공지사항 삭제 service 테스트")
+    public void deleteNotice() throws Exception {
+        //given
+        Notice notice = Notice.builder().noticeId(1).noticeTitle("제목1").noticeContent("내용1").build();
+        //when
+        doNothing().when(noticeRepository).deleteById(1);
+        //then
+        noticeService.deleteNotice(1);
+        System.out.println(notice.getNoticeTitle());
+        verify(noticeRepository, times(1)).deleteById(1);
     }
 }

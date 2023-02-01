@@ -24,7 +24,7 @@ public class NoticeService {
     }
 
     @Transactional
-    public Notice writeNotice(NoticeCreateFormDto noticeCreateFormDto) {
+    public Notice createNotice(NoticeCreateFormDto noticeCreateFormDto) {
         return noticeRepository.save(noticeCreateFormDto.toEntity());
     }
 
