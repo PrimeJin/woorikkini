@@ -19,7 +19,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "USER")
-public class User {
+public class User extends BaseEntity{
     @Id // primary key
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(columnDefinition = "INT UNSIGNED")
@@ -41,9 +41,6 @@ public class User {
 
     @CreationTimestamp
     private Timestamp userActivation;
-
-    @CreationTimestamp
-    private Timestamp userJoinDate;
 
     @Enumerated(EnumType.STRING)
     private AuthProvider userProvider;

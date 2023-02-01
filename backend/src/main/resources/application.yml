@@ -28,9 +28,12 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
   profiles:
-    include: db
+    include: secret
 
 #logging
 logging:
   level:
     com.ssafy.kkini: debug
+
+upload:
+  path: C:\workplace\Common_Project\uploadFile\

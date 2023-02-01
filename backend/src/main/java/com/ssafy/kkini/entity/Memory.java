@@ -15,7 +15,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "MEMORY")
-public class Memory {
+public class Memory extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(columnDefinition = "INT UNSIGNED")
@@ -23,8 +23,6 @@ public class Memory {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-    @CreationTimestamp
-    private Timestamp memoryRegDate;
     private String memoryContent;
     private String memoryTitle;
 

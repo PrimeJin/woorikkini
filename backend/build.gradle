@@ -37,6 +37,11 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 	runtimeOnly 'com.h2database:h2'
+	implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
+	// https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload
+	implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.4'
+
+
 }
 
 tasks.named('test') {

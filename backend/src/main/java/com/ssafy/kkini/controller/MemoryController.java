@@ -37,13 +37,6 @@ public class MemoryController {
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
         Memory createMemory = memoryService.createMemory(memoryCreateFormDto);
-//        if(!memoryCreateFormDto.getMemoryImgFiles().isEmpty()){
-//            // 파일 이름을 업로드 한 날짜로 바꾸어서 저장할 것이다
-//            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
-//            String current_date = simpleDateFormat.format(new Date());
-//
-//        }
-//        Photo createPhoto = memoryService.createPhoto(memoryCreateFormDto.getMemoryImgFile());
 
         if(createMemory != null){
             resultMap.put("message", SUCCESS);
