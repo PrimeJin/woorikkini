@@ -1,5 +1,6 @@
 package com.ssafy.kkini.service;
 
+import com.ssafy.kkini.dto.UserCreateFormDto;
 import com.ssafy.kkini.dto.UserJoinFormDto;
 import com.ssafy.kkini.entity.User;
 import com.ssafy.kkini.repository.UserRepository;
@@ -17,7 +18,6 @@ import org.springframework.test.context.TestPropertySource;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-//@TestPropertySource(locations = "classpath:application-test.yml"))
 @ExtendWith(MockitoExtension.class)
 @TestPropertySource(locations = "classpath:application-test.yml")
 class UserServiceTest {
@@ -36,21 +36,21 @@ class UserServiceTest {
             @DisplayName("회원가입")
             void successJoin(){
                 //given
-                UserJoinFormDto userJoinFormDto = new UserJoinFormDto(
+                UserCreateFormDto userCreateFormDto = new UserCreateFormDto(
                         "여민지"
                         ,"minji@naver.com"
                         ,"1234"
                         ,"밍"
                         ,"F"
                 ,19980901);
-                User user = userJoinFormDto.toEntity();
+                User user = userCreateFormDto.toEntity();
                 when(userRepository.save(any())).thenReturn(user);
 
                 //when
-                User result = userService.join(userJoinFormDto);
+                User result = userService.join(userCreateFormDto);
 
                 //then
-                Assertions.assertThat(user.getEmail()).isEqualTo(result.getEmail());
+                Assertions.assertThat(user.getUserEmail()).isEqualTo(result.getUserEmail());
             }
         }
 

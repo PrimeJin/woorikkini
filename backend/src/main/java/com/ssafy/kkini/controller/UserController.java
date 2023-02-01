@@ -49,13 +49,13 @@ public class UserController {
     @ApiOperation(value = "회원가입", notes = "회원가입", response = UserJoinFormDto.class)
     @PostMapping()
     public ResponseEntity<Map<String, Object>> join(@Valid @RequestBody @ApiParam(value = "회원가입 정보들", required = true, example  = "0")
-                                                    UserJoinFormDto userJoinFormDto) {
+                                                        UserCreateFormDto userCreateFormDto) {
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
         User joinUser = null;
 
         try {
-            joinUser = userService.join(userJoinFormDto);
+            joinUser = userService.join(userCreateFormDto);
 
             if(joinUser!=null){
                 resultMap.put("message", SUCCESS);

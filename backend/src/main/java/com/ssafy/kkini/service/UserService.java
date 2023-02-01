@@ -1,10 +1,7 @@
 package com.ssafy.kkini.service;
 
 
-import com.ssafy.kkini.dto.UserJoinFormDto;
-import com.ssafy.kkini.dto.UserLoginFormDto;
-import com.ssafy.kkini.dto.UserNicknameModifyFormDto;
-import com.ssafy.kkini.dto.UserPasswordModifyFormDto;
+import com.ssafy.kkini.dto.*;
 import com.ssafy.kkini.entity.User;
 import com.ssafy.kkini.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -23,8 +20,8 @@ public class UserService {
     private UserRepository userRepository;
 
     @Transactional
-    public User join(UserJoinFormDto userJoinFormDto){
-        User user = userJoinFormDto.toEntity();
+    public User join(UserCreateFormDto userCreateFormDto){
+        User user = userCreateFormDto.toEntity();
 
         return userRepository.save(user);
     }
