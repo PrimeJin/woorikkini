@@ -100,6 +100,7 @@ class MemoryServiceTest {
 
         MemoryCreateFormDto memoryCreateFormDto = new MemoryCreateFormDto("오늘 식단", "성공적", 2L, arrayList);
         Memory memory = memoryCreateFormDto.toEntity();
+        Photo photo = makePhotoEntity(arrayList,memory);
 
         //when
         ArrayList<Photo> result = memoryService.uploadPhoto(arrayList,memory);
@@ -109,7 +110,7 @@ class MemoryServiceTest {
         Assertions.assertThat(result.size()).isEqualTo(arrayList.size());
     }
 
-    Photo makePhotoEntity(ArrayList<MultipartFile> photoList, Memory memory){
+    Photo makePhotoEntity(List<MultipartFile> photoList, Memory memory){
         // 년/월/일 폴더의 생성으로 한 폴더에 너무 많은 파일이 들어가지 않도록 제어
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date date = new Date();
@@ -122,6 +123,7 @@ class MemoryServiceTest {
         }
 
         ArrayList<Photo> phoroList = new ArrayList<>();
+        Photo photo = null;
         for (MultipartFile uploadFile : photoList) {
             String originFileName = uploadFile.getOriginalFilename();
             // 파일의 확장자 추출
@@ -144,10 +146,13 @@ class MemoryServiceTest {
             // 파일명 중복 피하고자 나노초까지 얻어와 지정
             String new_file_name = System.nanoTime() + originalFileExtension;
 
-            Photo photo = new Photo();
+            photo = new Photo();
             photo.setMemory(memory);
             photo.setFilePath(uploadFolderPath + new_file_name);
             photo.setOriginalFilename(originFileName);
-    }
 
+
+        }
+        return photo;
+    }
 }
