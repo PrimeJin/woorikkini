@@ -63,3 +63,4 @@ replay_pid*
 
 ### secret
 application-db.yml
+application-email.yml
