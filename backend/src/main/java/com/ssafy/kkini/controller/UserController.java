@@ -1,13 +1,9 @@
 package com.ssafy.kkini.controller;
 
-import ch.qos.logback.classic.Logger;
-import com.ssafy.kkini.dto.UserCreateFormDto;
 import com.ssafy.kkini.entity.AuthCode;
-import com.ssafy.kkini.entity.User;
 import com.ssafy.kkini.service.AuthCodeService;
 import com.ssafy.kkini.service.EmailService;
 import com.ssafy.kkini.service.UserService;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.http.HttpStatus;
@@ -44,8 +40,8 @@ public class UserController {
 
     @ApiOperation(value = "입력한 이메일 인증코드 일치확인", notes = "발급된 이메일 인증코드와 입력한 이메일 인증코드 일치 여부와 인증코드 만료여부 확인")
     @PostMapping("/email/check")
-    public ResponseEntity<Map<String, Object>> emailCheck(@ApiParam(value = "회원가입에서 입력한 이메일")@RequestParam String authCodeContent,
-                                                          @ApiParam(value = "입력한 인증코드") @RequestParam String authCodeUserEmail) {
+    public ResponseEntity<Map<String, Object>> emailCheck(@ApiParam(value = "입력한 인증코드")@RequestParam String authCodeContent,
+                                                          @ApiParam(value = "회원가입에서 입력한 이메일") @RequestParam String authCodeUserEmail) {
         Map<String, Object> map = new HashMap<>();
         AuthCode authCode = authCodeService.getCodeByCodeContent(authCodeContent);
 
