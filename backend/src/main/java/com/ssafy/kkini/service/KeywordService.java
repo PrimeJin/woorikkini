@@ -12,7 +12,11 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class KeywordService {
-    private final KeywordRepository keywordRepository;
+    private KeywordRepository keywordRepository;
+
+    public KeywordService(KeywordRepository keywordRepository) {
+        this.keywordRepository = keywordRepository;
+    }
 
     public Map<Integer,String> getKeyword() {
         List<Keyword> keywordList = keywordRepository.findAll();
