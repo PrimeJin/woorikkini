@@ -83,8 +83,6 @@
   display: grid;
   grid-template-columns: 300px 300px 300px;
   gap: 4em;
-  /* grid-template-columns: repeat(3, 1fr); */
-  /* grid-template-rows: repeat(3, minmax(100px, auto)); */
 }
 .swiper-pagination {
   position: absolute;
@@ -112,22 +110,9 @@
 .swiper-pagination-bullet-active {
   background: #ffb200;
   width: 20px;
-  /* border-radius: 10px; */
 }
 
 .card-whole {
-  /* border-radius: 10px; */
-
-  /* Rectangle 190 */
-
-  /* box-sizing: border-box;
-
-position: absolute;
-width: 291px;
-height: 433px;
-left: 197px;
-top: 407px; */
-
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.22);
   box-shadow: 0px 100px 80px rgba(0, 0, 0, 0.07), 0px 41.7776px 33.4221px rgba(0, 0, 0, 0.0503198),

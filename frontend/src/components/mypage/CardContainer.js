@@ -33,31 +33,30 @@ const SwiperContainer = () => {
     }
   };
 
-  // 페이지 실행 시 바로 진행
+  // 페이지 들어가면 바로 실행
   useEffect(() => {
     getCardList();
   }, []);
 
-  // 카드 추가하기
-  const addCard = (event) => {
-    console.log('$', event);
+  // // 카드 추가하기
+  // const addCard = (event) => {
+  //   console.log('$', event);
 
-    // 새롭게 배열 데이터를 추가하는 함수
-    const newCard = {
-      id: cardList.length + 1,
-      img: event.img,
-      title: event.title,
-      content: event.content,
-    };
-    setCardList([...cardList, newCard]);
-  };
+  //   // 새롭게 배열 데이터를 추가하는 함수
+  //   const newCard = {
+  //     id: cardList.length + 1,
+  //     img: event.img,
+  //     title: event.title,
+  //     content: event.content,
+  //   };
+  //   setCardList([...cardList, newCard]);
+  // };
 
   // 카드 삭제하기
   const cardDelete = (id) => {
     // card.id 가 매개변수로 작성하지 않는 데이터들만 추출해서 새로운 배열을 만듬
     // = card.id 가 id 인 것을 제거함
     // setCardList(cardList.filter((card) => card.id !== id));
-
     axios
       .delete(`http://.../memory/${id}`, {
         data: {
@@ -65,7 +64,6 @@ const SwiperContainer = () => {
         },
       })
       .then(() => {
-        setModalOpen(false);
         alert('추억이 삭제되었습니다.');
       })
       .catch((err) => {
@@ -83,14 +81,6 @@ const SwiperContainer = () => {
     setCurrentCard(card);
   };
 
-  // 카드 리스트 수정하기
-  const cardListUpdate = (targetId, newCard) => {
-    setCardList(
-      cardList.map((card) =>
-        card.id === targetId ? { ...card, img: newCard.img, title: newCard.title, content: newCard.content } : card,
-      ),
-    );
-  };
   console.log('카드 리스트 ->', cardList);
 
   return (
@@ -141,7 +131,7 @@ const SwiperContainer = () => {
                   <UpdateCard
                     currentCard={currentCard}
                     cardUpdate={cardUpdate}
-                    cardListUpdate={cardListUpdate}
+                    // cardListUpdate={cardListUpdate}
                   ></UpdateCard>
                 ) : (
                   <div></div>
@@ -154,7 +144,7 @@ const SwiperContainer = () => {
             </div>
           );
         })}
-        <CreateCard addCard={addCard}></CreateCard>
+        <CreateCard></CreateCard>
       </div>
     </>
   );

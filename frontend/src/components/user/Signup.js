@@ -36,7 +36,9 @@ function Form() {
     } else {
       fetch('http:// /user/email/check', {
         method: 'GET',
-        body: { Email },
+        body: {
+          authCodeUserEmail: Email,
+        },
       })
         .then((res) => {
           if (res === 'success') {
@@ -63,7 +65,10 @@ function Form() {
     } else {
       fetch('http:// /user/email/check', {
         method: 'POST',
-        body: { Code },
+        body: {
+          authCodeUserEmail: Email,
+          authCodeContent: Code,
+        },
       })
         .then((res) => {
           if (res === 'success') {
@@ -152,12 +157,12 @@ function Form() {
     fetch('http:// /user/', {
       method: 'POST',
       body: {
-        Email,
-        Password,
-        Name,
-        Nickname,
-        Date,
-        Gender,
+        userEmail: Email,
+        userPassword: Password,
+        userName: Name,
+        userNickname: Nickname,
+        userBirth: Date,
+        userGender: Gender,
       },
     })
       .then((res) => {

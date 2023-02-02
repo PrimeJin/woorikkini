@@ -1,26 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 import './UpdateCard.css';
-// import axios from 'axios';
+import axios from 'axios';
 import Modal from '../Modal';
 
-function UpdateCard({ currentCard, cardUpdate, cardListUpdate }) {
+function UpdateCard({ currentCard }) {
   // props 데이터 타입 -> 설정 안하니까 오류났음
-  UpdateCard.propsTypes = {
-    currentCard: PropTypes.node.isRequired,
-    cardUpdate: PropTypes.node.isRequired,
-    cardListUpdate: PropTypes.node.isRequired,
-  };
+  // UpdateCard.propsTypes = {
+  //   currentCard: PropTypes.node.isRequired,
+  //   cardUpdate: PropTypes.node.isRequired,
+  // };
 
   // useState를 사용하여 open상태를 변경한다. (open일때 true로 만들어 열리는 방식)
-  console.log('수정1', currentCard);
-  // console.log('수정2', update);
   const [modalOpen, setModalOpen] = useState(false);
 
   // 바로 모달창 띄우기
   useEffect(() => {
-    console.log('지금 모야', modalOpen);
-
     setModalOpen(true);
   });
 
@@ -32,9 +27,6 @@ function UpdateCard({ currentCard, cardUpdate, cardListUpdate }) {
   const imgRef = useRef();
   const [updateTitleData, setUpdateTitleData] = useState(currentCard.title);
   const [updateContentData, setUpdateContentData] = useState(currentCard.content);
-
-  // console.log('원래 ->', fileData);
-  console.log('수정 후 ->', updateFileData);
 
   const onFile = () => {
     const file = imgRef.current.files[0];
@@ -64,19 +56,27 @@ function UpdateCard({ currentCard, cardUpdate, cardListUpdate }) {
   };
   const memoryUpdate = (event) => {
     event.preventDefault();
-    // const formData = { img: fileData, title: titleData, content: contentData };
-    console.log('얍!');
-    const formData = { id: currentCard.id, img: updateFileData, title: updateTitleData, content: updateContentData };
-    // addCard(formData);
-    console.log('욥!');
-    console.log('수정 내용', formData);
-    // setImgFile('');
-    // setUpdateFileData([]);
-    // setUpdateTitleData('');
-    // setUpdateContentData('');
+
+    // 서버로 전달
+    axios
+      .patch('http:// /memory/', {
+        data: {
+          img: updateFileData,
+          title: updateTitleData,
+          content: updateContentData,
+        },
+      })
+      .then(() => {
+        setModalOpen(false);
+        alert('추억이 수정되었습니다.');
+      })
+      .catch((err) => {
+        console.log(err);
+        alert('다시 시도해주시기 바랍니다.');
+      });
+
     setModalOpen(false);
-    cardUpdate();
-    cardListUpdate(currentCard.id, formData);
+    // cardUpdate();
   };
   return (
     <React.Fragment>

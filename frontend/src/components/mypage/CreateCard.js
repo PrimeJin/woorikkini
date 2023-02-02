@@ -1,15 +1,10 @@
 import React, { useRef, useState } from 'react';
-import PropTypes from 'prop-types';
 import './CreateCard.css';
 import axios from 'axios';
 import Modal from '../Modal';
 
-function CreateCard({ addCard }) {
+function CreateCard() {
   // useState를 사용하여 open상태를 변경한다. (open일때 true로 만들어 열리는 방식)
-  CreateCard.propsTypes = {
-    addCard: PropTypes.node.isRequired,
-  };
-
   const [modalOpen, setModalOpen] = useState(false);
 
   const openModal = () => {
@@ -60,11 +55,10 @@ function CreateCard({ addCard }) {
     // 서버로 전달
     axios
       .post('http:// /memory', {
-        headers: {},
         data: {
-          img: fileData,
-          title: titleData,
-          content: contentData,
+          memoryImgFile: fileData,
+          memoryTitle: titleData,
+          memoryContent: contentData,
         },
       })
       .then(() => {
@@ -109,7 +103,6 @@ function CreateCard({ addCard }) {
                 </div>
               );
             })}
-            {/* : <div></div>} */}
           </div>
           <input value={titleData} onChange={onTitle} style={{ width: 300 }} placeholder="제목을 입력하세요."></input>
           <br />
