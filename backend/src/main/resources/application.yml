@@ -18,7 +18,7 @@ spring:
   #jpa
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
@@ -28,7 +28,7 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
   profiles:
-    include: db,email
+    include: secret, email
 
 #logging
 logging:

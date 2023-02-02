@@ -1,18 +1,23 @@
 package com.ssafy.kkini.entity;
 
 import com.ssafy.kkini.dto.AuthProvider;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 
-@Entity
 @Getter
+@Entity
+@DynamicInsert
 @NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "USER")
 public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,5 +60,11 @@ public class User extends BaseEntity {
         this.userProviderId = userProviderId;
     }
 
+    public void changeNickname(String nickname) {
+        this.userNickname = nickname;
+    }
 
+    public void changePassword(String password){
+        this.userPassword = password;
+    }
 }
