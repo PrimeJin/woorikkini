@@ -10,11 +10,11 @@ server:
 
 #database
 spring:
-#  datasource:
-#    url:
-#    username:
-#    password:
-#    driver-class-name: com.mysql.cj.jdbc.Driver
+  #  datasource:
+  #    url:
+  #    username:
+  #    password:
+  #    driver-class-name: com.mysql.cj.jdbc.Driver
   #jpa
   jpa:
     hibernate:
@@ -28,7 +28,20 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
   profiles:
-    include: db,email
+    include: db
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: dnwlswkd17@gmail.com
+    password: tuwrypedvzbzbgfu
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+        transport:
+          protocol: smtp
 
 #logging
 logging:
