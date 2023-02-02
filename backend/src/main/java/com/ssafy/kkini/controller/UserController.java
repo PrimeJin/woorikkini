@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@RequestMapping("/user")
+@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE})
 public class UserController {
     private UserService userService;
     private AuthCodeService authCodeService;
