@@ -1,16 +1,7 @@
 import './Signup.css';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import mainlogo from '../../assets/우리끼니로고.png';
-
-// 회원가입 페이지 로고
-function Logo() {
-  return (
-    <div className="logo-top">
-      <img className="woori-logo" src={mainlogo} />
-    </div>
-  );
-}
+import Logo from './UserPagesLogo';
 
 // 회원가입 폼
 function Form() {
@@ -45,7 +36,9 @@ function Form() {
     } else {
       fetch('http:// /user/email/check', {
         method: 'GET',
-        body: { Email },
+        body: {
+          authCodeUserEmail: Email,
+        },
       })
         .then((res) => {
           if (res === 'success') {
@@ -72,7 +65,10 @@ function Form() {
     } else {
       fetch('http:// /user/email/check', {
         method: 'POST',
-        body: { Code },
+        body: {
+          authCodeUserEmail: Email,
+          authCodeContent: Code,
+        },
       })
         .then((res) => {
           if (res === 'success') {
@@ -161,12 +157,12 @@ function Form() {
     fetch('http:// /user/', {
       method: 'POST',
       body: {
-        Email,
-        Password,
-        Name,
-        Nickname,
-        Date,
-        Gender,
+        userEmail: Email,
+        userPassword: Password,
+        userName: Name,
+        userNickname: Nickname,
+        userBirth: Date,
+        userGender: Gender,
       },
     })
       .then((res) => {
@@ -183,7 +179,7 @@ function Form() {
   };
 
   return (
-    <form>
+    <form className="signup-form">
       <p className="text-type">회원가입</p>
       <input type="email" value={Email} onChange={onEmail} className="input-form-top" placeholder="이메일" required />
       <button type="click" className="check-btn" onClick={onEmailClick}>

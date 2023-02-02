@@ -1,13 +1,5 @@
 @import url('http://cdn.rawgit.com/innks/NanumSquareRound/master/nanumsquareround.min.css');
 
-.logo-top {
-  text-align: center;
-  font-family: 'NanumSquareRound';
-  justify-content: center;
-  display: flex;
-  flex-flow: row nowrap;
-}
-
 .Signup-all {
   text-align: center;
   font-family: 'NanumSquareRound';
@@ -32,7 +24,7 @@
   color: #090936;
 }
 
-form {
+.signup-form {
   /* Rectangle 27 */
 
   width: 330px;
