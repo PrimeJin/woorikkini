@@ -42,9 +42,9 @@ public class UserService {
 
     @Transactional
     public int delete(int userid) {
-        Optional<User> user = userRepository.findByUserId(userid);
-        if(user.isPresent()) {
-            userRepository.delete(user.get());
+        User user = userRepository.findByUserId(userid);
+        if(user != null) {
+            userRepository.delete(user);
             return 1;
         }
         return 0;
@@ -61,7 +61,7 @@ public class UserService {
 
     @Transactional
     public User passwordModify(UserPasswordModifyFormDto userPasswordModifyFormDto) {
-        User user = userRepository.findByUserId(userPasswordModifyFormDto.getUserId()).get();
+        User user = userRepository.findByUserId(userPasswordModifyFormDto.getUserId());
         if(user != null) {
             user.changePassword(userPasswordModifyFormDto.getUserPassword());
             return userRepository.save(user);

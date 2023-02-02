@@ -1,13 +1,7 @@
-buildscript {
-	ext {
-		queryDslVersion = "5.0.0"
-	}
-}
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '2.7.5'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
-	id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
 }
 
 group = 'com.ssafy'
@@ -35,40 +29,18 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 	implementation group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
 	implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
-
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.mysql:mysql-connector-j'
-
-	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
-	annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
-
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 	runtimeOnly 'com.h2database:h2'
-
+	implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
+	implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.4'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
-}
-def querydslDir = "$buildDir/generated/querydsl"
-querydsl {
-	jpa = true
-	querydslSourcesDir = querydslDir
-}
-sourceSets {
-	main.java.srcDir querydslDir
-}
-
-compileQuerydsl {
-	options.annotationProcessorPath = configurations.querydsl
-}
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
-	querydsl.extendsFrom compileClasspath
 }
