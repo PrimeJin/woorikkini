@@ -6,7 +6,7 @@ import com.ssafy.kkini.entity.Memory;
 import com.ssafy.kkini.entity.Photo;
 import com.ssafy.kkini.entity.User;
 import com.ssafy.kkini.repository.MemoryRepository;
-import com.ssafy.kkini.repository.PhotoRpository;
+import com.ssafy.kkini.repository.PhotoRepository;
 import com.ssafy.kkini.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,20 +32,20 @@ public class MemoryService {
     @Autowired
     MemoryRepository memoryRepository;
     @Autowired
-    PhotoRpository photoRpository;
+    PhotoRepository photoRepository;
 
     @Value("{upload.path}")
     private String fileDir;
 
-    public List<Memory> getMemory(Long userId) {
-        return memoryRepository.FindAllByUserId(userId);
+    public List<Memory> getMemory(int userId) {
+        return memoryRepository.findByUser_UserId(userId);
     }
 
     public Memory createMemory(MemoryCreateFormDto memoryCreateFormDto) {
-        Optional<User> user = userRepository.findAllByUserId(memoryCreateFormDto.getUserId());
+        User user = userRepository.findByUserId(memoryCreateFormDto.getUserId());
         Memory memory = memoryCreateFormDto.toEntity();
-        if(user.isPresent()){
-            memory.setUser(user.get());
+        if(user != null){
+            memory.setUser(user);
             Memory createMemory = memoryRepository.save(memory);
 
             if(createMemory != null && !memoryCreateFormDto.getMemoryImgFiles().isEmpty()){
@@ -59,7 +59,7 @@ public class MemoryService {
 
 
     public Memory updateMemory(MemoryUpdateFormDto memoryUpdateFormDto) {
-        Optional<Memory> memory = memoryRepository.findById(memoryUpdateFormDto.getMemoryId());
+        Optional<Memory> memory = memoryRepository.findByMemoryId(memoryUpdateFormDto.getMemoryId());
         if(memory.isPresent()){
             Memory updateMemory = memoryUpdateFormDto.toEntity();
             updateMemory = memoryRepository.save(updateMemory);
@@ -115,7 +115,7 @@ public class MemoryService {
             photo.setFilePath(uploadFolderPath + new_file_name);
             photo.setOriginalFilename(originFileName);
 
-            photoList.add(photoRpository.save(photo));
+            photoList.add(photoRepository.save(photo));
             // 업로드 한 파일 데이터를 지정한 파일에 저장
             File file = new File(uploadFolderPath + new_file_name);
             try {
@@ -128,8 +128,8 @@ public class MemoryService {
     }
 
     @Transactional
-    public void deletePhoto(Long memoryId){
-        List<Photo> photoList = photoRpository.findAllByMemoryId(memoryId);
+    public void deletePhoto(int memoryId){
+        List<Photo> photoList = photoRepository.findAllByMemory_MemoryId(memoryId);
         if(!photoList.isEmpty() && photoList.size() != 0){
             for (Photo photo : photoList) {
                 //현재 게시판에 존재하는 파일객체를 만듬
@@ -138,7 +138,7 @@ public class MemoryService {
                 if(file.exists()) { // 파일이 존재하면
                     file.delete(); // 파일 삭제
                 }
-                photoRpository.deleteById(photo.getPhotoId());
+                photoRepository.deleteByPhotoId(photo.getPhotoId());
             }
 
         }
@@ -146,8 +146,8 @@ public class MemoryService {
     }
 
 
-    public int deleteMemory(Long memoryId) {
-        Optional<Memory> deleteMemory = memoryRepository.findById(memoryId);
+    public int deleteMemory(int memoryId) {
+        Optional<Memory> deleteMemory = memoryRepository.findByMemoryId(memoryId);
         if(deleteMemory.isPresent()){
             deletePhoto(memoryId);
             memoryRepository.delete(deleteMemory.get());

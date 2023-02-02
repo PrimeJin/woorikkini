@@ -19,8 +19,8 @@ import javax.persistence.*;
 public class Photo extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(columnDefinition = "INT UNSIGNED")
-    private Long photoId;
+    @Column(name = "photo_id",columnDefinition = "INT UNSIGNED")
+    private int photoId;
     @ManyToOne
     @JoinColumn(name = "memory_id")
     private Memory memory;

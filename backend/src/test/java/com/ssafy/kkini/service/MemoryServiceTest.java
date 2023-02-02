@@ -7,7 +7,7 @@ import com.ssafy.kkini.entity.Memory;
 import com.ssafy.kkini.entity.Photo;
 import com.ssafy.kkini.entity.User;
 import com.ssafy.kkini.repository.MemoryRepository;
-import com.ssafy.kkini.repository.PhotoRpository;
+import com.ssafy.kkini.repository.PhotoRepository;
 import com.ssafy.kkini.repository.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -19,14 +19,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -39,7 +39,7 @@ class MemoryServiceTest {
     @Mock
     MemoryRepository memoryRepository;
     @Mock
-    PhotoRpository photoRepository;
+    PhotoRepository photoRepository;
     @Mock
     UserRepository userRepository;
 
@@ -66,10 +66,10 @@ class MemoryServiceTest {
                 ,"밍"
                 ,"F"
                 ,19980901);
-        MemoryCreateFormDto memoryCreateFormDto = new MemoryCreateFormDto("오늘 식단", "성공적", 2L, arrayList);
+        MemoryCreateFormDto memoryCreateFormDto = new MemoryCreateFormDto("오늘 식단", "성공적", 1, arrayList);
         Memory memory = memoryCreateFormDto.toEntity();
-        Optional<User> user = Optional.ofNullable(userCreateFormDto.toEntity());
-        when(userRepository.findAllByUserId(any())).thenReturn(user);
+        User user = userCreateFormDto.toEntity();
+        when(userRepository.findByUserId(any())).thenReturn(user);
         when(memoryRepository.save(any())).thenReturn(memory);
 
         //when
@@ -93,7 +93,7 @@ class MemoryServiceTest {
         arrayList.add(uploadFile1);
         arrayList.add(uploadFile2);
 
-        MemoryCreateFormDto memoryCreateFormDto = new MemoryCreateFormDto("오늘 식단", "성공적", 2L, arrayList);
+        MemoryCreateFormDto memoryCreateFormDto = new MemoryCreateFormDto("오늘 식단", "성공적", 2, arrayList);
         Memory memory = memoryCreateFormDto.toEntity();
         List<Photo> photolist = makePhotoEntity(arrayList,memory);
 
@@ -127,7 +127,7 @@ class MemoryServiceTest {
                 ,"밍"
                 ,"F"
                 ,19980901);
-        MemoryUpdateFormDto memoryUpdateFormDto = new MemoryUpdateFormDto(1L,"오늘 식단", "성공적", 1L, arrayList);
+        MemoryUpdateFormDto memoryUpdateFormDto = new MemoryUpdateFormDto(1,"오늘 식단", "성공적", 1, arrayList);
         Memory memory = memoryUpdateFormDto.toEntity();
         Optional<User> user = Optional.ofNullable(userCreateFormDto.toEntity());
 //        when(userRepository.findAllByUserId(any())).thenReturn(user);
@@ -154,12 +154,12 @@ class MemoryServiceTest {
         arrayList.add(uploadFile1);
         arrayList.add(uploadFile2);
 
-        MemoryCreateFormDto memoryCreateFormDto = new MemoryCreateFormDto("오늘 식단", "성공적", 2L, arrayList);
+        MemoryCreateFormDto memoryCreateFormDto = new MemoryCreateFormDto("오늘 식단", "성공적", 2, arrayList);
         Memory memory = memoryCreateFormDto.toEntity();
         List<Photo> photolist = makePhotoEntity(arrayList,memory);
 
         //when
-        when(photoRepository.findAllByMemoryId(memory.getMemoryId())).thenReturn(photolist);
+        when(photoRepository.findAllByMemory_MemoryId(memory.getMemoryId())).thenReturn(photolist);
         doNothing().when(photoRepository).deleteById(any());
 
 
@@ -181,16 +181,16 @@ class MemoryServiceTest {
         arrayList.add(uploadFile1);
         arrayList.add(uploadFile2);
 
-        MemoryCreateFormDto memoryCreateFormDto1 = new MemoryCreateFormDto("오늘 식단1", "성공적", 1L, arrayList);
-        MemoryCreateFormDto memoryCreateFormDto2 = new MemoryCreateFormDto("오늘 식단2", "성공적", 1L, arrayList);
+        MemoryCreateFormDto memoryCreateFormDto1 = new MemoryCreateFormDto("오늘 식단1", "성공적", 1, arrayList);
+        MemoryCreateFormDto memoryCreateFormDto2 = new MemoryCreateFormDto("오늘 식단2", "성공적", 1, arrayList);
         List<Memory> memoryList = new ArrayList<>();
         memoryList.add(memoryCreateFormDto1.toEntity());
         memoryList.add(memoryCreateFormDto2.toEntity());
 
-        when(memoryRepository.FindAllByUserId(1L)).thenReturn(memoryList);
+        when(memoryRepository.findByUser_UserId(1)).thenReturn(memoryList);
 
         //when
-        List<Memory> result = memoryService.getMemory(1L);
+        List<Memory> result = memoryService.getMemory(1);
 
         //then
         Assertions.assertThat(memoryList.size()).isEqualTo(result.size());

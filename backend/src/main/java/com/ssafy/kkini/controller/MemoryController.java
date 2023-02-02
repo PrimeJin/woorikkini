@@ -72,7 +72,7 @@ public class MemoryController {
     @ApiOperation(value = "추억카드 삭제", notes = "추억카드 삭제")
     @DeleteMapping("/{memoryId}")
     public ResponseEntity<Map<String,Object>> deleteMemory(@Valid @PathVariable @ApiParam(value = "추억 아이디", required = true, example = "0")
-                                                           Long memoryId){
+                                                           int memoryId){
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
 
@@ -89,9 +89,9 @@ public class MemoryController {
     }
 
     @ApiOperation(value = "추억카드 조회", notes = "추억카드 조회")
-    @GetMapping("/")
+    @GetMapping()
     public ResponseEntity<Map<String,Object>> getMemory(@Valid @RequestParam @ApiParam(value = "회원 아이디", required = true, example = "0")
-                                                           Long userId){
+                                                           int userId){
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
 

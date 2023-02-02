@@ -22,8 +22,8 @@ import java.sql.Timestamp;
 public class User extends BaseEntity{
     @Id // primary key
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(columnDefinition = "INT UNSIGNED")
-    private Long userId;
+    @Column(name = "user_id",columnDefinition = "INT UNSIGNED")
+    private int userId;
 
     private String userName;
 

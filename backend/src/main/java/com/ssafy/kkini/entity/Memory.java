@@ -1,12 +1,12 @@
 package com.ssafy.kkini.entity;
 
-import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.DynamicInsert;
-import org.springframework.stereotype.Service;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 
 @Getter
 @Setter
@@ -17,8 +17,8 @@ import java.sql.Timestamp;
 public class Memory extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(columnDefinition = "INT UNSIGNED")
-    private Long memoryId;
+    @Column(name = "memory_id",columnDefinition = "INT UNSIGNED")
+    private int memoryId;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -29,7 +29,7 @@ public class Memory extends BaseEntity{
         this.user = user;
     }
     @Builder
-    public Memory(Long memoryId, User user, String title, String content){
+    public Memory(int memoryId, User user, String title, String content){
         this.memoryId = memoryId;
         this.user = user;
         this.memoryTitle = title;
