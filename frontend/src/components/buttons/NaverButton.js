@@ -3,13 +3,16 @@
 import React from 'react';
 import { NaverNewLogin } from '../../api/NaverNewLogin';
 import { NAVER_AUTH_URL } from '../../data/OAuth';
+import { Link } from 'react-router-dom';
 import './Button.css';
 
 const NaverButton = () => {
   return (
-    <button type="button" className="naver-button" onClick={NaverNewLogin()}>
-      <img src="https://static.nid.naver.com/oauth/big_g.PNG?version=js-2.0.1" width="222" alt="" />
-    </button>
+    <Link to="http://i8a804.p.ssafy.io:8040/oauth2/authorize/naver?redirect_uri=http://localhost:3000/oauth/callback/naver">
+      <button type="button" className="naver-button">
+        <img src="https://static.nid.naver.com/oauth/big_g.PNG?version=js-2.0.1" width="222" alt="" />
+      </button>
+    </Link>
   );
 };
 

@@ -18,7 +18,7 @@ import { SET_TOKEN } from '../store/Auth';
 import KakaoButton from '../components/buttons/KakaoButton';
 import NaverButton from '../components/buttons/NaverButton';
 import GoogleButton from '../components/buttons/GoogleButton';
-import logo from '../assets/우리끼니로고.png';
+import Logo from '../components/PageLogo';
 import '../styles/LoginPage.css';
 
 const LoginPage = () => {
@@ -66,9 +66,7 @@ const LoginPage = () => {
 
   return (
     <div className="login">
-      <div className="logo">
-        <img className="woori-logo" src={logo} />
-      </div>
+      <Logo />
       <form className="loginform" onSubmit={handleSubmit(onValid)}>
         <div className="inputform">
           <div className="inputs">

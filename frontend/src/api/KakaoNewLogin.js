@@ -13,13 +13,19 @@ export const KakaoNewLogin = () => {
   return function (dispatch) {
     axios({
       method: 'POST',
-      url: '70.12.247.235:8040/oauth2/authorize/kakao?redirect_uri=localhost:3000',
+      url: 'http://i8a804.p.ssafy.io:8040/oauth2/authorize/kakao?redirect_uri=http://localhost:3000',
     })
       .then((response) => {
         console.log(response); //Access Token 확인용
 
         const accessToken = response.headers.get('accessToken');
         const refreshToken = response.headers.get('refreshToken');
+
+        // const accessToken = new URL(window.location.href).searchParams.get('accessToken');
+        // const refreshToken = new URL(window.location.href).searchParams.get('refreshToken');
+        // console.log(accessToken);
+        // console.log(refreshToken);
+
         setRefreshToken(refreshToken);
         //store에 Access Token 저장하도록 Action Dispatch
         //참고: /store/Auth.js

@@ -19,13 +19,15 @@ export const CheckToken = (key) => {
   useEffect(() => {
     const checkAuthToken = async () => {
       //Refresh Token이 없음
-      if ((refreshToken = undefined)) {
+      if (refreshToken == undefined) {
         dispatch(DELETE_TOKEN());
         setIsAuth('인증 실패');
+        console.log('인증 실패');
       } else {
         //토큰이 인증됐고, 만료가 아직 안됐으면
         if (authenticated && new Date().getTime() < expireTime) {
           setIsAuth('인증 성공');
+          console.log('인증 성공');
         } else {
           //Refresh Token을 활용해서 Access Token 재발급 요청
           const response = await requestToken(refreshToken);
@@ -34,15 +36,17 @@ export const CheckToken = (key) => {
             const accessToken = response.json.access_token;
             dispatch(SET_TOKEN(accessToken));
             setIsAuth('인증 성공');
+            console.log('인증 성공');
           } else {
             dispatch(DELETE_TOKEN());
             removeCookieToken();
             setIsAuth('인증 실패');
+            console.log('인증 실패');
           }
         }
       }
     };
-    // checkAuthToken();
+    checkAuthToken();
   }, [refreshToken, dispatch, key]);
 
   return {

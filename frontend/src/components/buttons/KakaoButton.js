@@ -4,12 +4,19 @@ import React from 'react';
 import { KAKAO_AUTH_URL } from '../../data/OAuth';
 import { KakaoNewLogin } from '../../api/KakaoNewLogin';
 import './Button.css';
+import { Link } from 'react-router-dom';
+import Kakao from '../../auth/Kakao';
 
 const KakaoButton = () => {
   return (
-    <button type="button" className="kakao-button" onClick={KakaoNewLogin()}>
-      <img src="//k.kakaocdn.net/14/dn/btqCn0WEmI3/nijroPfbpCa4at5EIsjyf0/o.jpg" width="222" alt="" />
-    </button>
+    // <button type="button" className="kakao-button" onClick={KakaoNewLogin()}>
+    //   <img src="//k.kakaocdn.net/14/dn/btqCn0WEmI3/nijroPfbpCa4at5EIsjyf0/o.jpg" width="222" alt="" />
+    // </button>
+    <Link to="http://i8a804.p.ssafy.io:8040/oauth2/authorize/kakao?redirect_uri=http://localhost:3000/oauth/callback/kakao">
+      <button type="button" className="kakao-button">
+        <img src="//k.kakaocdn.net/14/dn/btqCn0WEmI3/nijroPfbpCa4at5EIsjyf0/o.jpg" width="222" alt="" />
+      </button>
+    </Link>
   );
 };
 

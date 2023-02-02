@@ -3,23 +3,40 @@
  * 리다이렉트할 화면
  */
 
-import React from 'react';
 import { useDispatch } from 'react-redux';
-import { GoogleLogin } from '../api/GoogleLogin';
+import { SET_TOKEN } from '../store/Auth';
+import { setRefreshToken } from '../storage/Cookies';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
-const Google = (props) => {
+const Google = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  //인가코드(code?뒷부분이 인가코드이므로 따온다)
-  let code = new URL(window.location.href).searchParams.get('code');
+  // //인가코드(code?뒷부분이 인가코드이므로 따온다)
+  // let code = new URL(window.location.href).searchParams.get('code');
 
+  //url에 있는 accessToken refreshToken 따오기
+  const accessToken = new URL(window.location.href).searchParams.get('accessToken');
+  const refreshToken = new URL(window.location.href).searchParams.get('refreshToken');
+  console.log('access_Token: ' + accessToken);
+  console.log('refresh_Token: ' + refreshToken);
+
+  setRefreshToken(refreshToken);
+  //store에 Access Token 저장하도록 Action Dispatch
+  //참고: /store/Auth.js
+  dispatch(SET_TOKEN(accessToken));
+
+  useEffect(() => {
+    navigate('/mypage');
+  });
   //인가코드를 받아오면 백엔드로 넘기기
-  React.useEffect(() => {
-    async function fetchData() {
-      await dispatch(GoogleLogin(code));
-    }
-    fetchData();
-  }, []);
+  // React.useEffect(() => {
+  //   async function fetchData() {
+  //     await dispatch(GoogleLogin(code));
+  //   }
+  //   fetchData();
+  // }, []);
 };
 
 export default Google;
