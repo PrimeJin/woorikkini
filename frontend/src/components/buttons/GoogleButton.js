@@ -1,6 +1,6 @@
 import React from 'react';
-import { GoogleNewLogin } from '../api/GoogleNewLogin';
-import { GOOGLE_AUTH_URL } from '../data/OAuth';
+import { GoogleNewLogin } from '../../api/GoogleNewLogin';
+import { GOOGLE_AUTH_URL } from '../../data/OAuth';
 
 const GoogleButton = () => {
   return (

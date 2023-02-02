@@ -6,6 +6,7 @@ import Mypage from './components/mypage/Mypage';
 import MainPage from './pages/MainPage';
 import LoginPage from './pages/LoginPage';
 import LogoutPage from './pages/LogoutPage';
+import ModifyPage from './pages/ModifyPage';
 import Kakao from './auth/Kakao';
 import Naver from './auth/Naver';
 
@@ -24,6 +25,7 @@ function App() {
           <Route path="/user/signup" element={<Signup />} />
           <Route path="/user/login" element={<LoginPage />} />
           <Route path="/user/logout" element={<LogoutPage />} />
+          <Route path="/user/modify" element={<ModifyPage />} />
           <Route path="/oauth/callback/kakao" element={<Kakao />} />
           <Route path="/oauth/callback/naver" element={<Naver />} />
           <Route path="/mypage" element={<Mypage />} />
