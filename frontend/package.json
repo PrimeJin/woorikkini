@@ -3,10 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@reduxjs/toolkit": "^1.9.1",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.0.0",
     "@testing-library/user-event": "^13.2.1",
     "axios": "^1.2.6",
+    "immer": "^9.0.18",
+    "prettier": "^2.8.3",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-cookie": "^4.1.1",
@@ -22,10 +25,7 @@
     "redux-devtools-extension": "^2.13.9",
     "swiper": "^6.8.4",
     "web-vitals": "^2.1.0",
-    "yarn": "^1.22.19",
-    "@reduxjs/toolkit": "^1.9.1",
-    "immer": "^9.0.18",
-    "prettier": "^2.8.3"
+    "yarn": "^1.22.19"
   },
   "scripts": {
     "start": "react-scripts --openssl-legacy-provider start",

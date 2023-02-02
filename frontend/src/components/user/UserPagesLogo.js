@@ -6,7 +6,7 @@ import mainlogo from '../../assets/우리끼니로고.png';
 function Logo() {
   return (
     <div className="logo-top">
-      <img className="woori-logo" src={mainlogo} />
+      <img className="woori-logo" src={mainlogo} alt="" />
     </div>
   );
 }
