@@ -5,19 +5,21 @@
  * 로그인 상세기능 구현은 /api/Users.js 참고
  */
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { setRefreshToken } from '../storage/Cookies';
 import { Link } from 'react-router-dom';
 
-import { loginUser, loginUser_Axios } from '../api/Users';
+import { loginUser } from '../api/Users';
 import { SET_TOKEN } from '../store/Auth';
 
 import KakaoButton from '../component/KakaoButton';
 import NaverButton from '../component/NaverButton';
 import GoogleButton from '../component/GoogleButton';
+import logo from '../assets/우리끼니로고.png';
+import '../styles/LoginPage.css';
 
 const LoginPage = () => {
   //React Hooks
@@ -58,47 +60,62 @@ const LoginPage = () => {
     setValue('userPassword', '');
   };
 
+  const onSignUp = () => {
+    navigate('/user/signup');
+  };
+
   return (
-    <div className="loginForm">
-      <h1>로그인 페이지</h1>
-      <form onSubmit={handleSubmit(onValid)}>
-        <input
-          id="userEmail"
-          type="email"
-          placeholder="이메일을 입력하세요"
-          {...register('userEmail', {
-            required: '이메일은 필수 입력사항입니다.',
-            pattern: {
-              value: /\S+@\S+\.\S+/, //정규식
-              message: '이메일이 형식에 맞지 않습니다.',
-            },
-          })}
-        />
-        {errors.email && <small role="alert">{errors.email.message}</small>}
-        <input
-          id="userPassword"
-          type="password"
-          placeholder="비밀번호를 입력하세요"
-          {...register('userPassword', {
-            minLength: {
-              value: 8,
-              message: '8자리 이상 비밀번호를 사용해주세요.',
-            },
-          })}
-        />
-        {errors.password && <small role="alert">{errors.password.message}</small>}
-        <button type="submit" disabled={isSubmitting}>
-          로그인
+    <div className="login">
+      <div className="logo">
+        <img className="woori-logo" src={logo} />
+      </div>
+      <form className="loginform" onSubmit={handleSubmit(onValid)}>
+        <div className="inputform">
+          <div className="inputs">
+            <input
+              id="userEmail"
+              type="email"
+              placeholder="이메일을 입력하세요"
+              {...register('userEmail', {
+                required: '이메일은 필수 입력사항입니다.',
+                pattern: {
+                  value: /\S+@\S+\.\S+/, //정규식
+                  message: '이메일이 형식에 맞지 않습니다.',
+                },
+              })}
+            />
+            {errors.email && <small role="alert">{errors.email.message}</small>}
+            <input
+              id="userPassword"
+              type="password"
+              placeholder="비밀번호를 입력하세요"
+              {...register('userPassword', {
+                minLength: {
+                  value: 8,
+                  message: '8자리 이상 비밀번호를 사용해주세요.',
+                },
+              })}
+            />
+            {errors.password && <small role="alert">{errors.password.message}</small>}
+          </div>
+
+          <button className="loginButton" type="submit" disabled={isSubmitting}>
+            로그인
+          </button>
+        </div>
+
+        <button className="signUpButton" onClick={onSignUp}>
+          회원가입
         </button>
         <Link to="FindPassword" style={{ color: 'blue', textDecoration: 'none' }}>
           <small>비밀번호를 잊으셨나요?</small>
         </Link>
+        <div className="socialLogin">
+          <NaverButton />
+          <KakaoButton />
+          <GoogleButton />
+        </div>
       </form>
-      <div className="socialLoginForm">
-        <NaverButton />
-        <KakaoButton />
-        <GoogleButton />
-      </div>
     </div>
   );
 };
