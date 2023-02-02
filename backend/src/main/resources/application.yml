@@ -28,7 +28,7 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
   profiles:
-    include: db
+    include: db,email
 
 #logging
 logging:
