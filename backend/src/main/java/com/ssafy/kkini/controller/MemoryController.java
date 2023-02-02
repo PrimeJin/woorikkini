@@ -102,7 +102,6 @@ public class MemoryController {
             resultMap.put("message", FAIL);
             status = HttpStatus.BAD_REQUEST;
         }
-
         return new ResponseEntity<Map<String,Object>>(resultMap,status);
     }
 

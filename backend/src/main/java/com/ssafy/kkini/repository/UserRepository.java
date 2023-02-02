@@ -1,10 +1,10 @@
 package com.ssafy.kkini.repository;
 
-        import com.ssafy.kkini.entity.User;
-        import org.springframework.data.jpa.repository.JpaRepository;
-        import org.springframework.stereotype.Repository;
+import com.ssafy.kkini.entity.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-        import java.util.Optional;
+import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
@@ -14,11 +14,10 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByUserEmailAndUserProviderId(String email, String providerId);
 
-    Optional<User> findByUserId(int userId);
+//    Optional<User> findByUserId(int userId);
 
-//    User findByUserId(int userId);
-
+    //위에거 지우고 이걸로 해줘야 돌아감
+        User findByUserId(int userId);
     Optional<User> findAllByUserId(int userId);
 
 }
-

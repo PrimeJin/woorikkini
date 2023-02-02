@@ -10,11 +10,11 @@ server:
 
 #database
 spring:
-  #  datasource:
-  #    url:
-  #    username:
-  #    password:
-  #    driver-class-name: com.mysql.cj.jdbc.Driver
+#  datasource:
+#    url:
+#    username:
+#    password:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
   #jpa
   jpa:
     hibernate:
@@ -34,8 +34,3 @@ spring:
 logging:
   level:
     com.ssafy.kkini: debug
-
-
-
-upload:
-  path: C:\workplace\Common_Project\uploadFile\

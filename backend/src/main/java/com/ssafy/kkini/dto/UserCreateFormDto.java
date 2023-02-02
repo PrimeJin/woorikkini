@@ -20,7 +20,7 @@ public class UserCreateFormDto {
         return User.builder()
                 .userName(userName)
                 .userPassword(userPassword)
-                .userName(userName)
+                .userEmail(userEmail)
                 .userNickname(userNickname)
                 .userGender(userGender)
                 .userBirthYear(userBirth)
@@ -28,4 +28,3 @@ public class UserCreateFormDto {
     }
 
 }
-

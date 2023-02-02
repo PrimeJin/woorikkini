@@ -5,7 +5,6 @@ spring:
     username: sa
     password:
 
-
   jpa:
     hibernate:
       ddl-auto: create
@@ -16,7 +15,3 @@ spring:
 logging:
   level:
     org.hibernate.sql: debug
-
-upload:
-  path: C:\workplace\Common_Project\uploadFile\
-
