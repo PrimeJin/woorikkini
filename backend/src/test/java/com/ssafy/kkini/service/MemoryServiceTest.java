@@ -1,6 +1,7 @@
 package com.ssafy.kkini.service;
 
 import com.ssafy.kkini.dto.MemoryCreateFormDto;
+import com.ssafy.kkini.dto.MemoryUpdateFormDto;
 import com.ssafy.kkini.dto.UserCreateFormDto;
 import com.ssafy.kkini.entity.Memory;
 import com.ssafy.kkini.entity.Photo;
@@ -25,13 +26,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @TestPropertySource(locations = "classpath:application-test.yml")
@@ -41,19 +39,17 @@ class MemoryServiceTest {
     @Mock
     MemoryRepository memoryRepository;
     @Mock
-    PhotoRpository photoRpository;
+    PhotoRpository photoRepository;
     @Mock
     UserRepository userRepository;
 
     @Value("{upload.path}")
     private String fileDir;
 
-    @DisplayName("Memory create TEST")
+    @DisplayName("Memory create service TEST")
     @Test
     void createTest() throws IOException {
         //given
-//        URL resource1 = getClass().getResource("src\\Image1.jpg");
-//        URL resource2 = getClass().getResource("src\\Image2.png");
         String path1 = "C:\\workplace\\Common_Project\\MyPage_CRUD\\backend\\src\\test\\java\\com\\ssafy\\kkini\\src\\Image1.jpg";
         String path2 = "C:\\workplace\\Common_Project\\MyPage_CRUD\\backend\\src\\test\\java\\com\\ssafy\\kkini\\src\\Image2.png";
         MockMultipartFile uploadFile1 = new MockMultipartFile("file1", "Image1.jpg","image/jpg",new FileInputStream(new File(path1)));
@@ -70,7 +66,6 @@ class MemoryServiceTest {
                 ,"밍"
                 ,"F"
                 ,19980901);
-//        User user = userCreateFormDto.toEntity();
         MemoryCreateFormDto memoryCreateFormDto = new MemoryCreateFormDto("오늘 식단", "성공적", 2L, arrayList);
         Memory memory = memoryCreateFormDto.toEntity();
         Optional<User> user = Optional.ofNullable(userCreateFormDto.toEntity());
@@ -85,7 +80,7 @@ class MemoryServiceTest {
 
     }
 
-    @DisplayName("photo create TEST")
+    @DisplayName("photo create service TEST")
     @Test
     void createPhoto() throws IOException {
         //given
@@ -100,59 +95,120 @@ class MemoryServiceTest {
 
         MemoryCreateFormDto memoryCreateFormDto = new MemoryCreateFormDto("오늘 식단", "성공적", 2L, arrayList);
         Memory memory = memoryCreateFormDto.toEntity();
-        Photo photo = makePhotoEntity(arrayList,memory);
+        List<Photo> photolist = makePhotoEntity(arrayList,memory);
+
+        for (Photo photo : photolist) {
+            when(photoRepository.save(any())).thenReturn(photo);
+        }
 
         //when
         ArrayList<Photo> result = memoryService.uploadPhoto(arrayList,memory);
 
         //then
-        System.out.println(result.size());
-        Assertions.assertThat(result.size()).isEqualTo(arrayList.size());
+        Assertions.assertThat(result.size()).isEqualTo(photolist.size());
+    }
+    @DisplayName("memory update service TEST")
+    @Test
+    void updateMemory() throws IOException{
+        //given
+        String path1 = "C:\\workplace\\Common_Project\\MyPage_CRUD\\backend\\src\\test\\java\\com\\ssafy\\kkini\\src\\Image1.jpg";
+        String path2 = "C:\\workplace\\Common_Project\\MyPage_CRUD\\backend\\src\\test\\java\\com\\ssafy\\kkini\\src\\Image2.png";
+        MockMultipartFile uploadFile1 = new MockMultipartFile("file1", "Image1.jpg","image/jpg",new FileInputStream(new File(path1)));
+        MockMultipartFile uploadFile2 = new MockMultipartFile("file2", "Image2.png","image/png",new FileInputStream(new File(path2)));
+
+        List<MultipartFile> arrayList = new ArrayList<>();
+        arrayList.add(uploadFile1);
+        arrayList.add(uploadFile2);
+
+        UserCreateFormDto userCreateFormDto = new UserCreateFormDto(
+                "여민지"
+                ,"minji@naver.com"
+                ,"1234"
+                ,"밍"
+                ,"F"
+                ,19980901);
+        MemoryUpdateFormDto memoryUpdateFormDto = new MemoryUpdateFormDto(1L,"오늘 식단", "성공적", 1L, arrayList);
+        Memory memory = memoryUpdateFormDto.toEntity();
+        Optional<User> user = Optional.ofNullable(userCreateFormDto.toEntity());
+//        when(userRepository.findAllByUserId(any())).thenReturn(user);
+        when(memoryRepository.findById(any())).thenReturn(Optional.ofNullable(memory));
+        when(memoryRepository.save(any())).thenReturn(memory);
+
+        //when
+        Memory result = memoryService.updateMemory(memoryUpdateFormDto);
+
+        //then
+        Assertions.assertThat(memory.getMemoryTitle()).isEqualTo(result.getMemoryTitle());
     }
 
-    Photo makePhotoEntity(List<MultipartFile> photoList, Memory memory){
-        // 년/월/일 폴더의 생성으로 한 폴더에 너무 많은 파일이 들어가지 않도록 제어
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date date = new Date();
-        String str = dateFormat.format(date);
-        String uploadFolderPath = str.replace("-", File.separator);
-        //폴더 생성
-        File uploadPath = new File(fileDir, uploadFolderPath); // 오늘 날짜의 경로를 문자열로 생성
-        if (uploadPath.exists() == false) {
-            uploadPath.mkdirs();
-        }
+    @DisplayName("photo delete service TEST")
+    @Test
+    void deletePhoto() throws IOException{
+        //given
+        String path1 = "C:\\workplace\\Common_Project\\MyPage_CRUD\\backend\\src\\test\\java\\com\\ssafy\\kkini\\src\\Image1.jpg";
+        String path2 = "C:\\workplace\\Common_Project\\MyPage_CRUD\\backend\\src\\test\\java\\com\\ssafy\\kkini\\src\\Image2.png";
+        MockMultipartFile uploadFile1 = new MockMultipartFile("file1", "Image1.jpg","image/jpg",new FileInputStream(new File(path1)));
+        MockMultipartFile uploadFile2 = new MockMultipartFile("file2", "Image2.png","image/png",new FileInputStream(new File(path2)));
 
-        ArrayList<Photo> phoroList = new ArrayList<>();
-        Photo photo = null;
-        for (MultipartFile uploadFile : photoList) {
-            String originFileName = uploadFile.getOriginalFilename();
-            // 파일의 확장자 추출
-            String originalFileExtension;
-            String contentType = uploadFile.getContentType();
+        List<MultipartFile> arrayList = new ArrayList<>();
+        arrayList.add(uploadFile1);
+        arrayList.add(uploadFile2);
 
-            // 확장자명이 존재하지 않을 경우 처리 x
-            if(ObjectUtils.isEmpty(contentType)) {
-                break;
-            }
-            else {  // 확장자가 jpeg, png인 파일들만 받아서 처리
-                if(contentType.contains("image/jpeg"))
-                    originalFileExtension = ".jpg";
-                else if(contentType.contains("image/png"))
-                    originalFileExtension = ".png";
-                else  // 다른 확장자일 경우 처리 x
-                    break;
-            }
+        MemoryCreateFormDto memoryCreateFormDto = new MemoryCreateFormDto("오늘 식단", "성공적", 2L, arrayList);
+        Memory memory = memoryCreateFormDto.toEntity();
+        List<Photo> photolist = makePhotoEntity(arrayList,memory);
 
-            // 파일명 중복 피하고자 나노초까지 얻어와 지정
-            String new_file_name = System.nanoTime() + originalFileExtension;
+        //when
+        when(photoRepository.findAllByMemoryId(memory.getMemoryId())).thenReturn(photolist);
+        doNothing().when(photoRepository).deleteById(any());
 
-            photo = new Photo();
+
+        //then
+        memoryService.deletePhoto(memory.getMemoryId());
+        verify(photoRepository, times(2)).deleteById(any());
+    }
+
+    @DisplayName("memory get service TEST")
+    @Test
+    void getMemory() throws IOException{
+        //given
+        String path1 = "C:\\workplace\\Common_Project\\MyPage_CRUD\\backend\\src\\test\\java\\com\\ssafy\\kkini\\src\\Image1.jpg";
+        String path2 = "C:\\workplace\\Common_Project\\MyPage_CRUD\\backend\\src\\test\\java\\com\\ssafy\\kkini\\src\\Image2.png";
+        MockMultipartFile uploadFile1 = new MockMultipartFile("file1", "Image1.jpg","image/jpg",new FileInputStream(new File(path1)));
+        MockMultipartFile uploadFile2 = new MockMultipartFile("file2", "Image2.png","image/png",new FileInputStream(new File(path2)));
+
+        List<MultipartFile> arrayList = new ArrayList<>();
+        arrayList.add(uploadFile1);
+        arrayList.add(uploadFile2);
+
+        MemoryCreateFormDto memoryCreateFormDto1 = new MemoryCreateFormDto("오늘 식단1", "성공적", 1L, arrayList);
+        MemoryCreateFormDto memoryCreateFormDto2 = new MemoryCreateFormDto("오늘 식단2", "성공적", 1L, arrayList);
+        List<Memory> memoryList = new ArrayList<>();
+        memoryList.add(memoryCreateFormDto1.toEntity());
+        memoryList.add(memoryCreateFormDto2.toEntity());
+
+        when(memoryRepository.FindAllByUserId(1L)).thenReturn(memoryList);
+
+        //when
+        List<Memory> result = memoryService.getMemory(1L);
+
+        //then
+        Assertions.assertThat(memoryList.size()).isEqualTo(result.size());
+
+    }
+
+    List<Photo> makePhotoEntity(List<MultipartFile> photoList, Memory memory){
+        List<Photo> list = new ArrayList<Photo>();
+
+        for (MultipartFile file:photoList) {
+            Photo photo = new Photo();
             photo.setMemory(memory);
-            photo.setFilePath(uploadFolderPath + new_file_name);
-            photo.setOriginalFilename(originFileName);
+            photo.setFilePath("filename");
+            photo.setOriginalFilename("originFileName");
 
-
+            list.add(photo);
         }
-        return photo;
+
+        return list;
     }
 }

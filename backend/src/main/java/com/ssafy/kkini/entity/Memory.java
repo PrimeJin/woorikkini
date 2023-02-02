@@ -13,7 +13,6 @@ import java.sql.Timestamp;
 @Entity
 @DynamicInsert
 @NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "MEMORY")
 public class Memory extends BaseEntity{
     @Id
@@ -30,7 +29,8 @@ public class Memory extends BaseEntity{
         this.user = user;
     }
     @Builder
-    public Memory(User user, String title, String content){
+    public Memory(Long memoryId, User user, String title, String content){
+        this.memoryId = memoryId;
         this.user = user;
         this.memoryTitle = title;
         this.memoryContent = content;

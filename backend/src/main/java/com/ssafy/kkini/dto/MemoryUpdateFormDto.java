@@ -14,17 +14,19 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemoryCreateFormDto {
+public class MemoryUpdateFormDto {
+
+    private Long memoryId;
     @NotNull(message = "제목은 필수 입력 값입니다.")
     private String memoryTitle;
     private String memoryContent;
     private Long userId;
     private List<MultipartFile> memoryImgFiles;
 
-
     public Memory toEntity(){
         return Memory.builder().title(this.memoryTitle)
-                .content(this.memoryContent).build();
+                .content(this.memoryContent)
+                .memoryId(this.memoryId)
+                .build();
     }
-
 }
