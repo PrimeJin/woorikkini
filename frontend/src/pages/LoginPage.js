@@ -15,9 +15,9 @@ import { Link } from 'react-router-dom';
 import { loginUser } from '../api/Users';
 import { SET_TOKEN } from '../store/Auth';
 
-import KakaoButton from '../component/KakaoButton';
-import NaverButton from '../component/NaverButton';
-import GoogleButton from '../component/GoogleButton';
+import KakaoButton from '../components/buttons/KakaoButton';
+import NaverButton from '../components/buttons/NaverButton';
+import GoogleButton from '../components/buttons/GoogleButton';
 import logo from '../assets/우리끼니로고.png';
 import '../styles/LoginPage.css';
 
