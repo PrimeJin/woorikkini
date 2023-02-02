@@ -35,6 +35,7 @@ public class NoticeController {
             Page<Notice> noticeList = noticeService.getNoticeList(page, limit);
             map.put("message", "success");
             map.put("noticeList", noticeList);
+            map.put("totalSize", noticeList.getTotalElements());
             return new ResponseEntity<Map<String, Object>>(map, HttpStatus.ACCEPTED);
         } catch (Exception e) {
             map.put("message", "fail");
