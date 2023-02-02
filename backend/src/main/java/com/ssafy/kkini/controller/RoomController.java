@@ -1,8 +1,7 @@
 package com.ssafy.kkini.controller;
 
-import com.ssafy.kkini.dto.RoomCreateFormDto;
-import com.ssafy.kkini.dto.RoomPasswordXDto;
-import com.ssafy.kkini.dto.RoomSearchDto;
+
+import com.ssafy.kkini.dto.*;
 import com.ssafy.kkini.service.ExitService;
 import com.ssafy.kkini.service.KeywordService;
 import com.ssafy.kkini.service.RoomService;
@@ -13,21 +12,27 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequiredArgsConstructor
 @Api("Room RestController V1")
 @RequestMapping("/room")
 public class RoomController {
     private static final String SUCCESS = "success";
     private static final String FAIL = "fail";
-    private final RoomService roomService;
-    private final KeywordService keywordService;
-    private final ExitService exitService;
+    private RoomService roomService;
+    private KeywordService keywordService;
+    private ExitService exitService;
+
+    public RoomController(RoomService roomService, KeywordService keywordService, ExitService exitService) {
+        this.roomService = roomService;
+        this.keywordService = keywordService;
+        this.exitService = exitService;
+    }
 
     @ApiOperation(value = "방 생성", notes = "생성된 방 정보를 반환한다.", response = Map.class)
     @PostMapping
@@ -120,16 +125,17 @@ public class RoomController {
 
     @ApiOperation(value = "방 입장", notes = "사용자가 방 입장 시 사용자가 강제 퇴장 당한 유저라면 거절, " +
             "강퇴당한 유저가 아니라면 해당 방의 참여자 수를 1 증가시킨다.", response = Map.class)
-    @GetMapping("/enter/{roomId}")
+    @GetMapping("/enter/{roomId}/{userId}")
     public ResponseEntity<?> enterRoom(@ApiParam(value = "입장할 방 번호", required = true)
-                                           @PathVariable String roomId, @RequestParam String userId) {
+                                           @PathVariable String roomId, @PathVariable String userId, RoomEnterFormDto roomEnterFormDto) {
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
 
         //해당 유저가 강제퇴장 당한 유저인지 확인
         int cnt = exitService.findExitUser(roomId, userId);
         if(cnt == 0){
-            int result = roomService.enterRoom(Integer.valueOf(roomId));
+            int result = roomService.enterRoom(Integer.valueOf(roomId), roomEnterFormDto);
+
             if (result == 0){
                 status = HttpStatus.NOT_FOUND;
                 resultMap.put("message", FAIL);
