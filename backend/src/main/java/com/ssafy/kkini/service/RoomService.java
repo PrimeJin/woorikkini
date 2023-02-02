@@ -1,6 +1,7 @@
 package com.ssafy.kkini.service;
 
 import com.ssafy.kkini.dto.RoomCreateFormDto;
+import com.ssafy.kkini.dto.RoomEnterFormDto;
 import com.ssafy.kkini.dto.RoomPasswordXDto;
 import com.ssafy.kkini.dto.RoomSearchDto;
 import com.ssafy.kkini.entity.Room;
@@ -19,9 +20,16 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class RoomService {
-    private final RoomRepository roomRepository;
-    private final RoomKeywordRepository roomKeywordRepository;
-    private final KeywordRepository keywordRepository;
+    private RoomRepository roomRepository;
+    private RoomKeywordRepository roomKeywordRepository;
+    private KeywordRepository keywordRepository;
+
+    public RoomService(RoomRepository roomRepository, RoomKeywordRepository roomKeywordRepository, KeywordRepository keywordRepository) {
+        this.roomRepository = roomRepository;
+        this.roomKeywordRepository = roomKeywordRepository;
+        this.keywordRepository = keywordRepository;
+    }
+
     public RoomPasswordXDto createRoom(RoomCreateFormDto roomCreateFormDto){
         Room room = roomCreateFormDto.toEntity();
         List<Integer> keywordIdxList = roomCreateFormDto.getRoomKeywordList();
@@ -57,7 +65,12 @@ public class RoomService {
         return roomRepository.searchRoom(roomSearchDto);
     }
 
-    public int enterRoom(int roomId) {
+    public int enterRoom(int roomId, RoomEnterFormDto roomEnterFormDto) {
+        if(roomEnterFormDto.getRoomPrivate().equals("Y")){
+                if(!roomRepository.findByRoomId(roomId).getRoomPassword().equals(roomEnterFormDto.getRoomPassword())){
+                    return 0;
+                }
+        }
         return roomRepository.increaseRecentUserInRoom(roomId);
     }
     public int exitRoom(int roomId) {
