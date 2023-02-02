@@ -11,8 +11,14 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class ExitService {
-    private final RoomRepository roomRepository;
-    private final ExitRepository exitRepository;
+    private RoomRepository roomRepository;
+    private ExitRepository exitRepository;
+
+    public ExitService(RoomRepository roomRepository, ExitRepository exitRepository) {
+        this.roomRepository = roomRepository;
+        this.exitRepository = exitRepository;
+    }
+
     public int addExitUser(String roomId, String userId) {
         System.out.println("hihi");
         Room room = roomRepository.findByRoomId(Integer.parseInt(roomId));
