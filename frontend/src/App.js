@@ -21,12 +21,12 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<MainPage />} />
-          <Route path="/user/signup" element={<Signup />}></Route>
+          <Route path="/user/signup" element={<Signup />} />
           <Route path="/user/login" element={<LoginPage />} />
           <Route path="/user/logout" element={<LogoutPage />} />
           <Route path="/oauth/callback/kakao" element={<Kakao />} />
           <Route path="/oauth/callback/naver" element={<Naver />} />
-          <Route path="/mypage" element={<Mypage />}></Route>
+          <Route path="/mypage" element={<Mypage />} />
         </Routes>
       </BrowserRouter>
     </>
