@@ -14,6 +14,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -204,7 +205,7 @@ public class UserController {
 
         //인증코드에 담긴 이메일과 입력한 이메일 비교
         if(authCodeUserEmail.equals(authCode.getAuthCodeUserEmail())
-        && !(authCodeService.checkExpireAuthCode(authCode))) {
+                && !(authCodeService.checkExpireAuthCode(authCode))) {
             map.put("message", "success");
             authCodeService.useAuthCode(authCode);  //인증코드 사용처리
             return new ResponseEntity<Map<String, Object>>(map, HttpStatus.ACCEPTED);
