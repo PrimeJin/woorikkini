@@ -58,7 +58,7 @@ function CreateCard() {
 
     // 서버로 전달
     axios
-      .post('http:// /memory', {
+      .post('http://i8a804.p.ssafy.io:8040/memory', {
         data: {
           userId: userId,
           memoryImgFile: fileData,
