@@ -6,11 +6,14 @@ import { configureStore } from '@reduxjs/toolkit';
 import { tokenSlice } from './Auth';
 import { userSlice } from './User';
 
-export default configureStore({
-  reducer: {
-    token: tokenSlice.reducer,
-    user: userSlice.reducer,
-  },
+export default configureStore(
+  {
+    reducer: {
+      token: tokenSlice.reducer,
+      user: userSlice.reducer,
+    },
 
-  devTools: process.env.NODE_ENV !== 'production',
-});
+    devTools: process.env.NODE_ENV !== 'production',
+  },
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
+);

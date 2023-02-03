@@ -5,7 +5,7 @@ import './PageLogo.css';
 function Logo() {
   const navigate = useNavigate();
   const MainGo = () => {
-    navigate(`/room`);
+    navigate(`/`);
   };
   return (
     <div className="mypage-logo-top">
