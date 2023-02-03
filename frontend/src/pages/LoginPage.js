@@ -19,6 +19,7 @@ import { SET_TOKEN } from '../store/Auth';
 import KakaoButton from '../components/buttons/KakaoButton';
 import NaverButton from '../components/buttons/NaverButton';
 import GoogleButton from '../components/buttons/GoogleButton';
+import logo from '../assets/우리끼니로고.png';
 import '../styles/LoginPage.css';
 import CenterLogo from '../styles/CenterLogo';
 import axios from '../../node_modules/axios/index';
