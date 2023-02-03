@@ -36,7 +36,7 @@ public class AuthCodeService {
 
     //회원가입시 인증코드 발송할 때 인증코드 생성
     public AuthCode createAuthCode(String email) {
-        if(!userRepository.findByUserEmail(email).isPresent()) {
+        if(userRepository.findByUserEmail(email).isPresent()) {
             throw new IllegalStateException("이미 가입된 이메일입니다.");
         }
 
