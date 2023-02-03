@@ -15,7 +15,7 @@ export const userSlice = createSlice({
     SET_USER: (state, action) => {
       state.id = action.payload.id;
       state.name = action.payload.name;
-      state.nickName = action.payload.nickname;
+      state.nickname = action.payload.nickname;
     },
     DELETE_USER: (state) => {
       state.id = '';
@@ -24,3 +24,7 @@ export const userSlice = createSlice({
     },
   },
 });
+
+export const { SET_USER, DELETE_USER } = userSlice.actions;
+
+export default userSlice.reducer;

@@ -5,6 +5,7 @@
 
 import { useDispatch } from 'react-redux';
 import { SET_TOKEN } from '../store/Auth';
+import { SET_USER } from '../store/User';
 import { setRefreshToken } from '../storage/Cookies';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -17,10 +18,18 @@ const Google = () => {
   // let code = new URL(window.location.href).searchParams.get('code');
 
   //url에 있는 accessToken refreshToken 따오기
+  const id = new URL(window.location.href).searchParams.get('userId');
+  const nickname = new URL(window.location.href).searchParams.get('nickName');
+
   const accessToken = new URL(window.location.href).searchParams.get('accessToken');
   const refreshToken = new URL(window.location.href).searchParams.get('refreshToken');
+
+  console.log('userId: ' + id);
+  console.log('nickname: ' + nickname);
   console.log('access_Token: ' + accessToken);
   console.log('refresh_Token: ' + refreshToken);
+
+  dispatch(SET_USER({ id: id, nickname: nickname }));
 
   setRefreshToken(refreshToken);
   //store에 Access Token 저장하도록 Action Dispatch
@@ -28,7 +37,7 @@ const Google = () => {
   dispatch(SET_TOKEN(accessToken));
 
   useEffect(() => {
-    navigate('/mypage');
+    navigate('/');
   });
   //인가코드를 받아오면 백엔드로 넘기기
   // React.useEffect(() => {
