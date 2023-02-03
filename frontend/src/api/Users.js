@@ -121,7 +121,6 @@ export const requestToken = async (refreshToken) => {
     },
     body: JSON.stringify({ refresh_token: refreshToken }),
   };
-
   const data = await getPromise(`${BASE_URL}/user/login`, option).catch(() => {
     return statusError;
   });

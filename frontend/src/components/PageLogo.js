@@ -2,10 +2,10 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './PageLogo.css';
 
-function Logo(props) {
+function Logo() {
   const navigate = useNavigate();
   const MainGo = () => {
-    navigate(`/${props}`);
+    navigate(`/room`);
   };
   return (
     <div className="mypage-logo-top">

@@ -34,6 +34,7 @@ export const CheckToken = (key) => {
 
           if (response.status) {
             const accessToken = response.json.access_token;
+            console.log(response);
             dispatch(SET_TOKEN(accessToken));
             setIsAuth('인증 성공');
             console.log('인증 성공: 리프레시 토큰 재발급');
