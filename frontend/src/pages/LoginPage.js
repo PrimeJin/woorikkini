@@ -13,6 +13,7 @@ import { setRefreshToken } from '../storage/Cookies';
 import { Link } from 'react-router-dom';
 
 import { loginUser } from '../api/Users';
+import { SET_USER } from '../store/User';
 import { SET_TOKEN } from '../store/Auth';
 
 import KakaoButton from '../components/buttons/KakaoButton';
@@ -20,6 +21,7 @@ import NaverButton from '../components/buttons/NaverButton';
 import GoogleButton from '../components/buttons/GoogleButton';
 import '../styles/LoginPage.css';
 import CenterLogo from '../styles/CenterLogo';
+import axios from '../../node_modules/axios/index';
 
 const LoginPage = () => {
   //React Hooks
@@ -37,26 +39,44 @@ const LoginPage = () => {
   const onValid = async ({ userEmail, userPassword }) => {
     //response 객체
     //참고: /api/Users.js
-    const response = await loginUser({ userEmail, userPassword });
+    const data = {
+      userEmail,
+      userPassword,
+    };
 
-    //요청 응답이 오면 응답상태를 체크
-    //response.status가 true면 응답이 200번대(성공)
-    if (response.status) {
-      console.log(response);
-      //Cookie에 Refresh Token 저장
-      setRefreshToken(response.json.refresh_token);
-      //store에 Access Token 저장하도록 Action Dispatch
-      //참고: /store/Auth.js
-      dispatch(SET_TOKEN(response.json.access_token));
+    axios({
+      url: `http://i8a804.p.ssafy.io:8040/user/login`,
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json',
+      },
+      data,
+    })
+      .then((response) => {
+        //요청 응답이 오면 응답상태를 체크
+        //response.status가 true면 응답이 200번대(성공)
+        if (response.status / 100 === 2) {
+          console.log(response);
+          //Cookie에 Refresh Token 저장
+          setRefreshToken(response.data.refreshToken);
+          //store에 Access Token 저장하도록 Action Dispatch
+          //참고: /store/Auth.js
+          dispatch(SET_TOKEN(response.data.accessToken));
+          dispatch(SET_USER({ id: response.data.userId, nickname: response.data.userNickname }));
+          //화면 이동(메인)
+          navigate('/');
+        } else {
+          window.confirm('로그인 에러');
 
-      //화면 이동(메인)
-      return navigate('/');
-    } else {
-      console.log(response.json);
-      window.alert(response.json.error);
-    }
+          navigate('/user/login');
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 
     //input폼 비워주는 코드
+    setValue('userId', '');
     setValue('userPassword', '');
   };
 
