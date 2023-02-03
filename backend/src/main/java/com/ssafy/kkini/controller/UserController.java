@@ -138,7 +138,7 @@ public class UserController {
 
     @ApiOperation(value = "닉네임 수정", notes = "회원의 닉네임을 수정한다.", response = Map.class)
     @PatchMapping("/{userid}/nickname")
-    public ResponseEntity<Map<String,Object>> nicknameModify(@PathVariable("userid") @ApiParam(value = "수정할 회원정보(아이디)", required = true, example = "0") Long userid,
+    public ResponseEntity<Map<String,Object>> nicknameModify(@PathVariable("userid") @ApiParam(value = "수정할 회원정보(아이디)", required = true, example = "0") int userid,
                                                              @RequestBody @ApiParam(value = "수정할 회원정보(변경할 닉네임, 아이디)", required = true, example  = "0") UserNicknameModifyFormDto userNicknameModifyFormDto){
         Map<String, Object> resultMap = new HashMap<>();
         HttpStatus status = null;
@@ -162,7 +162,7 @@ public class UserController {
 
     @ApiOperation(value = "비밀번호 수정", notes = "회원의 닉네임을 수정한다.", response = Map.class)
     @PatchMapping("/{userid}/password")
-    public ResponseEntity<Map<String, Object>> passwordModify(@PathVariable("userid") @ApiParam(value = "수정할 회원정보(아이디)",required = true, example = "0") Long userid,
+    public ResponseEntity<Map<String, Object>> passwordModify(@PathVariable("userid") @ApiParam(value = "수정할 회원정보(아이디)",required = true, example = "0") int userid,
                                                               @RequestBody @ApiParam(value = "수정할 회원정보(변겨할 패스원드, 아이디", required = true, example = "0") UserPasswordModifyFormDto userPasswordModifyFormDto){
         Map<String,Object> resultMap = new HashMap<>();
         HttpStatus status = null;
@@ -213,6 +213,28 @@ public class UserController {
             return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
         }
 
+    }
+
+    @ApiOperation(value = "닉네임 중복체크", notes = "회원의 닉네임을 중복을 체크한다.", response = Map.class)
+    @PatchMapping("/{userNickname}")
+    public ResponseEntity<Map<String,Object>> nicknameModify(@PathVariable("userNickname") @ApiParam(value = "닉네임", required = true, example = "0") String userNickname){
+        Map<String, Object> resultMap = new HashMap<>();
+        HttpStatus status = null;
+
+        try {
+            User user = userService.nicknameCheck(userNickname);
+            if(user == null){
+                resultMap.put("messsage" , SUCCESS);
+                status = HttpStatus.ACCEPTED;
+            } else {
+                resultMap.put("message", FAIL);
+                status = HttpStatus.ACCEPTED;
+            }
+        }catch (Exception e){
+            resultMap.put("message",FAIL);
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+        return new ResponseEntity<Map<String, Object>>(resultMap, status);
     }
 
 }

@@ -68,4 +68,7 @@ public class UserService {
         }else return null;
     }
 
+    public User nicknameCheck(String userNickname) {
+        return userRepository.findByUserNickname(userNickname);
+    }
 }
