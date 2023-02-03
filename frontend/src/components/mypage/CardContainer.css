@@ -1,0 +1,127 @@
+@import url('http://cdn.rawgit.com/innks/NanumSquareRound/master/nanumsquareround.min.css');
+
+.card {
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  /* display: flex;
+  flex-direction: column; */
+  /* flex-shrink: 0; */
+  background: linear-gradient(270deg, rgba(247, 249, 255, 1) 0%, rgba(242, 246, 255, 1) 100%);
+  cursor: grab;
+}
+
+.slider-item-content {
+  /* padding: 32px; */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  transition: 0.4s;
+  font: 'NanumSquareRound';
+}
+
+.slider-image-wrapper {
+  height: 330px;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 20px 20px 0 0;
+}
+
+/* .slider-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: 0.2s;
+} */
+
+/* card container */
+
+.swiper-container {
+  width: 300px;
+  position: relative;
+  /* max-width: 420px; */
+  height: 80%;
+  /* max-height: 420px; */
+  /* border-radius: 10px; */
+}
+
+.swiper-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  z-index: 1;
+  position: relative;
+}
+
+.slider-buttons {
+  position: absolute;
+  display: flex;
+  top: 100%;
+  justify-content: flex-end;
+  width: 100%;
+  padding-top: 8px;
+  font-size: 100px;
+}
+
+/* .swiper-button-next,
+.swiper-button-prev {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  position: relative;
+  margin-left: 4px;
+} */
+.cardlist-top {
+  position: relative;
+  /* display: flex; */
+  margin: 5%;
+  justify-content: center;
+  display: grid;
+  grid-template-columns: 300px 300px 300px;
+  gap: 4em;
+}
+.swiper-pagination {
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  transform: translatex(-50%);
+  z-index: 1;
+  width: auto !important;
+}
+
+.swiper-pagination-bullet {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  line-height: 30px;
+  font-size: 12px;
+  opacity: 1;
+  background: rgba(255, 185, 0, 0.3);
+  display: inline-block;
+  /* margin-right: 8px; */
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.swiper-pagination-bullet-active {
+  background: #ffb200;
+  width: 20px;
+}
+
+.card-whole {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.22);
+  box-shadow: 0px 100px 80px rgba(0, 0, 0, 0.07), 0px 41.7776px 33.4221px rgba(0, 0, 0, 0.0503198),
+    0px 22.3363px 17.869px rgba(0, 0, 0, 0.0417275), 0px 12.5216px 10.0172px rgba(0, 0, 0, 0.035),
+    0px 6.6501px 5.32008px rgba(0, 0, 0, 0.0282725), 0px 2.76726px 2.21381px rgba(0, 0, 0, 0.0196802);
+  border-radius: 20px;
+  margin-top: 2em;
+  /* margin-left: 2%;
+  margin-right: 2%; */
+  /* flex-wrap: wrap;
+  justify-content: space-around; */
+}

@@ -1,0 +1,36 @@
+#port
+server:
+  port: 8040
+  servlet:
+    context-path: /
+    encoding:
+      charset: utf-8
+      enabled: true
+      force: true
+
+#database
+spring:
+#  datasource:
+#    url:
+#    username:
+#    password:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+  #jpa
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  #swagger spring version over 2.6
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  profiles:
+    include: secret, email
+
+#logging
+logging:
+  level:
+    com.ssafy.kkini: debug
