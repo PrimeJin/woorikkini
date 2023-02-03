@@ -18,8 +18,8 @@ import { SET_TOKEN } from '../store/Auth';
 import KakaoButton from '../components/buttons/KakaoButton';
 import NaverButton from '../components/buttons/NaverButton';
 import GoogleButton from '../components/buttons/GoogleButton';
-import Logo from '../components/PageLogo';
 import '../styles/LoginPage.css';
+import CenterLogo from '../styles/CenterLogo';
 
 const LoginPage = () => {
   //React Hooks
@@ -64,9 +64,16 @@ const LoginPage = () => {
     navigate('/user/signup');
   };
 
+  const goHome = () => {
+    navigate('/');
+  };
+
   return (
     <div className="login">
-      <Logo />
+      <div className="logo-box">
+        <CenterLogo />
+        <h3>같이 밥먹을래?</h3>
+      </div>
       <form className="loginform" onSubmit={handleSubmit(onValid)}>
         <div className="inputform">
           <div className="inputs">
@@ -105,8 +112,11 @@ const LoginPage = () => {
         <button className="signUpButton" onClick={onSignUp}>
           회원가입
         </button>
-        <Link to="FindPassword" style={{ color: 'blue', textDecoration: 'none' }}>
-          <small>비밀번호를 잊으셨나요?</small>
+        <Link
+          to="FindPassword"
+          style={{ color: 'blue', textDecoration: 'none', textAlign: 'right', marginRight: '50px', padding: '5px' }}
+        >
+          <small>비밀번호 찾기</small>
         </Link>
         <div className="socialLogin">
           <NaverButton />
