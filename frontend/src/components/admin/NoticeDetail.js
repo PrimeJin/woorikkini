@@ -1,24 +1,25 @@
-import axios from "axios";
-import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import axios from 'axios';
+import React from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const NoticeDetail = () => {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
   const params = useParams();
-  const [update, setUpdate] = useState("");
+  const [update, setUpdate] = useState('');
 
   function getDetail() {
     axios({
       url: `http://i8a804.p.ssafy.io:8050/notice/${params.noticeId}`,
-      methods: "GET",
+      methods: 'GET',
     })
       .then((res) => {
         setTitle(res.data.notice.noticeTitle);
         setContent(res.data.notice.noticeContent);
       })
       .catch((err) => {
-        console.log(err, "공지사항 디테일 에러");
+        console.log(err, '공지사항 디테일 에러');
       });
   }
 
@@ -26,8 +27,8 @@ const NoticeDetail = () => {
     getDetail();
   }, []);
 
-  const [inputTitle, setInputTitle] = useState("");
-  const [inputContent, setInputContent] = useState("");
+  const [inputTitle, setInputTitle] = useState('');
+  const [inputContent, setInputContent] = useState('');
 
   useEffect(() => {
     setInputTitle(title);
@@ -37,42 +38,42 @@ const NoticeDetail = () => {
   const navigate = useNavigate();
 
   function list() {
-    navigate("/admin/notice");
+    navigate('/admin/notice');
   }
 
   function goToUpdate() {
-    setUpdate("1");
+    setUpdate('1');
   }
 
   function back() {
-    setUpdate("");
+    setUpdate('');
   }
 
   function noticeDelete() {
     axios({
-      method: "DELETE",
+      method: 'DELETE',
       url: `http://i8a804.p.ssafy.io:8050/notice/${params.noticeId}/`,
       data: {
         noticeId: params.noticeId,
       },
     })
       .then((res) => {
-        alert("삭제가 완료되었습니다.");
-        navigate("/admin/notice");
+        alert('삭제가 완료되었습니다.');
+        navigate('/admin/notice');
       })
       .catch((err) => {
-        console.log("notice 삭제 에러");
+        console.log('notice 삭제 에러');
       });
   }
 
   function updateConfirm() {
-    if (inputTitle.trim() === "") {
-      alert("제목을 입력해주세요");
-    } else if (inputContent.trim() === "") {
-      alert("내용을 입력해주세요");
+    if (inputTitle.trim() === '') {
+      alert('제목을 입력해주세요');
+    } else if (inputContent.trim() === '') {
+      alert('내용을 입력해주세요');
     } else {
       axios({
-        method: "put",
+        method: 'put',
         url: `http://i8a804.p.ssafy.io:8050/notice/${params.noticeId}`,
         data: {
           noticeId: params.noticeId,
@@ -81,11 +82,11 @@ const NoticeDetail = () => {
         },
       })
         .then((res) => {
-          alert("수정이 완료되었습니다.");
+          alert('수정이 완료되었습니다.');
           window.location.replace(`${params.noticeId}`);
         })
         .catch((err) => {
-          console.log("공지사항 수정 에러", err);
+          console.log('공지사항 수정 에러', err);
         });
     }
   }
@@ -138,7 +139,7 @@ const NoticeDetail = () => {
   return (
     <div>
       <h1>공지사항</h1>
-      <div style={{ display: "flex", justifyContent: "center" }}>
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
         {!update ? (
           <div className="detail">
             <p className="title">{title}</p>
@@ -147,11 +148,7 @@ const NoticeDetail = () => {
             <button className="btn" onClick={goToUpdate}>
               수정
             </button>
-            <button
-              className="btn"
-              onClick={noticeDelete}
-              style={{ backgroundColor: "#FF8D89" }}
-            >
+            <button className="btn" onClick={noticeDelete} style={{ backgroundColor: '#FF8D89' }}>
               삭제
             </button>
           </div>
@@ -184,9 +181,7 @@ const NoticeDetail = () => {
           </div>
         )}
       </div>
-      <div
-        style={{ justifyContent: "left", display: "flex", marginBottom: "2%" }}
-      >
+      <div style={{ justifyContent: 'left', display: 'flex', marginBottom: '2%' }}>
         <button className="toList" onClick={list}>
           목록으로
         </button>

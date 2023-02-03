@@ -24,7 +24,7 @@ const Naver = () => {
   dispatch(SET_TOKEN(accessToken));
 
   useEffect(() => {
-    navigate('/mypage');
+    navigate('/');
   });
 };
 
