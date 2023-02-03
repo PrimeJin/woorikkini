@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
 public class KeywordService {
     private KeywordRepository keywordRepository;
 

@@ -59,7 +59,7 @@ public class GoogleUserInfoDto implements OAuth2UserInfoDto {
                 .userNickname(getNickName())
                 .userBirthYear(getBirthYear())
                 .userGender(getGender())
-                .userProvider(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()))
+                .userProvider(AuthProvider.valueOf(getProvider()))
                 .userProviderId(getProviderId())
                 .build();
     }
