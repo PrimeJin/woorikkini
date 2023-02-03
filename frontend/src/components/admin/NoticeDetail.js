@@ -10,12 +10,12 @@ const NoticeDetail = () => {
 
   function getDetail() {
     axios({
-      url: `https://jsonplaceholder.typicode.com/posts`,
+      url: `http://i8a804.p.ssafy.io:8050/notice/${params.noticeId}`,
       methods: "GET",
     })
       .then((res) => {
-        setTitle(res.data[params.noticeId - 1].title);
-        setContent(res.data[params.noticeId - 1].body);
+        setTitle(res.data.notice.noticeTitle);
+        setContent(res.data.notice.noticeContent);
       })
       .catch((err) => {
         console.log(err, "공지사항 디테일 에러");
@@ -50,14 +50,15 @@ const NoticeDetail = () => {
 
   function noticeDelete() {
     axios({
-      method: "POST",
-      url: `/notice/${params.noticeId}`,
+      method: "DELETE",
+      url: `http://i8a804.p.ssafy.io:8050/notice/${params.noticeId}/`,
       data: {
         noticeId: params.noticeId,
       },
     })
       .then((res) => {
-        console.log(params.noticeId, "삭제");
+        alert("삭제가 완료되었습니다.");
+        navigate("/admin/notice");
       })
       .catch((err) => {
         console.log("notice 삭제 에러");
@@ -70,63 +71,128 @@ const NoticeDetail = () => {
     } else if (inputContent.trim() === "") {
       alert("내용을 입력해주세요");
     } else {
-      // axios({
-      //   method: "post",
-      //   url: "/notice",
-      //   data: {
-      //     noticeTitle: inputTitle,
-      //     noticeContent: inputContent,
-      //   }
-      // })
-      // .then((res) => {
-      //   //리랜더링
-      // })
+      axios({
+        method: "put",
+        url: `http://i8a804.p.ssafy.io:8050/notice/${params.noticeId}`,
+        data: {
+          noticeId: params.noticeId,
+          noticeTitle: inputTitle,
+          noticeContent: inputContent,
+        },
+      })
+        .then((res) => {
+          alert("수정이 완료되었습니다.");
+          window.location.replace(`${params.noticeId}`);
+        })
+        .catch((err) => {
+          console.log("공지사항 수정 에러", err);
+        });
     }
   }
 
-  if (!update) {
-    return (
-      <div>
-        <h1>공지사항</h1>
-        <div>
-          제목: {title}
-          <br />
-          내용: {content}
-          <br />
-          <button onClick={goToUpdate}>수정</button>
-          <button onClick={noticeDelete}>삭제</button>
-        </div>
-        <button onClick={list}>목록으로</button>
+  //   if (!update) {
+  //     return (
+  //       <div style={{ display: "flex", flexWrap: "wrap" }}>
+  //         <h1>공지사항</h1>
+  //         <div className="detail">
+  //           제목: {title}
+  //           <br />
+  //           내용: {content}
+  //           <br />
+  //           <button onClick={goToUpdate}>수정</button>
+  //           <button onClick={noticeDelete}>삭제</button>
+  //         </div>
+  //         <button onClick={list}>목록으로</button>
+  //       </div>
+  //     );
+  //   } else {
+  //     return (
+  //       <div>
+  //         <h1>공지사항</h1>
+  //         <div>
+  //           <label>제목</label>
+  //           <br />
+  //           <input
+  //             type="text"
+  //             value={inputTitle}
+  //             onChange={(e) => setInputTitle(e.target.value)}
+  //           />
+  //           <br />
+  //           <label>내용</label>
+  //           <br />
+  //           <input
+  //             type="text"
+  //             value={inputContent}
+  //             onChange={(e) => setInputContent(e.target.value)}
+  //           />
+  //           <br />
+  //           <button onClick={updateConfirm}>확인</button>
+  //           <button onClick={back}>취소</button>
+  //         </div>
+  //         <button onClick={list}>목록으로</button>
+  //       </div>
+  //     );
+  //   }
+  // };
+
+  return (
+    <div>
+      <h1>공지사항</h1>
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        {!update ? (
+          <div className="detail">
+            <p className="title">{title}</p>
+            <hr />
+            <p className="content">{content}</p>
+            <button className="btn" onClick={goToUpdate}>
+              수정
+            </button>
+            <button
+              className="btn"
+              onClick={noticeDelete}
+              style={{ backgroundColor: "#FF8D89" }}
+            >
+              삭제
+            </button>
+          </div>
+        ) : (
+          <div className="update">
+            <label>제목</label>
+            <br />
+            <input
+              className="inputTitle"
+              type="text"
+              value={inputTitle}
+              onChange={(e) => setInputTitle(e.target.value)}
+            />
+            <br />
+            <label>내용</label>
+            <br />
+            <input
+              className="inputContent"
+              type="text"
+              value={inputContent}
+              onChange={(e) => setInputContent(e.target.value)}
+            />
+            <br />
+            <button className="upBtn" onClick={updateConfirm}>
+              확인
+            </button>
+            <button className="upBtn" onClick={back}>
+              취소
+            </button>
+          </div>
+        )}
       </div>
-    );
-  } else {
-    return (
-      <div>
-        <h1>공지사항</h1>
-        <div>
-          <label>제목</label>
-          <br />
-          <input
-            type="text"
-            value={inputTitle}
-            onChange={(e) => setInputTitle(e.target.value)}
-          />
-          <br />
-          <label>내용</label>
-          <br />
-          <input
-            type="text"
-            value={inputContent}
-            onChange={(e) => setInputContent(e.target.value)}
-          />
-          <br />
-          <button onClick={updateConfirm}>확인</button>
-          <button onClick={back}>취소</button>
-        </div>
-        <button onClick={list}>목록으로</button>
+      <div
+        style={{ justifyContent: "left", display: "flex", marginBottom: "2%" }}
+      >
+        <button className="toList" onClick={list}>
+          목록으로
+        </button>
       </div>
-    );
-  }
+    </div>
+  );
 };
 
 export default NoticeDetail;

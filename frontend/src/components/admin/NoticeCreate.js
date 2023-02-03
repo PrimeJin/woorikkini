@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-// import axios from "axios";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const NoticeCreate = (props) => {
@@ -15,18 +15,20 @@ const NoticeCreate = (props) => {
     } else if (content.trim() === "") {
       alert("내용을 입력해주세요");
     } else {
-      // axios({
-      //   method: "post",
-      //   url: "/notice",
-      //   data: {
-      //     noticeTitle: title,
-      //     noticeContent: content,
-      //   }
-      // })
-      // .then((res) => {
-      //   navigate("/notice")
-      // })
-      navigate("/admin/notice");
+      axios({
+        method: "post",
+        url: "http://i8a804.p.ssafy.io:8050/notice/",
+        data: {
+          noticeTitle: title,
+          noticeContent: content,
+        },
+      })
+        .then((res) => {
+          navigate("/admin/notice");
+        })
+        .catch((err) => {
+          console.log("공지사항 create에러", err);
+        });
     }
   }
 

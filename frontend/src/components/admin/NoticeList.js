@@ -1,15 +1,24 @@
-import React from "react";
+import "./Notice.css";
 
 function NoticeList(props) {
-  const title = props.notice.title;
-  const noticeDetail = `notice/${props.notice.id}`;
+  const noticeDetail = `notice/${props.notice.noticeId}`;
+  const id = props.notice.noticeId;
+  const title = props.notice.noticeTitle;
+  const time = props.notice.createdTime.substr(0, 10);
 
   return (
-    <div>
-      <a href={noticeDetail} style={{ textDecoration: "none", color: "black" }}>
-        {title}
-      </a>
-    </div>
+    <tr>
+      <td>{id}</td>
+      <td>
+        <a
+          href={noticeDetail}
+          style={{ textDecoration: "none", color: "black" }}
+        >
+          {title}
+        </a>
+      </td>
+      <td>{time}</td>
+    </tr>
   );
 }
 
