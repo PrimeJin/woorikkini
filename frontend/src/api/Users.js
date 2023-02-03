@@ -13,7 +13,7 @@
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-const BASE_URL = 'http://localhost:3001'; //API 테스트용 프록시 URL
+const BASE_URL = 'http://i8a804.p.ssafy.io:8040'; //API 테스트용 프록시 URL
 
 //Promise 요청 타임아웃 시간 설정
 const TIME_OUT = 300 * 1000;
@@ -54,7 +54,7 @@ export const loginUser = async (code) => {
   };
 
   //Promise 객체로 응답을 받을거면 이쪽으로
-  const data = await getPromise(`${BASE_URL}/login`, option).catch(() => {
+  const data = await getPromise(`${BASE_URL}/user/login`, option).catch(() => {
     return statusError;
   });
 
@@ -93,7 +93,7 @@ export const logoutUser = async (credentials, accessToken) => {
     body: JSON.stringify(credentials),
   };
 
-  const data = await getPromise(`${BASE_URL}/logout`, option).catch(() => {
+  const data = await getPromise(`${BASE_URL}/user/logout`, option).catch(() => {
     return statusError;
   });
 
@@ -122,7 +122,7 @@ export const requestToken = async (refreshToken) => {
     body: JSON.stringify({ refresh_token: refreshToken }),
   };
 
-  const data = await getPromise(`${BASE_URL}/login`, option).catch(() => {
+  const data = await getPromise(`${BASE_URL}/user/login`, option).catch(() => {
     return statusError;
   });
 
@@ -142,7 +142,7 @@ export const requestToken = async (refreshToken) => {
 
 //회원탈퇴
 export const DeleteUser = (userId) => {
-  const url = `${BASE_URL}/${userId}`;
+  const url = `${BASE_URL}/user/${userId}`;
   const accessToken = useSelector((state) => state.accessToken);
   const navigate = useNavigate();
   //useSelector는 React 함수나 Custom Hook 내부에 있어야 하는데

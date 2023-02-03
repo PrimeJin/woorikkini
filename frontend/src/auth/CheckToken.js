@@ -19,7 +19,7 @@ export const CheckToken = (key) => {
   useEffect(() => {
     const checkAuthToken = async () => {
       //Refresh Token이 없음
-      if (refreshToken == undefined) {
+      if (refreshToken === undefined) {
         dispatch(DELETE_TOKEN());
         setIsAuth('인증 실패');
         console.log('인증 실패: 리프레시 토큰 없음');
