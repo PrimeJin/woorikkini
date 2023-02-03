@@ -16,6 +16,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByUserId(int userId);
 
+    //위에거 지우고 이걸로 해줘야 돌아감
+//        User findByUserId(int userId);
     Optional<User> findAllByUserId(int userId);
 
 }
