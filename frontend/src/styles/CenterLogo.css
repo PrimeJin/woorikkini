@@ -1,12 +1,12 @@
 .mypage-logo-top {
+  justify-content: center;
   display: flex;
-  justify-content: left;
-  flex-flow: nowrap;
+  flex-flow: row nowrap;
   margin: 2%;
   width: 130px;
 }
 
 .mypage-logo {
-  width: 75px;
-  height: 83px;
+  width: 120px;
+  height: 136px;
 }

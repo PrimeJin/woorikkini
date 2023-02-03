@@ -8,6 +8,7 @@ const Room = () => {
   const [isPrivate, setIsPrivate] = useState(false);
   const [isFull, setIsFull] = useState(false);
   const [filtered, setFiltered] = useState([]);
+  const [sort, setSort] = useState("");
 
   function getList() {
     axios({
@@ -28,9 +29,20 @@ const Room = () => {
   }, []);
 
   function sorting(e) {
-    // list.sort((b) => b.title);
-    // setList(list);
-    // console.log(list[1].title);
+    const value = e.target.value;
+    if (value === "old") {
+      list.sort((a, b) => a.id - b.id);
+      setSort(1);
+    } else if (value === "new") {
+      list.sort((a, b) => b.id - a.id);
+      setSort(2);
+    } else if (value === "numHigh") {
+      list.sort((a, b) => (b.title < a.title ? -1 : 1));
+      setSort(3);
+    } else if (value === "numLow") {
+      list.sort((a, b) => (b.title < a.title ? 1 : -1));
+      setSort(4);
+    }
   }
 
   useEffect(() => {
@@ -43,7 +55,7 @@ const Room = () => {
       : isPrivate
       ? setFiltered(list.filter((room) => room.completed === true))
       : setFiltered(list);
-  }, [isPrivate, isFull]);
+  }, [isPrivate, isFull, sort]);
 
   return (
     <div>

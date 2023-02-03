@@ -1,5 +1,6 @@
 //클라이언트 ID, URL 등 통합관리
-export const BASE_URL = '70.12.247.235'; //베이스 도메인
+// export const BASE_URL = '70.12.247.235'; //베이스 도메인
+export const BASE_URL = 'http://i8a804.p.ssafy.io:8040';
 
 //CLIENT SECRET은 사실 필요가 없는게 백엔드 서버에서 인증 서버에 ACCESS TOKEN을 요청할 때 사용하는게 일반적이라
 

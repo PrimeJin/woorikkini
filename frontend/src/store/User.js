@@ -13,9 +13,9 @@ export const userSlice = createSlice({
     //매개변수 state는 기존 state(initialState)
     //action은 state를 변화시키기 위한 action
     SET_USER: (state, action) => {
-      state.id = action.payload.id;
+      state.id = parseInt(action.payload.id);
       state.name = action.payload.name;
-      state.nickName = action.payload.nickname;
+      state.nickname = action.payload.nickname;
     },
     DELETE_USER: (state) => {
       state.id = '';
@@ -24,3 +24,7 @@ export const userSlice = createSlice({
     },
   },
 });
+
+export const { SET_USER, DELETE_USER } = userSlice.actions;
+
+export default userSlice.reducer;
