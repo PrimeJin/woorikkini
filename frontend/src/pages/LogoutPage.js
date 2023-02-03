@@ -33,7 +33,7 @@ const LogoutPage = () => {
       removeCookieToken();
       return navigate('/');
     } else {
-      window.location.reload();
+      return navigate(-1);
     }
   }
 

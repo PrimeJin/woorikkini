@@ -1,3 +1,4 @@
+import React from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
@@ -16,7 +17,7 @@ function DeletePage() {
   };
 
   const deleteUser = (userId) => {
-    const url = `url/${userId}`;
+    const url = `http://i8a804.p.ssafy.io:8040/${userId}`;
 
     fetch(url, {
       method: 'DELETE',

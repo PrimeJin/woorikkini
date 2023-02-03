@@ -12,6 +12,9 @@ import Naver from './auth/Naver';
 
 import PrivateRoute from './routes/PrivateRoute';
 import PublicRoute from './routes/PublicRoute';
+import Google from './auth/Google';
+import DeletePage from './pages/DeletePage';
+import ErrorPage from './pages/ErrorPage';
 
 function App() {
   return (
@@ -24,11 +27,16 @@ function App() {
           <Route path="/" element={<MainPage />} />
           <Route path="/user/signup" element={<Signup />} />
           <Route path="/user/login" element={<LoginPage />} />
-          <Route path="/user/logout" element={<LogoutPage />} />
-          <Route path="/user/modify" element={<ModifyPage />} />
           <Route path="/oauth/callback/kakao" element={<Kakao />} />
           <Route path="/oauth/callback/naver" element={<Naver />} />
-          <Route path="/mypage" element={<Mypage />} />
+          <Route path="/oauth/callback/google" element={<Google />} />
+          <Route path="/*" element={<ErrorPage />} />
+          <Route element={<PrivateRoute />}>
+            <Route path="/user/logout" element={<LogoutPage />} />
+            <Route path="/user/modify" element={<ModifyPage />} />
+            <Route path="/user/delete" element={<DeletePage />} />
+            <Route path="/mypage" element={<Mypage />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </>
