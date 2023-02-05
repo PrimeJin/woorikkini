@@ -31,6 +31,14 @@ public class AuthController {
     private final RefreshTokenRepository refreshTokenRepository;
     private final TokenProviderService tokenProvider;
 
+    @PostMapping("/token")
+    public ResponseEntity<Map<String, Object>> test () {
+        HttpStatus status = null;
+        Map<String, Object> resultMap = new HashMap<>();
+
+        return new ResponseEntity<Map<String, Object>>(resultMap, status);
+    }
+
     @PostMapping("/refresh")
     public ResponseEntity<Map<String, Object>> refreshToken (@Valid @RequestBody Map<String, String> requestBody) {
         HttpStatus status = null;

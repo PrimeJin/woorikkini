@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class ExitService {
     private RoomRepository roomRepository;
     private ExitRepository exitRepository;
@@ -20,9 +19,7 @@ public class ExitService {
     }
 
     public int addExitUser(String roomId, String userId) {
-        System.out.println("hihi");
         Room room = roomRepository.findByRoomId(Integer.parseInt(roomId));
-        System.out.println(room);
 
         if (room == null) {
             return 0;
@@ -34,7 +31,9 @@ public class ExitService {
 
     public int findExitUser(String roomId, String userId) {
         Exit exit = exitRepository.findByOutcaster(Integer.parseInt(userId));
-        if (exit == null || exit.getRoomId().getRoomId() != Integer.parseInt(roomId)){
+        if (exit == null){
+            return 0;
+        } else if(exit.getRoomId().getRoomId() != Integer.parseInt(roomId)){
             return 0;
         }
 

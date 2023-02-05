@@ -125,9 +125,9 @@ public class RoomController {
 
     @ApiOperation(value = "방 입장", notes = "사용자가 방 입장 시 사용자가 강제 퇴장 당한 유저라면 거절, " +
             "강퇴당한 유저가 아니라면 해당 방의 참여자 수를 1 증가시킨다.", response = Map.class)
-    @GetMapping("/enter/{roomId}/{userId}")
+    @PostMapping("/enter/{roomId}/{userId}")
     public ResponseEntity<?> enterRoom(@ApiParam(value = "입장할 방 번호", required = true)
-                                           @PathVariable String roomId, @PathVariable String userId, RoomEnterFormDto roomEnterFormDto) {
+                                           @PathVariable String roomId, @PathVariable String userId, @RequestBody RoomEnterFormDto roomEnterFormDto) {
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
 
@@ -144,7 +144,7 @@ public class RoomController {
                 resultMap.put("message", SUCCESS);
             }
         } else{
-            status = HttpStatus.OK;
+            status = HttpStatus.UNAUTHORIZED;
             resultMap.put("message", "denied");
         }
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
@@ -161,7 +161,7 @@ public class RoomController {
             status = HttpStatus.NOT_FOUND;
             resultMap.put("message", FAIL);
         } else {
-            int cnt = roomService.exitRoom(Integer.parseInt(userId));
+            int cnt = roomService.exitRoom(Integer.parseInt(roomId));
             if(cnt == 0){
                 status = HttpStatus.NOT_FOUND;
                 resultMap.put("message", FAIL);
