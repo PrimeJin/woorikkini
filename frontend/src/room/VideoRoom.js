@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import UserVideoComponent from './UserVideoComponent';
 import { OpenVidu } from 'openvidu-browser';
+
+import CenterLogo from '../styles/CenterLogo';
 import './UserVideo.css';
 import './VideoRoom.css';
 
@@ -22,10 +24,15 @@ class VideoRoom extends Component {
     this.state = {
       mySessionId: 'SessionA',
       myUserName: 'Participant' + Math.floor(Math.random() * 100),
-      session: undefined,
+      session: undefined, //현재 접속해있는 세션
       mainStreamManager: undefined, // 스트림 종합한 페이지의 메인 비디오
       publisher: undefined, //로컬 웹캠 스트림
       subscribers: [], //다른 사용자의 활성 웹캠 스트림
+      isEmpty: false, //세션이 비어있는지 아닌지
+      isHost: false, //
+      token: undefined, //accessToken
+      message: '', //메시지 단일입력
+      messages: [], //메시지 로그
     };
 
     //method
@@ -41,27 +48,105 @@ class VideoRoom extends Component {
   //컴포넌트 마운트 직후
   componentDidMount() {
     window.addEventListener('beforeunload', this.onbeforeunload);
+
+    const { roomId, nickName, token } = this.props; //props에서 초기값 물려받기
+
+    this.setState({
+      mySessionId: roomId,
+      myUserName: nickName,
+      token,
+    });
+
+    //this.joinSession(); //바로 방입장하려면 이 옵션을 활성화
   }
 
   //컴포넌트 언마운트 직전
   componentWillUnmount() {
+    window.location.reload(); //화면 새로고침
     window.removeEventListener('beforeunload', this.onbeforeunload);
+    //세션에 아무도 없으면 퇴장
+    if (this.state.isEmpty) {
+      this.leaveSession();
+    }
   }
 
   onbeforeunload(event) {
     this.leaveSession();
   }
 
+  //방 이름 폼에 적으면 반영
   handleChangeSessionId(e) {
     this.setState({
       mySessionId: e.target.value,
     });
   }
 
+  //유저 닉네임 폼에 적으면 반영(쓸일 없음)
   handleChangeUserName(e) {
     this.setState({
       myUserName: e.target.value,
     });
+  }
+
+  //chat input form 반영
+  handleChangeChatMessage(e) {
+    this.setState({
+      message: e.target.value,
+    });
+  }
+
+  //클릭해서 채팅보내기
+  sendMessageByClick() {
+    this.setState({
+      messages: [
+        ...this.state.messages,
+        {
+          userName: this.state.myUserName,
+          message: this.state.message,
+        },
+      ],
+    });
+
+    const mySession = this.state.session;
+
+    mySession.signal({
+      data: `${this.state.myUserName}, ${this.state.message}`, //signal의 실질적 메시지
+      to: [], //Session.on('signal')을 subscribe한 참여자들에게 전달됨. []거나 undefined일 경우, 전체 참여자에게 전달됨
+      type: 'chat', //signal 타입. Session.on('signal:type') 이벤트를 subscribe한 참여자들에게 전달
+    });
+
+    //message창 초기화
+    this.setState({
+      message: '',
+    });
+  }
+
+  //엔터쳐서 채팅보내기
+  sendMessageByEnter(e) {
+    if (e.key === 'Enter') {
+      this.setState({
+        messages: [
+          ...this.state.messages,
+          {
+            userName: this.state.myUserName,
+            message: this.state.message,
+          },
+        ],
+      });
+
+      const mySession = this.state.session;
+
+      mySession.signal({
+        data: `${this.state.myUserName}, ${this.state.message}`, //signal의 실질적 메시지
+        to: [], //Session.on('signal')을 subscribe한 참여자들에게 전달됨. []거나 undefined일 경우, 전체 참여자에게 전달됨
+        type: 'chat', //signal 타입. Session.on('signal:type') 이벤트를 subscribe한 참여자들에게 전달
+      });
+
+      //message창 초기화
+      this.setState({
+        message: '',
+      });
+    }
   }
 
   //선택한 화면(stream)을 메인으로 띄우기
@@ -82,6 +167,27 @@ class VideoRoom extends Component {
         subscribers: subscribers,
       });
     }
+  }
+
+  //현재 세션의 참가자 정보 획득
+  updateHost() {
+    return new Promise((resolve, reject) => {
+      axios({
+        method: 'GET',
+        url: `${'https://i8a804.p.ssafy.io:8443/api/sessions/'}${this.state.mySessionId}/connection`,
+        headers: {
+          Authorization: `Basic ${btoa(`OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`)}`,
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET,POST',
+        },
+      })
+        .then((response) => {
+          let content = response.content;
+          content.sort((a, b) => a.createdAt - b.createdAt);
+          resolve(content[0].clientData);
+        })
+        .catch((error) => reject(error));
+    });
   }
 
   //submit버튼을 클릭하면 방(세션)에 참여
@@ -112,11 +218,48 @@ class VideoRoom extends Component {
           console.log('subscribers ' + this.subscribers); //등록 확인용
         });
 
+        mySession.on('signal:chat', (event) => {
+          let chatdata = event.data.split(','); //위에서 송신한 `${this.state.myUserName}, ${this.state.message}`를 분리
+
+          if (chatdata[0] !== this.state.myUserName) {
+            this.setState({
+              messages: [
+                ...this.state.messages,
+                {
+                  userName: chatdata[0],
+                  text: chatdata[1],
+                },
+              ],
+            });
+          }
+        });
+
         //사용자가 화상회의를 떠나면 Session객체에서 소멸된 stream을 받아와
         //subscribers 상태값 업데이트
         mySession.on('streamDestroyed', (event) => {
+          this.updateHost().then((clientData) => {
+            const host = JSON.parse(clientData).clientData;
+
+            mySession
+              .signal({
+                data: host,
+                to: [],
+                type: 'update-host',
+              })
+              .then(() => {})
+              .catch((error) => {});
+          });
+
           // subscribers 배열에서 스트림을 제거합니다
           this.deleteSubscriber(event.stream.streamManager);
+        });
+
+        mySession.on('signal:update-host', (event) => {
+          if (this.state.userName === event.data) {
+            this.setState({
+              isHost: true,
+            });
+          }
         });
 
         // 모든 비동기 오류마다 Session 객체에 의해 트리거 되는 이벤트
@@ -208,8 +351,6 @@ class VideoRoom extends Component {
         );
 
         if (newVideoDevice.length > 0) {
-          // Creating a new publisher with specific videoSource
-          // In mobile devices the default and first camera is the front one
           var newPublisher = this.OV.initPublisher(undefined, {
             videoSource: newVideoDevice[0].deviceId,
             publishAudio: true,
@@ -217,7 +358,6 @@ class VideoRoom extends Component {
             mirror: true,
           });
 
-          //newPublisher.once("accessAllowed", () => {
           await this.state.session.unpublish(this.state.mainStreamManager);
 
           await this.state.session.publish(newPublisher);
@@ -239,11 +379,9 @@ class VideoRoom extends Component {
 
     return (
       <div className="container">
+        <CenterLogo />
         {this.state.session === undefined ? (
           <div id="join">
-            <div id="img-div">
-              <img src="resources/images/openvidu_grey_bg_transp_cropped.png" alt="OpenVidu logo" />
-            </div>
             <div id="join-dialog" className="jumbotron vertical-center">
               <h1> 참여하기 </h1>
               <form className="form-group" onSubmit={this.joinSession}>
