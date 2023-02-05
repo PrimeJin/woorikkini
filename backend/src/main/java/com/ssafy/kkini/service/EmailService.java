@@ -41,4 +41,17 @@ public class EmailService {
 
         this.sendEmail(email, subject, text);
     }
+
+    public void sendEmailPasswordCode(String email, String passwordCode) {
+        String subject = "[우리끼니] 비밀번호를 변경해주세요.";
+
+        StringBuilder sb = new StringBuilder();
+        //서버주소
+        sb.append("<a href='https://i8a804.p.ssafy.io/user/password?userEmail=");
+        sb.append(email);
+        sb.append("&passwordCodeContent=");
+        sb.append(passwordCode);
+        sb.append("'>비밀번호 변경페이지</a>");
+        this.sendEmail(email, subject, sb.toString(), true);
+    }
 }

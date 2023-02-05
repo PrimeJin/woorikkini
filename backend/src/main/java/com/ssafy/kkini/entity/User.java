@@ -48,12 +48,14 @@ public class User extends BaseEntity {
     @ColumnDefault("0")
     private int userReported;
     @Builder
-    public User(String userEmail, String userName, String userPassword,String userNickname,String userGender, int userBirthYear, AuthProvider userProvider,String userProviderId){
+    public User(int userId, String userEmail, String userName, String userPassword,String userNickname,String userGender,Timestamp userActivation, int userBirthYear, AuthProvider userProvider,String userProviderId){
+        this.userId = userId;
         this.userEmail = userEmail;
         this.userName = userName;
         this.userPassword = userPassword;
         this.userNickname = userNickname;
         this.userGender = userGender;
+        this.userActivation = userActivation;
         this.userRole = "ROLE_USER";
         this.userBirthYear = userBirthYear;
         this.userProvider = userProvider;
