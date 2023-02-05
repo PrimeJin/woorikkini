@@ -14,6 +14,7 @@ import DeletePage from './pages/DeletePage';
 import ErrorPage from './pages/ErrorPage';
 import PwFind from './components/PwFind';
 import PwChange from './components/PwChange';
+import VideoRoom from './room/VideoRoom';
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
           <Route path="/oauth/callback/kakao" element={<Kakao />} />
           <Route path="/oauth/callback/naver" element={<Naver />} />
           <Route path="/oauth/callback/google" element={<Google />} />
+          <Route path="/room" element={<VideoRoom />} />
           {/* <Route path="/admin/notice" element={<Notice />} />
           <Route path="/admin/notice/:noticeId" element={<NoticeDetail />} />
           <Route path="/admin/notice/create" element={<NoticeCreate />} /> */
