@@ -4,20 +4,24 @@ import './UpdateCard.css';
 import axios from 'axios';
 import Modal from '../Modal';
 
-function UpdateCard({ currentCard }) {
+function UpdateCard(props) {
   // props 데이터 타입 -> 설정 안하니까 오류났음
   // UpdateCard.propsTypes = {
   //   currentCard: PropTypes.node.isRequired,
   //   cardUpdate: PropTypes.node.isRequired,
   // };
+  const currentCard = props.currentCard;
+  const getCardList = props.getCardList;
+  const update = props.update;
+  console.log(props);
+  console.log('지금 이거 수정할거야', currentCard);
+  console.log('업데이트 할거야?', update);
 
   // useState를 사용하여 open상태를 변경한다. (open일때 true로 만들어 열리는 방식)
   const [modalOpen, setModalOpen] = useState(false);
 
   // 바로 모달창 띄우기
-  useEffect(() => {
-    setModalOpen(true);
-  });
+  // useEffect(() => {
 
   const closeModal = () => {
     setModalOpen(false);
@@ -59,7 +63,7 @@ function UpdateCard({ currentCard }) {
 
     // 서버로 전달
     axios
-      .patch('http:// /memory/', {
+      .patch('http://i8a804.p.ssafy.io:8040/memory/', {
         data: {
           img: updateFileData,
           title: updateTitleData,
@@ -69,6 +73,8 @@ function UpdateCard({ currentCard }) {
       .then(() => {
         setModalOpen(false);
         alert('추억이 수정되었습니다.');
+        getCardList();
+        // setUpdate(!update);
       })
       .catch((err) => {
         console.log(err);
@@ -92,30 +98,26 @@ function UpdateCard({ currentCard }) {
             id="profileImg"
             onChange={onFile}
             ref={imgRef}
-          ></input>
+          />
           <div className="photo">
-            {updateFileData.map((item, id) => {
-              return (
-                <div key={id} style={{ width: 80, height: 60 }}>
-                  <img src={item} style={{ width: 50, height: 60 }} />
-                  <div onClick={() => deleteImg(id)}>X</div>
-                </div>
-              );
-            })}
+            {updateFileData &&
+              updateFileData.map((item, id) => {
+                return (
+                  <div key={id} style={{ width: 80, height: 60 }}>
+                    <img src={item} style={{ width: 50, height: 60 }} />
+                    <div onClick={() => deleteImg(id)}>X</div>
+                  </div>
+                );
+              })}
           </div>
-          <input
-            value={updateTitleData}
-            onChange={onTitle}
-            style={{ width: 300 }}
-            placeholder="제목을 입력하세요."
-          ></input>
+          <input value={updateTitleData} onChange={onTitle} style={{ width: 300 }} placeholder="제목을 입력하세요." />
           <br />
           <textarea
             value={updateContentData}
             onChange={onContent}
             style={{ width: 300, height: 100 }}
             placeholder="내용을 입력하세요."
-          ></textarea>
+          />
         </form>
       </Modal>
     </React.Fragment>

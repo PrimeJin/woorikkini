@@ -50,7 +50,6 @@ function Form() {
           console.log(err);
         });
     }
-    console.log('이메일 인증 ->', emailCheck);
   };
   // 인증 코드 입력
   const onCode = (event) => {
@@ -77,7 +76,6 @@ function Form() {
           alert('다시 시도해주시기 바랍니다.');
         });
     }
-    console.log('코드 인증 ->', codeCheck);
   };
   // 비밀번호 입력
   const onPassword = (event) => {
@@ -125,12 +123,15 @@ function Form() {
         method: 'GET',
       })
         .then((res) => {
-          console.log('??', res.data.messsage);
-          if (res.data.messsage === 'success') {
-            console.log('!!');
+          console.log('??', res.data.message);
+          if (res.data.message === 'success') {
             setPossible(true);
+            setImpossible(false);
+            console.log('!!!', possible);
           } else {
             setImpossible(true);
+            setPossible(false);
+            alert('중복되는 닉네임 입니다.');
           }
         })
         .catch((err) => {
@@ -194,18 +195,19 @@ function Form() {
   return (
     <form className="signup-form">
       <p className="text-type">회원가입</p>
-      <div style={{ justifyContent: 'center', display: 'flex' }}>
+      <div style={{ position: 'relative' }}>
         <input type="email" value={Email} onChange={onEmail} className="input-form-top" placeholder="이메일" required />
         <button type="click" className="check-btn" onClick={onEmailClick} value={emailCheck}>
           코드 전송
         </button>
       </div>
       <p></p>
-
-      <input type="code" value={Code} onChange={onCode} className="input-form" placeholder="인증코드" required />
-      <button className="check-btn" onClick={onCodeClick} value={codeCheck}>
-        인증하기
-      </button>
+      <div style={{ position: 'relative' }}>
+        <input type="code" value={Code} onChange={onCode} className="input-form" placeholder="인증코드" required />
+        <button className="check-btn" onClick={onCodeClick} value={codeCheck}>
+          인증하기
+        </button>
+      </div>
 
       <p></p>
       <input
@@ -216,7 +218,7 @@ function Form() {
         placeholder="비밀번호"
         required
       />
-      {pwVisible ? <span>* 8 ~ 12자의 비밀번호를 입력해야 합니다.</span> : <p></p>}
+      {pwVisible ? <span className="impossible">* 8 ~ 12자의 비밀번호를 입력해야 합니다.</span> : <p></p>}
       <input
         type="password"
         value={ConfirmPassword}
@@ -225,18 +227,27 @@ function Form() {
         placeholder="비밀번호 확인"
         required
       />
-      {pwcheckVisible ? <span>* 비밀번호가 일치하지 않습니다.</span> : <p></p>}
+      {pwcheckVisible ? <span className="impossible">* 비밀번호가 일치하지 않습니다.</span> : <p></p>}
       <input type="text" value={Name} onChange={onName} className="input-form" placeholder="이름" required />
       <p></p>
-      <input type="text" value={Nickname} onChange={onNickname} className="input-form" placeholder="닉네임" required />
-      <button className="check-btn" onClick={onNickCheck}>
-        중복 확인
-      </button>
-      {nickVisible ? <span>* 최대 10자의 닉네임을 사용할 수 있습니다.</span> : <p></p>}
-      {possible && <span>* 사용할 수 있는 닉네임 입니다.</span>}
-      {impossible && <span>* 중복되는 닉네임 입니다.</span>}
-      {/* <p></p> */}
-      <input type="date" value={Date} onChange={onDate} className="input-form" placeholder="생년월일" required />
+      <div style={{ position: 'relative' }}>
+        <input
+          type="text"
+          value={Nickname}
+          onChange={onNickname}
+          className="input-form"
+          placeholder="닉네임"
+          required
+        />
+        <button className="check-btn" onClick={onNickCheck}>
+          중복 확인
+        </button>
+      </div>
+      {nickVisible && <span className="impossible">* 최대 10자의 닉네임을 사용할 수 있습니다.</span>}
+      {possible && <span className="possible">* 사용할 수 있는 닉네임 입니다.</span>}
+      {impossible && <span className="impossible">* 중복되는 닉네임 입니다.</span>}
+      <p></p>
+      <input type="date" value={Date} onChange={onDate} className="date-input" data-placeholder="생년월일" required />
       <p></p>
       <div className="check-box">
         <p className="gender">성별</p>

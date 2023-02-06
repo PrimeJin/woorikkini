@@ -39,12 +39,20 @@
   margin-top: 2%;
 }
 
-form span {
+.impossible {
   justify-content: left;
   display: flex;
   font-weight: 100;
   font-size: 2px;
   color: red;
+  padding-left: 18%;
+}
+.possible {
+  justify-content: left;
+  display: flex;
+  font-weight: 100;
+  font-size: 2px;
+  color: blue;
   padding-left: 18%;
 }
 
@@ -72,8 +80,34 @@ form span {
   font-weight: 500;
   font-size: 13px;
   line-height: 27px;
+  /* padding-left: 4%;
+  padding-right: 4%; */
+  padding: 0 15px;
+}
+.date-input {
+  border: none;
+  width: 230px;
+  height: 35px;
+  background: #ffffff;
+  border-radius: 10px;
+  font-family: 'NanumSquareRound';
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 27px;
   padding-left: 4%;
   padding-right: 4%;
+  /* -webkit-appearance: none;
+  display: none; */
+}
+
+input[type='date']::before {
+  content: attr(data-placeholder);
+  width: 100%;
+}
+
+input[type='date']:focus::before,
+input[type='date']:valid::before {
+  display: none;
 }
 
 .check-box {
@@ -138,7 +172,7 @@ label input {
   align-items: center;
   border: none;
   position: absolute;
-  left: 117em;
+  /* left: 117em; */
   margin: 6px;
 
   width: 60px;
@@ -151,4 +185,6 @@ label input {
   font-family: 'NanumSquareRound';
   justify-content: center;
   color: #090936;
+  top: 0;
+  right: 50px;
 }

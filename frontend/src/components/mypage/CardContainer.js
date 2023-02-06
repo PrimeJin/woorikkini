@@ -2,6 +2,7 @@ import './CardContainer.css';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwipeCore, { Navigation, Pagination, Autoplay } from 'swiper';
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import axios from 'axios';
 import CreateCard from './CreateCard';
 import UpdateCard from './UpdateCard';
@@ -14,43 +15,40 @@ import 'swiper/components/pagination/pagination.min.css';
 // 카드
 const SwiperContainer = () => {
   SwipeCore.use([Navigation, Pagination, Autoplay]);
-  const [cardList, setCardList] = useState([{}]);
+  const [cardList, setCardList] = useState([]);
+
+  const userId = useSelector((state) => state.user.id);
 
   // 전체 카드 목록 보여주기
-  const getCardList = async () => {
+  function getCardList() {
     try {
-      const res = await axios.get('https://.../memory/');
-      const inputData = res.data.map((rowData) => ({
-        id: rowData.memory_id,
-        img: rowData.save_filename,
-        date: rowData.memory_reg_date,
-        title: rowData.memory_title,
-        content: rowData.memory_content,
-      }));
-      setCardList(cardList.concat(inputData));
+      // axios.get('http://i8a804.p.ssafy.io:8040/memory');
+      console.log('새로운 목록 불러오기');
+      axios({
+        url: `http://i8a804.p.ssafy.io:8040/memory?userId=${userId}`,
+        method: 'GET',
+      }).then((res) => {
+        console.log(res);
+        const response = res;
+        const inputData = response.data.memoryList.map((rowData) => ({
+          id: rowData.memoryId,
+          // img: rowData.save_filename,
+          date: rowData.createdTime.slice(0, 10),
+          title: rowData.memoryTitle,
+          content: rowData.memoryContent,
+        }));
+        // setCardList(cardList.concat(inputData));
+        setCardList(inputData);
+      });
     } catch (e) {
-      console.error(e);
+      console.error('*', e);
     }
-  };
+  }
 
   // 페이지 들어가면 바로 실행
   useEffect(() => {
     getCardList();
   }, []);
-
-  // // 카드 추가하기
-  // const addCard = (event) => {
-  //   console.log('$', event);
-
-  //   // 새롭게 배열 데이터를 추가하는 함수
-  //   const newCard = {
-  //     id: cardList.length + 1,
-  //     img: event.img,
-  //     title: event.title,
-  //     content: event.content,
-  //   };
-  //   setCardList([...cardList, newCard]);
-  // };
 
   // 카드 삭제하기
   const cardDelete = (id) => {
@@ -58,13 +56,14 @@ const SwiperContainer = () => {
     // = card.id 가 id 인 것을 제거함
     // setCardList(cardList.filter((card) => card.id !== id));
     axios
-      .delete(`http://.../memory/${id}`, {
+      .delete(`http://i8a804.p.ssafy.io:8040/memory/${id}`, {
         data: {
           memoryId: id,
         },
       })
       .then(() => {
         alert('추억이 삭제되었습니다.');
+        getCardList();
       })
       .catch((err) => {
         console.log(err);
@@ -75,13 +74,16 @@ const SwiperContainer = () => {
   // 카드 수정하기
   const [update, setUpdate] = useState(false);
   const [currentCard, setCurrentCard] = useState({});
+  const [modalOpen, setModalOpen] = useState(false);
   const cardUpdate = (data) => {
     setUpdate(!update);
     const card = data;
     setCurrentCard(card);
+    console.log('수정할거야', update);
   };
-
-  console.log('카드 리스트 ->', cardList);
+  const openModal = () => {
+    setModalOpen(true);
+  };
 
   return (
     <>
@@ -126,11 +128,20 @@ const SwiperContainer = () => {
                 </div>
               </Swiper>
               <div>
-                <button onClick={() => cardUpdate(data)}>수정</button>
+                <button
+                  onClick={() => {
+                    cardUpdate(data);
+                    openModal();
+                  }}
+                >
+                  수정
+                </button>
                 {update ? (
                   <UpdateCard
                     currentCard={currentCard}
-                    cardUpdate={cardUpdate}
+                    getCardList={getCardList}
+                    update={update}
+                    modalOpen={modalOpen}
                     // cardListUpdate={cardListUpdate}
                   ></UpdateCard>
                 ) : (
@@ -144,7 +155,7 @@ const SwiperContainer = () => {
             </div>
           );
         })}
-        <CreateCard></CreateCard>
+        <CreateCard getCardList={getCardList}></CreateCard>
       </div>
     </>
   );

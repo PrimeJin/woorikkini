@@ -1,6 +1,6 @@
 .logo {
   text-align: center;
-  font-family: "NanumSquareRound";
+  font-family: 'NanumSquareRound';
   font-weight: 1000;
   font-size: 80px;
   color: #eb6123;
@@ -13,7 +13,7 @@
   justify-content: center;
 }
 
-form {
+/* form {
   justify-content: center;
   width: 482px;
   height: 422px;
@@ -29,7 +29,7 @@ form {
     0px 4.5288px 3.62304px rgba(0, 0, 0, 0.0243888),
     0px 1.99324px 1.59459px rgba(0, 0, 0, 0.0167767);
   border-radius: 50px;
-}
+} */
 
 .userInfo {
   width: 384px;
@@ -38,7 +38,7 @@ form {
   background: #ffffff;
   border-radius: 10px;
   font-size: 20px;
-  font-family: "NanumSquareRound";
+  font-family: 'NanumSquareRound';
   font-style: normal;
   font-weight: 300;
   border: none;
@@ -48,7 +48,7 @@ form {
   justify-content: center;
   margin-top: 10%;
   margin-bottom: 5%;
-  font-family: "NanumSquareRound";
+  font-family: 'NanumSquareRound';
   font-style: normal;
   font-weight: 800;
   font-size: 32px;

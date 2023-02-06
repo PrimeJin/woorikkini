@@ -4,9 +4,10 @@ import './CreateCard.css';
 import axios from 'axios';
 import Modal from '../Modal';
 
-function CreateCard() {
+function CreateCard(props) {
   // store에서 현재 로그인한 사용자의 userId 가져오기
   const userId = useSelector((state) => state.user.id);
+  const getCardList = props.getCardList;
 
   // useState를 사용하여 open상태를 변경한다. (open일때 true로 만들어 열리는 방식)
   const [modalOpen, setModalOpen] = useState(false);
@@ -20,23 +21,32 @@ function CreateCard() {
 
   const [fileData, setFileData] = useState([]);
   const imgRef = useRef();
+  const [previewData, setPreviewData] = useState([]);
   const [titleData, setTitleData] = useState('');
   const [contentData, setContentData] = useState('');
 
-  const onFile = () => {
-    const file = imgRef.current.files[0];
+  const onFile = (event) => {
+    console.log('사진', event.target.files[0]);
+    const file = event.target.files[0];
+    setFileData([...fileData, file]);
+    const img = imgRef.current.files[0];
     const reader = new FileReader();
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(img);
     reader.onloadend = () => {
       // 이미지 띄울 수 있게 변경한 값 넣기
       const imageFile = reader.result;
       // 리스트에 추가하기
-      setFileData([...fileData, imageFile]);
+      setPreviewData([...previewData, imageFile]);
     };
   };
 
   const deleteImg = (id) => {
+    console.log('삭제할거야', id);
+    // console.log('사진리스트', previewData[id]);
+    setPreviewData(previewData.filter((img) => previewData.indexOf(img) !== id));
     setFileData(fileData.filter((img) => fileData.indexOf(img) !== id));
+    console.log('같은건가?', previewData.indexOf(previewData[id]));
+    console.log('사진리스트 삭제 후', previewData);
   };
 
   const onTitle = (event) => {
@@ -48,27 +58,26 @@ function CreateCard() {
 
   const memoryRegister = (event) => {
     event.preventDefault();
-
-    // const formData = { img: fileData, title: titleData, content: contentData };
-    // addCard(formData);
-    // setFileData([]);
-    // setTitleData('');
-    // setContentData('');
-    // setModalOpen(false);
-
+    const formData = new FormData();
+    formData.append('memoryImgFiles', fileData);
+    const cardData = {
+      userId: userId,
+      memoryImgFiles: formData,
+      memoryTitle: titleData,
+      memoryContent: contentData,
+    };
     // 서버로 전달
-    axios
-      .post('http://i8a804.p.ssafy.io:8040/memory', {
-        data: {
-          userId: userId,
-          memoryImgFile: fileData,
-          memoryTitle: titleData,
-          memoryContent: contentData,
-        },
-      })
+    console.log('새로운 추억', cardData);
+    axios({
+      url: 'http://i8a804.p.ssafy.io:8040/memory',
+      method: 'POST',
+      data: cardData,
+      // headers: { 'Content-Type': 'multipart/form-data' },
+    })
       .then(() => {
         setModalOpen(false);
         alert('새로운 추억이 등록되었습니다.');
+        getCardList();
       })
       .catch((err) => {
         console.log(err);
@@ -87,7 +96,7 @@ function CreateCard() {
       </div>
       <Modal open={modalOpen} close={closeModal} register={memoryRegister} header="기록하기">
         {/* // Modal.js <main> {props.children} </main>에 내용이 입력된다.  */}
-        <form className="memory">
+        <form className="memory" encType="multipart/form-data">
           {/* <p>{fileData}</p>  */}
           <input
             // value={fileData}
@@ -100,7 +109,7 @@ function CreateCard() {
           />
           <div className="photo">
             {/* {imgFile ?  */}
-            {fileData.map((item, id) => {
+            {previewData.map((item, id) => {
               return (
                 <div key={id} style={{ width: 80, height: 60 }}>
                   <img src={item} style={{ width: 50, height: 60 }} />
