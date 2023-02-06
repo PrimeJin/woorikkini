@@ -8,11 +8,13 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +22,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/memory")
+@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE})
 public class MemoryController {
 
     private static final String SUCCESS = "success";
@@ -33,16 +36,23 @@ public class MemoryController {
                                                      MemoryCreateFormDto memoryCreateFormDto){
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
-        Memory createMemory = memoryService.createMemory(memoryCreateFormDto);
-
-        if(createMemory != null){
-            resultMap.put("message", SUCCESS);
-            status = HttpStatus.ACCEPTED;
-        }
-        else {
+        Memory createMemory = null;
+        try {
+            createMemory = memoryService.createMemory(memoryCreateFormDto);
+            if(createMemory != null){
+                resultMap.put("message", SUCCESS);
+                status = HttpStatus.ACCEPTED;
+            }
+            else {
+                resultMap.put("message", FAIL);
+                status = HttpStatus.BAD_REQUEST;
+            }
+        } catch (IOException e) {
             resultMap.put("message", FAIL);
             status = HttpStatus.BAD_REQUEST;
         }
+
+
         return new ResponseEntity<Map<String,Object>>(resultMap,status);
     }
     @ApiOperation(value = "추억카드 수정", notes = "추억카드 수정")
@@ -52,16 +62,24 @@ public class MemoryController {
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
 
-        Memory updateMemory = memoryService.updateMemory(memoryUpdateFormDto);
+        Memory updateMemory = null;
+        try {
+            updateMemory = memoryService.updateMemory(memoryUpdateFormDto);
+            if(updateMemory != null){
+                resultMap.put("message", SUCCESS);
+                status = HttpStatus.ACCEPTED;
+            }
+            else {
+                resultMap.put("message", FAIL);
+                status = HttpStatus.BAD_REQUEST;
+            }
 
-        if(updateMemory != null){
-            resultMap.put("message", SUCCESS);
-            status = HttpStatus.ACCEPTED;
-        }
-        else {
+        } catch (IOException e) {
             resultMap.put("message", FAIL);
             status = HttpStatus.BAD_REQUEST;
         }
+
+
 
         return new ResponseEntity<Map<String,Object>>(resultMap,status);
     }
