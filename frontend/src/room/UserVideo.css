@@ -1,9 +1,17 @@
+/* 비디오 개별 화면*/
 video {
-  width: 100%;
+  width: 50%;
   height: auto;
   float: left;
   cursor: pointer;
 }
+
+/* 비디오 전체*/
+.streamcomponent {
+  display: flex;
+  justify-content: left;
+}
+
 .streamcomponent div {
   position: absolute;
   background: #f8f8f8;

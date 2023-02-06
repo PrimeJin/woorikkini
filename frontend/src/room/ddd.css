@@ -1,0 +1,392 @@
+/* ChatWrapper */
+/* 
+position: absolute;
+width: 372px;
+height: 708px;
+left: 982px;
+top: 161px;
+
+background: #FEFAEF;
+box-shadow: 0px 100px 80px rgba(0, 0, 0, 0.07), 0px 41.7776px 33.4221px rgba(0, 0, 0, 0.0503198), 0px 22.3363px 17.869px rgba(0, 0, 0, 0.0417275), 0px 12.5216px 10.0172px rgba(0, 0, 0, 0.035), 0px 6.6501px 5.32008px rgba(0, 0, 0, 0.0282725), 0px 2.76726px 2.21381px rgba(0, 0, 0, 0.0196802);
+border-radius: 50px 0px 0px 50px; */
+
+/* ChatLogBox */
+
+/* position: absolute;
+width: 327px;
+height: 433px;
+left: 1008px;
+top: 248px;
+
+background: #FFFFFF;
+border-radius: 50px; */
+
+/* ChatInputForm */
+/* 
+position: absolute;
+width: 327px;
+height: 72px;
+left: 1008px;
+top: 772px;
+
+background: #ffffff;
+border-radius: 50px; */
+
+/* OtherChatLog2 */
+
+position: absolute;
+width: 137px;
+height: 45px;
+left: 1028px;
+top: 325px;
+
+background: #d6ebfc;
+border-radius: 100px;
+
+/* OtherChatLog */
+
+position: absolute;
+width: 137px;
+height: 46px;
+left: 1028px;
+top: 417px;
+
+background: #d6ebfc;
+border-radius: 100px;
+
+/* 안녕하세요 */
+
+position: absolute;
+width: 224px;
+height: 52px;
+left: 984px;
+top: 414px;
+
+font-family: 'NanumSquare';
+font-style: normal;
+font-weight: 400;
+font-size: 20px;
+line-height: 23px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #090936;
+
+/* User2 */
+
+position: absolute;
+width: 223px;
+height: 51px;
+left: 942px;
+top: 378px;
+
+font-family: 'NanumSquare';
+font-style: normal;
+font-weight: 700;
+font-size: 20px;
+line-height: 23px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #090936;
+
+/* Me */
+
+position: absolute;
+width: 223px;
+height: 51px;
+left: 1185px;
+top: 446px;
+
+font-family: 'NanumSquare';
+font-style: normal;
+font-weight: 700;
+font-size: 20px;
+line-height: 23px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #090936;
+
+/* 안녕하세요 */
+
+position: absolute;
+width: 224px;
+height: 52px;
+left: 984px;
+top: 414px;
+
+font-family: 'NanumSquare';
+font-style: normal;
+font-weight: 400;
+font-size: 20px;
+line-height: 23px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #090936;
+
+/* MyChatLog */
+
+position: absolute;
+width: 137px;
+height: 46px;
+left: 1182px;
+top: 489px;
+
+background: #d6ebfc;
+border-radius: 100px;
+
+/* 안녕하세요! */
+
+position: absolute;
+width: 224px;
+height: 52px;
+left: 1138px;
+top: 486px;
+
+font-family: 'NanumSquare';
+font-style: normal;
+font-weight: 400;
+font-size: 20px;
+line-height: 23px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #090936;
+
+/* 채팅 */
+
+position: absolute;
+width: 107px;
+height: 24px;
+left: 1097px;
+top: 196px;
+
+font-family: 'NanumSquareRound';
+font-style: normal;
+font-weight: 800;
+font-size: 36px;
+line-height: 41px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #090936;
+
+/* image 78 */
+
+position: absolute;
+width: 46px;
+height: 45px;
+left: 1192px;
+top: 186px;
+
+background: url(image.png);
+
+/* image 83 */
+
+position: absolute;
+width: 67px;
+height: 69px;
+left: 1254px;
+top: 924px;
+
+background: url(image.png);
+
+/* 방 나가기 */
+
+position: absolute;
+width: 117px;
+height: 26px;
+left: 1229px;
+top: 893px;
+
+font-family: 'NanumSquareRound';
+font-style: normal;
+font-weight: 800;
+font-size: 20px;
+line-height: 23px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #090936;
+
+/* ChatSendButton */
+
+position: absolute;
+width: 111px;
+height: 44px;
+left: 1208px;
+top: 786px;
+
+background: rgba(9, 9, 54, 0.85);
+border-radius: 50px;
+
+/* 전송하기 */
+
+position: absolute;
+width: 83px;
+height: 20px;
+left: 1222px;
+top: 798px;
+
+font-family: 'NanumSquareRound';
+font-style: normal;
+font-weight: 800;
+font-size: 16px;
+line-height: 18px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #ffffff;
+
+/* ChatSendTo */
+
+position: absolute;
+width: 327px;
+height: 52px;
+left: 1008px;
+top: 703px;
+
+background: #ff8d89;
+border-radius: 50px;
+
+/* 모두에게 */
+
+position: absolute;
+width: 167px;
+height: 21px;
+left: 1088px;
+top: 718px;
+
+font-family: 'NanumSquareRound';
+font-style: normal;
+font-weight: 800;
+font-size: 24px;
+line-height: 27px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #ffffff;
+
+/* ↓ */
+
+position: absolute;
+width: 24px;
+height: 21px;
+left: 1288px;
+top: 720px;
+
+font-family: 'NanumSquareRound';
+font-style: normal;
+font-weight: 800;
+font-size: 32px;
+line-height: 36px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #ffffff;
+
+/* 입력하세요. */
+
+position: absolute;
+width: 115px;
+height: 21px;
+left: 1039px;
+top: 797px;
+
+font-family: 'NanumSquareRound';
+font-style: normal;
+font-weight: 300;
+font-size: 24px;
+line-height: 27px;
+
+color: rgba(0, 0, 0, 0.5);
+
+/* ChatToggle */
+
+position: absolute;
+width: 16px;
+height: 29px;
+left: 1311px;
+top: 193px;
+
+background: #090936;
+border: 7px solid #090936;
+
+/* Rectangle 326 */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 507px;
+height: 78px;
+left: 258px;
+top: 759px;
+
+background: #ffffff;
+border: 1px solid #000000;
+box-shadow: 0px 100px 80px rgba(0, 0, 0, 0.07), 0px 41.7776px 33.4221px rgba(0, 0, 0, 0.0503198),
+  0px 22.3363px 17.869px rgba(0, 0, 0, 0.0417275), 0px 12.5216px 10.0172px rgba(0, 0, 0, 0.035),
+  0px 6.6501px 5.32008px rgba(0, 0, 0, 0.0282725), 0px 2.76726px 2.21381px rgba(0, 0, 0, 0.0196802);
+border-radius: 40px;
+
+/* image 104 */
+
+position: absolute;
+width: 46px;
+height: 50px;
+left: 305px;
+top: 772px;
+
+background: url(image.png);
+
+/* image 105 */
+
+position: absolute;
+width: 64px;
+height: 70px;
+left: 372px;
+top: 762px;
+
+background: url(image.png);
+
+/* image 106 */
+
+position: absolute;
+width: 55px;
+height: 60px;
+left: 467px;
+top: 767px;
+
+background: url(image.png);
+
+/* image 107 */
+
+position: absolute;
+width: 73px;
+height: 80px;
+left: 549px;
+top: 757px;
+
+background: url(image.png);
+
+/* image 108 */
+
+position: absolute;
+width: 73px;
+height: 80px;
+left: 659px;
+top: 757px;
+
+background: url(image.png);
