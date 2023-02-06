@@ -56,7 +56,7 @@ const LoginPage = () => {
       .then((response) => {
         //요청 응답이 오면 응답상태를 체크
         //response.status가 true면 응답이 200번대(성공)
-        if (response.status / 100 === 2) {
+        if (response.status === 202) {
           console.log(response);
           //Cookie에 Refresh Token 저장
           setRefreshToken(response.data.refreshToken);
@@ -117,8 +117,8 @@ const LoginPage = () => {
               placeholder="비밀번호를 입력하세요"
               {...register('userPassword', {
                 minLength: {
-                  value: 8,
-                  message: '8자리 이상 비밀번호를 사용해주세요.',
+                  value: 4,
+                  message: '4자리 이상 비밀번호를 사용해주세요.',
                 },
               })}
             />
