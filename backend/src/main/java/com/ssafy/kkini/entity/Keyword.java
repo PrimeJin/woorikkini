@@ -25,7 +25,5 @@ public class Keyword {
     @Column(length = 30)
     private String keyword;
 
-    @OneToMany(mappedBy = "keywordId", fetch = FetchType.LAZY)
-    private List<RoomKeyword> roomKeywords;
 
 }
