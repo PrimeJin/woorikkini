@@ -13,7 +13,7 @@ public interface RoomRepository extends JpaRepository<Room, Long>, RoomCustomRep
     Room findByRoomId(int roomId);
     @Modifying(clearAutomatically = true)
     @Transactional
-    @Query("update Room r set r.roomRecentUser = r.roomRecentUser + 1 where r.roomId=:roomId")
+    @Query("update Room r set r.roomRecentUser = r.roomRecentUser + 1 where r.roomId=:roomId and r.roomRecentUser < r.roomLimitUser")
     int increaseRecentUserInRoom(int roomId);
 
 

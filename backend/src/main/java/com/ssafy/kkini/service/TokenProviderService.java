@@ -3,8 +3,10 @@ package com.ssafy.kkini.service;
 import com.ssafy.kkini.config.AppProperties;
 import com.ssafy.kkini.dto.UserPrincipalDto;
 import com.ssafy.kkini.entity.RefreshToken;
+import com.ssafy.kkini.entity.User;
 import com.ssafy.kkini.exception.TokenValidFailedException;
 import com.ssafy.kkini.repository.RefreshTokenRepository;
+import com.ssafy.kkini.repository.UserRepository;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +27,10 @@ public class TokenProviderService {
     private RefreshTokenRepository refreshTokenRepository;
     @Autowired
     CustomUserDetailsService customUserDetailsService;
+
+    @Autowired
+    private UserRepository userRepository;
+
     public TokenProviderService(AppProperties appProperties) {
         this.appProperties = appProperties;
     }
@@ -98,18 +104,19 @@ public class TokenProviderService {
      * @param refreshToken
      */
     public void saveRefreshToken(int userId, String refreshToken){
-        RefreshToken oldRefreshToken = refreshTokenRepository.findByUserId(userId);
+        RefreshToken oldRefreshToken = refreshTokenRepository.findByUser_UserId(userId);
+        User user = userRepository.findByUserId(userId);
 
         if(oldRefreshToken != null){
             oldRefreshToken.setRefreshToken(refreshToken);
         }else{
-            oldRefreshToken = new RefreshToken(userId,refreshToken);
+            oldRefreshToken = new RefreshToken(user,refreshToken);
             refreshTokenRepository.saveAndFlush(oldRefreshToken);
         }
     }
 
     public void deleteRefreshToken(int userId){
-        RefreshToken refreshToken = refreshTokenRepository.findByUserId(userId);
+        RefreshToken refreshToken = refreshTokenRepository.findByUser_UserId(userId);
         refreshToken.setRefreshToken(null);
         refreshTokenRepository.save(refreshToken);
     }

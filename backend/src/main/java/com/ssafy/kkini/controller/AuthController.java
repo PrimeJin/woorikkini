@@ -53,7 +53,7 @@ public class AuthController {
             return new ResponseEntity<Map<String, Object>>(resultMap, status);
         }
         // 새로운 access token 생성
-        String newAccessToken = tokenProvider.createAccessToken(refreshToken.getUserId(), "ROLE_USER");
+        String newAccessToken = tokenProvider.createAccessToken(refreshToken.getUser().getUserId(), "ROLE_USER");
         resultMap.put("accessToken", newAccessToken);
         long validTime = tokenProvider.getTokenClaims(userRefreshToken).getExpiration().getTime() - new Date().getTime();
         // refresh 토큰 기간이 3일 이하로 남은 경우, refresh 토큰 갱신
@@ -62,7 +62,7 @@ public class AuthController {
             String newRefreshToken = tokenProvider.createRefreshToken();
 
             // DB에 refresh 토큰 업데이트
-            refreshTokenRepository.save(new RefreshToken(refreshToken.getUserId(), newRefreshToken));
+            refreshTokenRepository.save(new RefreshToken(refreshToken.getUser(), newRefreshToken));
 
             status = HttpStatus.ACCEPTED;
             resultMap.put("refreshToken", newRefreshToken);

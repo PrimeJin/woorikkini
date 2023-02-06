@@ -120,7 +120,6 @@ public class UserController {
 
         try {
             if (userService.delete(userid) > 0) {
-                tokenProviderService.deleteRefreshToken(userid);
                 resultMap.put("message", SUCCESS);
                 status = HttpStatus.ACCEPTED;
             } else {
