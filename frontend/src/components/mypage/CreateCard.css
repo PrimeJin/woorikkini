@@ -23,6 +23,23 @@
   margin-top: 20px;
   padding: 20px;
 }
+input[type='file'] {
+  appearance: none;
+  /* background-color: initial; */
+  cursor: default;
+  align-items: center;
+  color: inherit;
+  text-overflow: ellipsis;
+  white-space: pre;
+  border: none;
+  font-family: 'NanumSquareRound';
+  color: #090936;
+
+  /* text-align: start !important; */
+  /* padding: initial; */
+  /* border: initial; */
+  /* overflow: hidden !important; */
+}
 
 .photo {
   border: 1px;

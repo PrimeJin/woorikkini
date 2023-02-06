@@ -94,7 +94,7 @@ function CreateCard(props) {
           <p>추가하기</p>
         </div>
       </div>
-      <Modal open={modalOpen} close={closeModal} register={memoryRegister} header="기록하기">
+      <Modal open={modalOpen} close={closeModal} register={memoryRegister} header="&#128221; 기록하기">
         {/* // Modal.js <main> {props.children} </main>에 내용이 입력된다.  */}
         <form className="memory" encType="multipart/form-data">
           {/* <p>{fileData}</p>  */}
@@ -106,8 +106,12 @@ function CreateCard(props) {
             id="profileImg"
             onChange={onFile}
             ref={imgRef}
+            style={{ justifyContent: 'center' }}
           />
-          <div className="photo">
+          <div
+            className="photo"
+            style={{ border: 'none', width: 280, height: 250, marginBottom: '3%', borderRadius: '10px' }}
+          >
             {/* {imgFile ?  */}
             {previewData.map((item, id) => {
               return (
@@ -118,12 +122,17 @@ function CreateCard(props) {
               );
             })}
           </div>
-          <input value={titleData} onChange={onTitle} style={{ width: 300 }} placeholder="제목을 입력하세요."></input>
+          <input
+            value={titleData}
+            onChange={onTitle}
+            style={{ width: 250, border: 'none', borderRadius: '10px', padding: '5%', marginBottom: '3%' }}
+            placeholder="제목을 입력하세요."
+          ></input>
           <br />
           <textarea
             value={contentData}
             onChange={onContent}
-            style={{ width: 300, height: 100 }}
+            style={{ width: 250, height: 80, border: 'none', borderRadius: '10px', padding: '5%' }}
             placeholder="내용을 입력하세요."
           ></textarea>
         </form>

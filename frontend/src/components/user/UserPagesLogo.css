@@ -4,6 +4,7 @@
   justify-content: center;
   display: flex;
   flex-flow: row nowrap;
+  background-color: #fffdfa;
 }
 .woori-logo {
   margin-top: 2%;

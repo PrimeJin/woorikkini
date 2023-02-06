@@ -17,16 +17,18 @@ const Modal = (props) => {
         <section>
           <header>
             {header}
-            <button className="close" onClick={close}>
-              X
+            <button className="close-top" onClick={close}>
+              &#10006;
             </button>
           </header>
           <main>{props.children}</main>
+
           <footer>
             <button className="register" onClick={register}>
               등록하기
             </button>
-            <button className="close" onClick={close}>
+            <div style={{ width: 30 }}></div>
+            <button className="close-bottom" onClick={close}>
               취소하기
             </button>
           </footer>

@@ -11,9 +11,9 @@ function Mypage() {
       <div className="mypage">
         <Logo />
         <div className="title">
-          <p style={{ fontSize: 50, marginBottom: 0 }}>나의 먹기록</p>
+          <p style={{ fontSize: 50, marginBottom: 0 }}>나의 먹기록 &#127860; &#10024;</p>
           <br />
-          <p style={{ marginTop: 0 }}>내가 기록하고 싶은 순간들</p>
+          <p style={{ marginTop: 0, fontSize: 20 }}>내가 기록하고 싶은 순간들 &#128248;</p>
         </div>
         <Nav></Nav>
       </div>

@@ -46,7 +46,7 @@ const LoginPage = () => {
     };
 
     axios({
-      url: `http://i8a804.p.ssafy.io:8040/user/login`,
+      url: 'http://i8a804.p.ssafy.io:8040/user/login',
       method: 'POST',
       headers: {
         'Content-type': 'application/json',
@@ -56,7 +56,7 @@ const LoginPage = () => {
       .then((response) => {
         //요청 응답이 오면 응답상태를 체크
         //response.status가 true면 응답이 200번대(성공)
-        console.log(response);
+        console.log('@@', response);
         if (response.status === 200 || 202) {
           console.log(response.status / 100);
           //Cookie에 Refresh Token 저장
@@ -74,7 +74,7 @@ const LoginPage = () => {
         }
       })
       .catch((err) => {
-        console.log(err);
+        console.log('???', err);
       });
 
     //input폼 비워주는 코드
