@@ -89,12 +89,12 @@ public class RoomController {
     }
 
     @ApiOperation(value = "검색어에 해당되는 방 제공", notes = "입력된 검색어에 해당되는 방의 정보를 반환한다.", response = Map.class)
-    @PostMapping("/search")
-    public ResponseEntity<?> searchRoom(@RequestBody @ApiParam(value = "검색종류 subject = (title, keyword), 검색어(content) ", required = true)
-                                             @Valid RoomSearchDto roomSearchDto) {
+    @GetMapping("/search")
+    public ResponseEntity<?> searchRoom(@ApiParam(value = "검색종류 subject = (title, keyword), 검색어(content) ", required = true)
+                                             @RequestParam String subject, @RequestParam String content) {
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
-        List<RoomPasswordXDto> roomList = roomService.searchRoom(roomSearchDto);
+        List<RoomPasswordXDto> roomList = roomService.searchRoom(subject, content);
         if (roomList == null){
             status = HttpStatus.NOT_FOUND;
             resultMap.put("message", FAIL);
@@ -151,9 +151,9 @@ public class RoomController {
     }
 
     @ApiOperation(value = "강제퇴장 조치", notes = "특정 사용자를 강제 퇴장 시킨다", response = Map.class)
-    @PostMapping("/exit/{roomId}")
+    @PostMapping("/exit/{roomId}/{userId}")
     public ResponseEntity<?> addExitUser(@ApiParam(value = "사용자 아이디", required = true)
-                                         @PathVariable String roomId, @RequestParam String userId) {
+                                         @PathVariable String roomId, @PathVariable String userId) {
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
         int result = exitService.addExitUser(roomId, userId);
