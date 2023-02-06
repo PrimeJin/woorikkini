@@ -24,15 +24,15 @@ public class RoomCustomRepositoryImpl implements RoomCustomRepository{
     }
 
     @Override
-    public List<RoomPasswordXDto> searchRoom(RoomSearchDto roomSearchDto) {
-        if(roomSearchDto.getSubject().equals("title")){
+    public List<RoomPasswordXDto> searchRoom(String subject, String content) {
+        if(subject.equals("title")){
             return queryFactory
                     .select(Projections.constructor(RoomPasswordXDto.class,
                             room))
                     .from(room)
-                    .where(roomTitleContains(roomSearchDto.getContent()))
+                    .where(roomTitleContains(content))
                     .fetch();
-        } else if(roomSearchDto.getSubject().equals("keyword")){
+        } else if(subject.equals("keyword")){
             QKeyword k = new QKeyword("k");
             QRoomKeyword rk = new QRoomKeyword("rk");
             QRoom r= new QRoom("r");
@@ -41,7 +41,7 @@ public class RoomCustomRepositoryImpl implements RoomCustomRepository{
                     .from(rk)
                     .innerJoin(rk.roomId, r)
                     .innerJoin(rk.keywordId, k)
-                    .where(k.keyword.contains(roomSearchDto.getContent()))
+                    .where(k.keyword.contains(content))
                     .fetch();
         }
         return null;

@@ -60,8 +60,8 @@ public class RoomService {
         return roomListDto;
     }
 
-    public List<RoomPasswordXDto> searchRoom(RoomSearchDto roomSearchDto) {
-        return roomRepository.searchRoom(roomSearchDto);
+    public List<RoomPasswordXDto> searchRoom(String subject, String content) {
+        return roomRepository.searchRoom(subject, content);
     }
 
     public int enterRoom(int roomId, RoomEnterFormDto roomEnterFormDto) {

@@ -6,5 +6,5 @@ import com.ssafy.kkini.dto.RoomSearchDto;
 import java.util.List;
 
 public interface RoomCustomRepository {
-    List<RoomPasswordXDto> searchRoom(RoomSearchDto roomSearchDto);
+    List<RoomPasswordXDto> searchRoom(String subject, String content);
 }
