@@ -1,20 +1,20 @@
-import axios from "axios";
-import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import "./Notice.css";
+import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import './Notice.css';
 
 const NoticeDetail = () => {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [time, setTime] = useState("");
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [time, setTime] = useState('');
   const params = useParams();
-  const [update, setUpdate] = useState("");
+  const [update, setUpdate] = useState('');
   const [modal, setModal] = useState(false);
 
   function getDetail() {
     axios({
       url: `http://i8a804.p.ssafy.io:8050/notice/${params.noticeId}`,
-      methods: "GET",
+      methods: 'GET',
     })
       .then((res) => {
         setTitle(res.data.notice.noticeTitle);
@@ -22,7 +22,7 @@ const NoticeDetail = () => {
         setTime(res.data.notice.createdTime.substr(0, 10));
       })
       .catch((err) => {
-        console.log(err, "공지사항 디테일 에러");
+        console.log(err, '공지사항 디테일 에러');
       });
   }
 
@@ -31,8 +31,8 @@ const NoticeDetail = () => {
     console.log(content);
   }, [update]);
 
-  const [inputTitle, setInputTitle] = useState("");
-  const [inputContent, setInputContent] = useState("");
+  const [inputTitle, setInputTitle] = useState('');
+  const [inputContent, setInputContent] = useState('');
 
   useEffect(() => {
     setInputTitle(title);
@@ -42,31 +42,31 @@ const NoticeDetail = () => {
   const navigate = useNavigate();
 
   function list() {
-    navigate("/admin/notice");
+    navigate('/admin/notice');
   }
 
   function goToUpdate() {
-    setUpdate("1");
+    setUpdate('1');
   }
 
   function back() {
-    setUpdate("");
+    setUpdate('');
   }
 
   function noticeDelete() {
     axios({
-      method: "DELETE",
+      method: 'DELETE',
       url: `http://i8a804.p.ssafy.io:8050/notice/${params.noticeId}/`,
       data: {
         noticeId: params.noticeId,
       },
     })
       .then((res) => {
-        alert("삭제가 완료되었습니다.");
-        navigate("/admin/notice");
+        alert('삭제가 완료되었습니다.');
+        navigate('/admin/notice');
       })
       .catch((err) => {
-        console.log("notice 삭제 에러");
+        console.log('notice 삭제 에러');
       });
   }
 
@@ -80,13 +80,13 @@ const NoticeDetail = () => {
   }
 
   function updateConfirm() {
-    if (inputTitle.trim() === "") {
-      alert("제목을 입력해주세요");
-    } else if (inputContent.trim() === "") {
-      alert("내용을 입력해주세요");
+    if (inputTitle.trim() === '') {
+      alert('제목을 입력해주세요');
+    } else if (inputContent.trim() === '') {
+      alert('내용을 입력해주세요');
     } else {
       axios({
-        method: "put",
+        method: 'put',
         url: `http://i8a804.p.ssafy.io:8050/notice/${params.noticeId}`,
         data: {
           noticeId: params.noticeId,
@@ -95,11 +95,11 @@ const NoticeDetail = () => {
         },
       })
         .then((res) => {
-          alert("수정이 완료되었습니다.");
-          setUpdate("");
+          alert('수정이 완료되었습니다.');
+          setUpdate('');
         })
         .catch((err) => {
-          console.log("공지사항 수정 에러", err);
+          console.log('공지사항 수정 에러', err);
         });
     }
   }
@@ -112,18 +112,16 @@ const NoticeDetail = () => {
       {modal ? (
         <div
           style={{
-            display: "flex",
-            justifyContent: "center",
-            width: "100%",
-            position: "fixed",
-            backgroundColor: "rgba(0,0,0,0)",
-            top: "30%",
+            display: 'flex',
+            justifyContent: 'center',
+            width: '100%',
+            position: 'fixed',
+            backgroundColor: 'rgba(0,0,0,0)',
+            top: '30%',
           }}
         >
           <div className="delete">
-            <p style={{ width: "100%", marginBottom: 0 }}>
-              해당 글을 삭제하시겠습니까?
-            </p>
+            <p style={{ width: '100%', marginBottom: 0 }}>해당 글을 삭제하시겠습니까?</p>
             <button className="modalBtn" onClick={noticeDelete}>
               확인
             </button>
@@ -137,16 +135,13 @@ const NoticeDetail = () => {
       )}
       {/* 모달 끝 */}
 
-      <div
-        style={{ display: "flex", justifyContent: "center" }}
-        onClick={modalClose}
-      >
+      <div style={{ display: 'flex', justifyContent: 'center' }} onClick={modalClose}>
         {!update ? (
           //
           // 디테일
           <div className="detail">
             <p className="title">{title}</p>
-            <div style={{ marginLeft: "80%", marginBottom: "2%" }}>
+            <div style={{ marginLeft: '80%', marginBottom: '2%' }}>
               <small>작성일자: {time}</small>
             </div>
             <hr />
@@ -154,11 +149,7 @@ const NoticeDetail = () => {
             <button className="btn" onClick={goToUpdate}>
               수정
             </button>
-            <button
-              className="btn"
-              onClick={DeleteModal}
-              style={{ backgroundColor: "#FF8D89" }}
-            >
+            <button className="btn" onClick={DeleteModal} style={{ backgroundColor: '#FF8D89' }}>
               삭제
             </button>
           </div>
@@ -193,9 +184,7 @@ const NoticeDetail = () => {
           </div>
         )}
       </div>
-      <div
-        style={{ justifyContent: "left", display: "flex", marginBottom: "2%" }}
-      >
+      <div style={{ justifyContent: 'left', display: 'flex', marginBottom: '2%' }}>
         <button className="toList" onClick={list}>
           목록으로
         </button>
