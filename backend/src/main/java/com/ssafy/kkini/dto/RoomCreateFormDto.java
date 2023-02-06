@@ -19,7 +19,7 @@ public class RoomCreateFormDto {
     private String roomPassword;
 
     @NotNull(message = "방 프리셋을 입력해주세요")
-    private Integer roomPreset;
+    private String roomPreset;
 
     private List<Integer> roomKeywordList;
 
