@@ -18,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,7 +43,7 @@ public class MemoryService {
         return memoryRepository.findByUser_UserId(userId);
     }
 
-    public Memory createMemory(MemoryCreateFormDto memoryCreateFormDto) {
+    public Memory createMemory(MemoryCreateFormDto memoryCreateFormDto) throws IOException {
         User user = userRepository.findByUserId(memoryCreateFormDto.getUserId());
         Memory memory = memoryCreateFormDto.toEntity();
         if(user != null){
@@ -58,10 +60,12 @@ public class MemoryService {
     }
 
 
-    public Memory updateMemory(MemoryUpdateFormDto memoryUpdateFormDto) {
+    public Memory updateMemory(MemoryUpdateFormDto memoryUpdateFormDto) throws IOException {
         Optional<Memory> memory = memoryRepository.findByMemoryId(memoryUpdateFormDto.getMemoryId());
-        if(memory.isPresent()){
+        User user = userRepository.findByUserId(memoryUpdateFormDto.getUserId());
+        if(memory.isPresent() && user != null){
             Memory updateMemory = memoryUpdateFormDto.toEntity();
+            updateMemory.setUser(user);
             updateMemory = memoryRepository.save(updateMemory);
             if(updateMemory != null){
                 deletePhoto(memoryUpdateFormDto.getMemoryId());
@@ -74,7 +78,7 @@ public class MemoryService {
     }
 
     @Transactional
-    public ArrayList<Photo> uploadPhoto(List<MultipartFile> memoryImgFiles, Memory memory) {
+    public ArrayList<Photo> uploadPhoto(List<MultipartFile> memoryImgFiles, Memory memory) throws IllegalStateException, IOException {
 
         // 년/월/일 폴더의 생성으로 한 폴더에 너무 많은 파일이 들어가지 않도록 제어
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -82,7 +86,10 @@ public class MemoryService {
         String str = dateFormat.format(date);
         String uploadFolderPath = str.replace("-", File.separator);
         //폴더 생성
-        File uploadPath = new File(fileDir, uploadFolderPath); // 오늘 날짜의 경로를 문자열로 생성
+        String hostname = InetAddress.getLocalHost().getHostName();
+        File uploadPath = null;
+        if(hostname. substring(0, 7).equals ("DESKTOP") ) uploadPath = new File(fileDir, uploadFolderPath); // 오늘 날짜의 경로를 문자열로 생성
+        else uploadPath = new File("\\images\\",uploadFolderPath);
         if (uploadPath.exists() == false) {
             uploadPath.mkdirs();
         }
