@@ -9,7 +9,7 @@ import './UserVideo.css';
 import './VideoRoom.css';
 
 const OPENVIDU_SERVER_URL = 'https://i8a804.p.ssafy.io:8443'; //도커에 올린 openvidu server
-const OPENVIDU_SERVER_SECRET = 'MY_SECRET'; //시크릿키값, 바꿔주면 좋음
+const OPENVIDU_SERVER_SECRET = 'kkini'; //시크릿키값, 바꿔주면 좋음
 
 const EncodeBase64 = (data) => {
   return Buffer.from(data).toString('base64');
@@ -49,23 +49,22 @@ class VideoRoom extends Component {
   componentDidMount() {
     window.addEventListener('beforeunload', this.onbeforeunload);
 
-    const { roomId, nickName, token } = this.props; //props에서 초기값 물려받기
+    // const { home } = this.props;
+    // const { roomId, nickName, token } = home; //props에서 초기값 물려받기
 
-    this.setState({
-      mySessionId: roomId,
-      myUserName: nickName,
-      token,
-    });
+    // this.setState({
+    //   token,
+    // });
 
-    //this.joinSession(); //바로 방입장하려면 이 옵션을 활성화
+    // this.joinSession(); //바로 방입장하려면 이 옵션을 활성화
   }
 
   //컴포넌트 언마운트 직전
   componentWillUnmount() {
-    window.location.reload(); //화면 새로고침
+    // window.location.reload(); //화면 새로고침
     window.removeEventListener('beforeunload', this.onbeforeunload);
     //세션에 아무도 없으면 퇴장
-    if (this.state.isEmpty) {
+    if (!this.state.isEmpty) {
       this.leaveSession();
     }
   }
@@ -320,23 +319,34 @@ class VideoRoom extends Component {
     }
 
     //백엔드에 퇴장 요청 보내기
-    axios
-      .put('/rooms', {
-        roomId: this.state.mySessionId,
-      })
-      .then(() => {
-        // 모든 속성(프로퍼티) 초기화
-        this.OV = null; //Openvidu 객체 삭제
-        this.setState({
-          session: undefined,
-          subscribers: [],
-          mySessionId: 'SessionA',
-          myUserName: 'Participant' + Math.floor(Math.random() * 100),
-          mainStreamManager: undefined,
-          publisher: undefined,
-        });
+    // axios
+    //   .put('/rooms', {
+    //     roomId: this.state.mySessionId,
+    //   })
+    //   .then(() => {
+    //     // 모든 속성(프로퍼티) 초기화
+    //     this.OV = null; //Openvidu 객체 삭제
+    //     this.setState({
+    //       session: undefined,
+    //       subscribers: [],
+    //       mySessionId: 'SessionA',
+    //       myUserName: 'Participant' + Math.floor(Math.random() * 100),
+    //       mainStreamManager: undefined,
+    //       publisher: undefined,
+    //     });
 
-        this.props.history.push('/');
+    //     this.props.history.push('/');
+    //   });
+
+    axios
+      .delete(`${OPENVIDU_SERVER_URL}/openvidu/api/sessions/${this.state.mySessionId}`, {
+        headers: {
+          Authorization: `Basic ${btoa(`OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`)}`,
+          'Content-Type': 'application/json',
+        },
+      })
+      .then((res) => {
+        window.location.reload();
       });
   }
 
@@ -465,31 +475,16 @@ class VideoRoom extends Component {
     );
   }
 
-  /**
-   * --------------------------------------------
-   * GETTING A TOKEN FROM YOUR APPLICATION SERVER
-   * --------------------------------------------
-   * The methods below request the creation of a Session and a Token to
-   * your application server. This keeps your OpenVidu deployment secure.
-   *
-   * In this sample code, there is no user control at all. Anybody could
-   * access your application server endpoints! In a real production
-   * environment, your application server must identify the user to allow
-   * access to the endpoints.
-   *
-   * Visit https://docs.openvidu.io/en/stable/application-server to learn
-   * more about the integration of OpenVidu in your application server.
-   */
-  getToken() {
-    return this.createSession(this.state.mySessionId).then((sessionId) => {
-      this.createToken(sessionId);
-    });
+  //createSession 응답이 오면 createToken을 실행하게 해서
+  //token이 undefined인채로 getToken을 실행하는 일을 막아요
+  async getToken() {
+    const sessionId = await this.createSession(this.state.mySessionId);
+    return await this.createToken(sessionId);
   }
 
   createSession(sessionId) {
     return new Promise((resolve, reject) => {
       let data = JSON.stringify({ customSessionId: sessionId });
-
       axios
         .post(`${OPENVIDU_SERVER_URL}/openvidu/api/sessions`, data, {
           headers: {
@@ -499,12 +494,14 @@ class VideoRoom extends Component {
         })
         .then((response) => {
           resolve(response.data.id);
+          console.log('createSession: ' + response.data.id);
         })
         .catch((response) => {
           let error = { ...response };
           if (error.response) {
             if (error.response.status === 409) {
               resolve(sessionId);
+              console.log('이미 있는 세션입니다');
             } else if (
               window.confirm(
                 `OpenVidu Server와 연결되지 않았습니다. 인증서 오류 일 수도 있습니다. "${OPENVIDU_SERVER_URL}"\n\n 확인해주세요.` +
@@ -524,12 +521,16 @@ class VideoRoom extends Component {
       axios
         .post(`${OPENVIDU_SERVER_URL}/openvidu/api/sessions/${sessionId}/connection`, data, {
           headers: {
-            Authorization: `Basic ${btoa(`OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`)}`,
+            Authorization: `Basic ${EncodeBase64(`OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`)}`,
             'Content-Type': 'application/json',
           },
         })
         .then((response) => {
           resolve(response.data.token);
+          this.setState({
+            token: response.data.token,
+          });
+          console.log('createToken: ' + this.state.token);
         })
         .catch((error) => reject(error));
     });
