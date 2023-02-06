@@ -3,6 +3,7 @@ package com.ssafy.kkini.service;
 import com.ssafy.kkini.dto.*;
 import com.ssafy.kkini.entity.User;
 import com.ssafy.kkini.repository.UserRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -12,8 +13,11 @@ import java.util.Optional;
 public class UserService {
     private UserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @Transactional
@@ -22,8 +26,9 @@ public class UserService {
     }
 
     @Transactional
-    public User join(UserCreateFormDto userJoinFormDto){
-        User user = userJoinFormDto.toEntity();
+    public User join(UserCreateFormDto userCreateFormDto){
+        userCreateFormDto.setUserPassword(bCryptPasswordEncoder.encode(userCreateFormDto.getUserPassword()));
+        User user = userCreateFormDto.toEntity();
 
         return userRepository.save(user);
     }
@@ -31,10 +36,8 @@ public class UserService {
     public User login(UserLoginFormDto userLoginFormDto) {
         if (userLoginFormDto.getUserEmail() == null || userLoginFormDto.getUserPassword() == null) return null;
         Optional<User> user = userRepository.findByUserEmail(userLoginFormDto.getUserEmail());
-        if(!user.isPresent() && user.get().getUserPassword() != userLoginFormDto.getUserPassword()) return null;
-        else return user.get();
-//        System.out.println(userLoginFormDto.getUserEmail() + " + " + userLoginFormDto.getUserPassword());
-//        return userRepository.login(userLoginFormDto.getUserEmail(), userLoginFormDto.getUserPassword());
+        if(bCryptPasswordEncoder.matches(userLoginFormDto.getUserPassword(), user.get().getUserPassword())) return user.get();
+        else return null;
     }
 
     @Transactional
