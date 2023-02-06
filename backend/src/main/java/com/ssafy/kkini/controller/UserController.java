@@ -7,12 +7,14 @@ import com.ssafy.kkini.entity.User;
 import com.ssafy.kkini.service.*;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.models.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -305,6 +307,22 @@ public class UserController {
 
         map.put("message", "fail");
         return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
+    }
+
+    @ApiOperation(value = "관리자가 전체 회원 조회", notes = "관리자 페이지에서 전체 회원 조회 기능")
+    @GetMapping("/")
+    public ResponseEntity<Map<String, Object>> getUserList() {
+        Map<String, Object> map = new HashMap<>();
+        try {
+            List<UserListDto> userListDto = userService.getUserList();
+            map.put("message", "success");
+            map.put("userList", userListDto);
+            map.put("totalSize", userListDto.size());
+            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.ACCEPTED);
+        } catch (Exception e) {
+            map.put("message", "fail");
+            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
+        }
     }
 
 }
