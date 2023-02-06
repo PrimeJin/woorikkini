@@ -125,8 +125,8 @@ function Form() {
         method: 'GET',
       })
         .then((res) => {
-          console.log('??', res.data.messsage);
-          if (res.data.messsage === 'success') {
+          console.log('??', res.data.message);
+          if (res.data.message === 'success') {
             console.log('!!');
             setPossible(true);
           } else {
