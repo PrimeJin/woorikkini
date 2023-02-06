@@ -8,9 +8,11 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -37,8 +39,8 @@ public class User extends BaseEntity {
 
     private String userGender;
 
-    @CreationTimestamp
-    private Timestamp userActivation;
+    @CreatedDate  //@CreationTimeStamp -> @CreatedDate로 변경
+    private LocalDateTime userActivation;
 
     @Enumerated(EnumType.STRING)
     private AuthProvider userProvider;
@@ -46,9 +48,9 @@ public class User extends BaseEntity {
     private String userProviderId;
 
     @ColumnDefault("0")
-    private int userReported;
+    private int userReportedCount;
     @Builder
-    public User(int userId, String userEmail, String userName, String userPassword,String userNickname,String userGender,Timestamp userActivation, int userBirthYear, AuthProvider userProvider,String userProviderId){
+    public User(int userId, String userEmail, String userName, String userPassword,String userNickname,String userGender,LocalDateTime userActivation, int userBirthYear, AuthProvider userProvider,String userProviderId, int userReportedCount){
         this.userId = userId;
         this.userEmail = userEmail;
         this.userName = userName;
@@ -60,6 +62,7 @@ public class User extends BaseEntity {
         this.userBirthYear = userBirthYear;
         this.userProvider = userProvider;
         this.userProviderId = userProviderId;
+        this.userReportedCount = userReportedCount;
     }
 
     public void changeNickname(String nickname) {

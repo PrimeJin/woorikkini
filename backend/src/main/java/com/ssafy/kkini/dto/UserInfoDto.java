@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -27,13 +28,13 @@ public class UserInfoDto {
 
     private String userGender;
 
-    private Timestamp userActivation;
+    private LocalDateTime userActivation;
 
     private AuthProvider userProvider;
 
     private String userProviderId;
 
-    private int userReported;
+    private int userReportedCount;
 
     //entity -> dto
     public UserInfoDto(User entity) {
@@ -48,7 +49,7 @@ public class UserInfoDto {
         this.userActivation = entity.getUserActivation();
         this.userProvider = entity.getUserProvider();
         this.userProviderId = entity.getUserProviderId();
-        this.userReported = entity.getUserReported();
+        this.userReportedCount = entity.getUserReportedCount();
     }
 
     //dto -> entity
@@ -64,6 +65,7 @@ public class UserInfoDto {
                 .userActivation(userActivation)
                 .userProvider(userProvider)
                 .userProviderId(userProviderId)
+                .userReportedCount(userReportedCount)
                 .build();
     }
 

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -42,7 +43,8 @@ public class CommonOAuth2UserService {
         if(userOptional.isPresent()) {
             user = userOptional.get();
 
-            if((user.getUserActivation().after(new Timestamp(System.currentTimeMillis())))) {
+//            if((user.getUserActivation().after(new Timestamp(System.currentTimeMillis())))) {
+            if((user.getUserActivation().isAfter(LocalDateTime.now()))) {
                 throw new LockedException("Your Account is denied");
             }
         }
