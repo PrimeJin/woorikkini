@@ -214,7 +214,7 @@ public class UserController {
     }
 
     @ApiOperation(value = "닉네임 중복체크", notes = "회원의 닉네임을 중복을 체크한다.", response = Map.class)
-    @PatchMapping("/{userNickname}")
+    @GetMapping("/{userNickname}")
     public ResponseEntity<Map<String,Object>> nicknameModify(@PathVariable("userNickname") @ApiParam(value = "닉네임", required = true, example = "0") String userNickname){
         Map<String, Object> resultMap = new HashMap<>();
         HttpStatus status = null;
