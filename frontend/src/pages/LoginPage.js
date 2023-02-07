@@ -134,7 +134,7 @@ const LoginPage = () => {
           회원가입
         </button>
         <Link
-          to="FindPassword"
+          to="/user/findpw"
           style={{ color: 'blue', textDecoration: 'none', textAlign: 'right', marginRight: '50px', padding: '5px' }}
         >
           <small>비밀번호 찾기</small>
