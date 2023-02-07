@@ -10,8 +10,10 @@ import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
@@ -22,7 +24,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/api/memory")
-@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE})
+@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE,RequestMethod.OPTIONS})
 public class MemoryController {
 
     private static final String SUCCESS = "success";
@@ -31,12 +33,16 @@ public class MemoryController {
     private MemoryService memoryService;
 
     @ApiOperation(value = "추억카드 등록", notes = "추억카드 등록")
-    @PostMapping(consumes = {"multipart/form-data"})
+    @PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<Map<String,Object>> createMemory(@Valid @ApiParam(value = "추억 제목,내용, 사진",required = true,example = "0")
-                                                     MemoryCreateFormDto memoryCreateFormDto){
+                                                           @RequestPart(value="fileData") List<MultipartFile> memoryImgFiles,
+                                                           @RequestPart(value="cardData", required=false) MemoryCreateFormDto memoryCreateFormDto){
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
         Memory createMemory = null;
+        memoryCreateFormDto.setMemoryImgFiles(memoryImgFiles);
+        System.out.println(memoryCreateFormDto.toString());
+
         try {
             createMemory = memoryService.createMemory(memoryCreateFormDto);
             if(createMemory != null){
@@ -56,9 +62,9 @@ public class MemoryController {
         return new ResponseEntity<Map<String,Object>>(resultMap,status);
     }
     @ApiOperation(value = "추억카드 수정", notes = "추억카드 수정")
-    @PatchMapping(consumes = {"multipart/form-data"})
+    @PatchMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<Map<String,Object>> updateMemory(@Valid @ApiParam(value = "추억 아이디, 제목, 내용 사진", required = true, example = "0")
-                                                           MemoryUpdateFormDto memoryUpdateFormDto){
+                                                               @RequestPart MemoryUpdateFormDto memoryUpdateFormDto){
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
 
