@@ -1,6 +1,7 @@
 package com.ssafy.kkini.service;
 
 import com.ssafy.kkini.dto.MemoryCreateFormDto;
+import com.ssafy.kkini.dto.MemoryGetFormDto;
 import com.ssafy.kkini.dto.MemoryUpdateFormDto;
 import com.ssafy.kkini.entity.Memory;
 import com.ssafy.kkini.entity.Photo;
@@ -36,11 +37,18 @@ public class MemoryService {
     @Autowired
     PhotoRepository photoRepository;
 
-    @Value("{upload.path}")
+    @Value("${upload.path}")
     private String fileDir;
 
-    public List<Memory> getMemory(int userId) {
-        return memoryRepository.findByUser_UserId(userId);
+    public List<MemoryGetFormDto> getMemory(int userId) {
+        List<MemoryGetFormDto> memoryGetFormDtoList = new ArrayList<>();
+        for (Memory memory : memoryRepository.findByUser_UserId(userId)) {
+            MemoryGetFormDto memoryGetFormDto = new MemoryGetFormDto();
+            memoryGetFormDto.setMemory(memory);
+            memoryGetFormDto.setPhotoList(photoRepository.findAllByMemory_MemoryId(memory.getMemoryId()));
+            memoryGetFormDtoList.add(memoryGetFormDto);
+        }
+        return memoryGetFormDtoList;
     }
 
     public Memory createMemory(MemoryCreateFormDto memoryCreateFormDto) throws IOException {
@@ -69,7 +77,10 @@ public class MemoryService {
             updateMemory = memoryRepository.save(updateMemory);
             if(updateMemory != null){
                 deletePhoto(memoryUpdateFormDto.getMemoryId());
-                uploadPhoto(memoryUpdateFormDto.getMemoryImgFiles(),updateMemory);
+                if(memoryUpdateFormDto.getMemoryImgFiles() != null && memoryUpdateFormDto.getMemoryImgFiles().size() != 0){
+                    uploadPhoto(memoryUpdateFormDto.getMemoryImgFiles(),updateMemory);
+                }
+
             }
             return updateMemory;
         }else{
@@ -85,11 +96,16 @@ public class MemoryService {
         Date date = new Date();
         String str = dateFormat.format(date);
         String uploadFolderPath = str.replace("-", File.separator);
+        uploadFolderPath = uploadFolderPath + File.separator;
         //폴더 생성
         String hostname = InetAddress.getLocalHost().getHostName();
         File uploadPath = null;
         if(hostname. substring(0, 7).equals ("DESKTOP") ) uploadPath = new File(fileDir, uploadFolderPath); // 오늘 날짜의 경로를 문자열로 생성
+
         else uploadPath = new File("\\images\\",uploadFolderPath);
+
+        System.out.println("host_name = " + hostname + ", uploadPath = " + uploadPath);
+
         if (uploadPath.exists() == false) {
             uploadPath.mkdirs();
         }
@@ -109,7 +125,7 @@ public class MemoryService {
                 if(contentType.contains("image/jpg"))
                     originalFileExtension = ".jpg";
                 else if(contentType.contains("image/jpeg"))
-                    originalFileExtension = ".jpeg";
+                    originalFileExtension = ".jpg";
                 else if(contentType.contains("image/png"))
                     originalFileExtension = ".png";
                 else  // 다른 확장자일 경우 처리 x
@@ -121,12 +137,12 @@ public class MemoryService {
 
             Photo photo = new Photo();
             photo.setMemory(memory);
-            photo.setFilePath(uploadFolderPath + new_file_name);
+            photo.setFilePath(fileDir + uploadFolderPath + new_file_name);
             photo.setOriginalFilename(originFileName);
 
             photoList.add(photoRepository.save(photo));
             // 업로드 한 파일 데이터를 지정한 파일에 저장
-            File file = new File(uploadFolderPath + new_file_name);
+            File file = new File(fileDir,uploadFolderPath + new_file_name);
             try {
                 uploadFile.transferTo(file);
             }catch (IOException e) {
@@ -147,7 +163,7 @@ public class MemoryService {
                 if(file.exists()) { // 파일이 존재하면
                     file.delete(); // 파일 삭제
                 }
-                photoRepository.deleteByPhotoId(photo.getPhotoId());
+                photoRepository.delete(photo);
             }
 
         }

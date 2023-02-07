@@ -1,6 +1,7 @@
 package com.ssafy.kkini.service;
 
 import com.ssafy.kkini.dto.MemoryCreateFormDto;
+import com.ssafy.kkini.dto.MemoryGetFormDto;
 import com.ssafy.kkini.dto.MemoryUpdateFormDto;
 import com.ssafy.kkini.dto.UserCreateFormDto;
 import com.ssafy.kkini.entity.Memory;
@@ -190,7 +191,7 @@ class MemoryServiceTest {
         when(memoryRepository.findByUser_UserId(1)).thenReturn(memoryList);
 
         //when
-        List<Memory> result = memoryService.getMemory(1);
+        List<MemoryGetFormDto> result = memoryService.getMemory(1);
 
         //then
         Assertions.assertThat(memoryList.size()).isEqualTo(result.size());
