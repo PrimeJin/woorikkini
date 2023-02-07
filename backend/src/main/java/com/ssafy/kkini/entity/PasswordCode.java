@@ -3,6 +3,8 @@ package com.ssafy.kkini.entity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -22,7 +24,8 @@ public class PasswordCode extends BaseEntity {
 
     private LocalDateTime passwordCodeExpireDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name="user_id")
     private User user;
 
