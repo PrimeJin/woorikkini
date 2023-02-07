@@ -1,12 +1,16 @@
 import React, { useEffect, useState, useCallback } from "react";
 import "./Pw.css";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const PwChange = () => {
   // function confirmToken() {
 
   // }
+
+  const params = useParams();
+  const email = params.email;
+  const code = params.passwordCodeContent;
   const useInput = (initial, validate) => {
     const [value, setValue] = useState(initial);
     const inputChange = (event) => {
@@ -75,24 +79,26 @@ const PwChange = () => {
   const navigate = useNavigate();
 
   function goPw() {
-    // state에 userId가 있다는 가정하에
-    const userId = this.state.userId;
-
     if (pwError === "" && matchError === "") {
       axios({
-        url: `http://localhost3000/${userId}/password`,
+        url: `http://i8a804.p.ssafy.io:8040/user/password`,
         method: "POST",
-        data: pw,
+        data: {
+          userEmail: email,
+          passwordCodeContent: code,
+          userPassword: pw,
+          userPasswordCheck: pw2,
+        },
       })
         .then((res) => {
           alert("비밀번호 변경에 성공하였습니다.");
-          navigate("/login");
+          navigate("/user/login");
         })
         .catch((err) => {
           console.log(err, "goPw 에러");
         });
     } else {
-      console.log("뭔가 에러가 있음");
+      console.log("pwchange error");
       console.log(errorMessage);
     }
   }
@@ -106,15 +112,7 @@ const PwChange = () => {
         끼니
       </p>
       <div className="all">
-        <form
-          action="/123"
-          method="post"
-          // onSubmit={function (e) {
-          //   console.log(e.target);
-          //   alert("비밀번호 변경이 완료되었습니다.");
-          //   this.props.onSubmit(e.target);
-          // }.bind(this)}
-        >
+        <form className="pwForm">
           <p className="pwChange">비밀번호 변경</p>
           <br />
           <div style={{ height: "60px" }}>

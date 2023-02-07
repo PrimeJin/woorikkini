@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "./Pw.css";
 import axios from "axios";
 
@@ -28,21 +28,16 @@ const PwFind = () => {
 
   const getInfo = () => {
     axios({
-      // url: `http://localhost3000/${email}/password`,
-      url: `https://jsonplaceholder.typicode.com/users`,
+      url: `http://i8a804.p.ssafy.io:8040/user/${email}/password?userName=${name}`,
       method: "GET",
     })
       .then((res) => {
-        if (res.data[0].name === name) {
-          // 이메일 보내는 거 -> 이메일 확인하라는 알람창
-          alert("해당 이메일로 비밀번호 변경 페이지의 링크를 보냈습니다.");
-        } else {
-          alert("해당 하는 회원이 없습니다. 확인 후 다시 입력해주세요");
-          console.log(res.data);
-        }
+        console.log(res);
+        alert("해당 이메일로 비밀번호 변경 페이지의 링크를 보냈습니다.");
       })
       .catch((err) => {
         console.log(err, "getInfo에러");
+        // alert("해당 하는 회원이 없습니다. 확인 후 다시 입력해주세요");
       });
   };
 
@@ -55,7 +50,7 @@ const PwFind = () => {
         끼니
       </p>
       <div className="all">
-        <form>
+        <form className="pwForm">
           <p className="pwChange">비밀번호 찾기</p>
           <br />
           <div style={{ height: "60px" }}>
@@ -67,7 +62,13 @@ const PwFind = () => {
               onChange={inputEmail}
             />
             <br />
-            {errMsg ? <span>{errMsg}</span> : ""}
+            {errMsg ? (
+              <h5 style={{ color: "red", textAlign: "left", margin: 0 }}>
+                {errMsg}
+              </h5>
+            ) : (
+              ""
+            )}
           </div>
           <input
             className="userInfo"
