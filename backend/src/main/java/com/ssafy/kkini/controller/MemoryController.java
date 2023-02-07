@@ -1,6 +1,7 @@
 package com.ssafy.kkini.controller;
 
 import com.ssafy.kkini.dto.MemoryCreateFormDto;
+import com.ssafy.kkini.dto.MemoryGetFormDto;
 import com.ssafy.kkini.dto.MemoryUpdateFormDto;
 import com.ssafy.kkini.entity.Memory;
 import com.ssafy.kkini.service.MemoryService;
@@ -8,7 +9,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,8 +31,8 @@ public class MemoryController {
     private MemoryService memoryService;
 
     @ApiOperation(value = "추억카드 등록", notes = "추억카드 등록")
-    @PostMapping()
-    public ResponseEntity<Map<String,Object>> createMemory(@Valid @RequestBody @ApiParam(value = "추억 제목,내용, 사진",required = true,example = "0")
+    @PostMapping(consumes = {"multipart/form-data"})
+    public ResponseEntity<Map<String,Object>> createMemory(@Valid @ApiParam(value = "추억 제목,내용, 사진",required = true,example = "0")
                                                      MemoryCreateFormDto memoryCreateFormDto){
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
@@ -56,8 +56,8 @@ public class MemoryController {
         return new ResponseEntity<Map<String,Object>>(resultMap,status);
     }
     @ApiOperation(value = "추억카드 수정", notes = "추억카드 수정")
-    @PatchMapping()
-    public ResponseEntity<Map<String,Object>> updateMemory(@Valid @RequestBody @ApiParam(value = "추억 아이디, 제목, 내용 사진", required = true, example = "0")
+    @PatchMapping(consumes = {"multipart/form-data"})
+    public ResponseEntity<Map<String,Object>> updateMemory(@Valid @ApiParam(value = "추억 아이디, 제목, 내용 사진", required = true, example = "0")
                                                            MemoryUpdateFormDto memoryUpdateFormDto){
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
@@ -78,8 +78,6 @@ public class MemoryController {
             resultMap.put("message", FAIL);
             status = HttpStatus.BAD_REQUEST;
         }
-
-
 
         return new ResponseEntity<Map<String,Object>>(resultMap,status);
     }
@@ -110,15 +108,15 @@ public class MemoryController {
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
 
-        List<Memory> memoryList = memoryService.getMemory(userId);
+        List<MemoryGetFormDto> memoryGetFormDtoList = memoryService.getMemory(userId);
 
-        if(memoryList != null && memoryList.size() != 0){
+        if(memoryGetFormDtoList != null && memoryGetFormDtoList.size() != 0){
             resultMap.put("message", SUCCESS);
-            resultMap.put("memoryList", memoryList);
+            resultMap.put("memoryList", memoryGetFormDtoList);
             status = HttpStatus.ACCEPTED;
         }else{
             resultMap.put("message", FAIL);
-            status = HttpStatus.BAD_REQUEST;
+            status = HttpStatus.ACCEPTED;
         }
         return new ResponseEntity<Map<String,Object>>(resultMap,status);
     }
