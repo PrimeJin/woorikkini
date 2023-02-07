@@ -9,6 +9,7 @@ import './UserVideo.css';
 import './VideoRoom.css';
 
 import Messages from './components/Messages';
+import { Button } from '../../node_modules/@mui/material/index';
 
 const OPENVIDU_SERVER_URL = 'https://i8a804.p.ssafy.io:8443'; //도커에 올린 openvidu server
 const OPENVIDU_SERVER_SECRET = 'kkini'; //시크릿키값, 바꿔주면 좋음
@@ -57,16 +58,20 @@ class VideoRoom extends Component {
     this.onbeforeunload = this.onbeforeunload.bind(this);
   }
 
+  //라이프 사이클
+
   //컴포넌트 마운트 직후
   componentDidMount() {
     window.addEventListener('beforeunload', this.onbeforeunload);
-    //방 리스트를 띄워야 합니다
     this.scrollToBottom();
+    //방 리스트를 띄워야 합니다
   }
 
+  //컴포넌트가 업데이트 될 때마다 실행
   componentDidUpdate() {
     this.scrollToBottom();
   }
+
   //컴포넌트 언마운트 직전
   componentWillUnmount() {
     // window.location.reload(); //화면 새로고침
@@ -80,6 +85,8 @@ class VideoRoom extends Component {
   onbeforeunload(event) {
     this.leaveSession();
   }
+
+  //메소드
 
   //방 이름 폼에 적으면 반영
   handleChangeSessionId(e) {
@@ -209,6 +216,7 @@ class VideoRoom extends Component {
     });
   }
 
+  //채팅창 팝업 열고 닫기
   chatToggle() {
     this.setState({ isChatOn: !this.state.isChatOn });
   }
@@ -418,6 +426,7 @@ class VideoRoom extends Component {
     }
   }
 
+  //채팅창 스크롤 자동으로 내려주는 기능
   scrollToBottom = () => {
     //componentDidUpdate() 생명주기는 수시로 호출되기 때문에
     //호출될 때마다 messagesEndRef.current가 없을 수도 있으므로 체크해줘야 한다
@@ -485,6 +494,12 @@ class VideoRoom extends Component {
             <div className="chat">
               {this.state.isChatOn ? (
                 <div className="chatWrapper chatbox--active">
+                  <div className="chatHeader">
+                    <h1 style="text-align: center">채팅</h1>
+                    <button onClick={this.chatToggle}>
+                      <h2>{'>'}</h2>
+                    </button>
+                  </div>
                   <div className="chatLogBox">
                     <Messages messages={messages} />
                     <div ref={this.messagesEndRef} />

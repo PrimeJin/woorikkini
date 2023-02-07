@@ -37,7 +37,7 @@ function ModifyPage() {
     console.log(nickname);
     axios({
       method: 'GET',
-      url: `http://i8a804.p.ssafy.io:8040/user/userNickname=${nickname}`,
+      url: `https://i8a804.p.ssafy.io/api/user/userNickname=${nickname}`,
       headers: {
         'Content-type': 'application/json',
       },
@@ -98,7 +98,7 @@ function ModifyPage() {
       alert('비밀번호를 확인해주세요');
     } else {
       axios({
-        url: `http://i8a804.p.ssafy.io:8040/user/${userId}/nickname`,
+        url: `https://i8a804.p.ssafy.io/api/user/${userId}/nickname`,
         method: 'PATCH',
         headers: {
           'Content-type': 'application/json',
@@ -108,7 +108,7 @@ function ModifyPage() {
         .then((response) => {
           if (response.status === 202) {
             axios({
-              url: `http://i8a804.p.ssafy.io:8040/user/${userId}/password`,
+              url: `https://i8a804.p.ssafy.io/api/user/${userId}/password`,
               method: 'PATCH',
               headers: {
                 'Content-type': 'application/json',

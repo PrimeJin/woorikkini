@@ -27,7 +27,7 @@ const LogoutPage = () => {
   async function logoutFunc() {
     axios({
       methods: 'GET',
-      url: `http://i8a804.p.ssafy.io:8040/user/logout/${id}`,
+      url: `https://i8a804.p.ssafy.io/api/user/logout/${id}`,
       headers: {
         'Content-type': 'application/json',
       },

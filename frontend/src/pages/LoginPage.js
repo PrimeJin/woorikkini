@@ -46,7 +46,7 @@ const LoginPage = () => {
     };
 
     axios({
-      url: `http://i8a804.p.ssafy.io:8040/user/login`,
+      url: `https://i8a804.p.ssafy.io/api/user/login`,
       method: 'POST',
       headers: {
         'Content-type': 'application/json',
