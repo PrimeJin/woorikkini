@@ -34,15 +34,16 @@ class VideoRoom extends Component {
       isEmpty: false, //세션이 비어있는지 아닌지
       isHost: false, //
       isChatOn: false, //채팅팝업창이 켜져있는지 아닌지
-      token: undefined, //accessToken
+      token: '', //accessToken
       message: '', //메시지 단일입력
       messages: [], //메시지 로그
       messagesEnd: null,
+      users: [], //전체 참여자
     };
 
     //method
     this.joinSession = this.joinSession.bind(this);
-    this.leaveSession = this.leaveSession.bind(this);
+    this.closeSession = this.closeSession.bind(this);
     this.switchCamera = this.switchCamera.bind(this);
     this.handleChangeSessionId = this.handleChangeSessionId.bind(this);
     this.handleChangeUserName = this.handleChangeUserName.bind(this);
@@ -56,6 +57,7 @@ class VideoRoom extends Component {
 
     this.handleMainVideoStream = this.handleMainVideoStream.bind(this);
     this.onbeforeunload = this.onbeforeunload.bind(this);
+    this.getUserList = this.getUserList.bind(this);
   }
 
   //라이프 사이클
@@ -68,22 +70,26 @@ class VideoRoom extends Component {
   }
 
   //컴포넌트가 업데이트 될 때마다 실행
+  //디버깅용
   componentDidUpdate() {
     this.scrollToBottom();
+    // console.log('createSession');
+    // console.log(this.state.session.sessionId); //현재 세션값
+    // console.log('createToken');
+    // console.log(this.state.token); //현재 토큰값
   }
 
   //컴포넌트 언마운트 직전
   componentWillUnmount() {
-    // window.location.reload(); //화면 새로고침
     window.removeEventListener('beforeunload', this.onbeforeunload);
     //세션에 아무도 없으면 퇴장
     if (!this.state.isEmpty) {
-      this.leaveSession();
+      this.closeSession();
     }
   }
 
   onbeforeunload(event) {
-    this.leaveSession();
+    this.closeSession();
   }
 
   //메소드
@@ -195,22 +201,26 @@ class VideoRoom extends Component {
     }
   }
 
-  //현재 세션의 참가자 정보 획득
-  updateHost() {
+  //현재 세션의 참가자 정보
+  getUserList() {
     return new Promise((resolve, reject) => {
       axios({
         method: 'GET',
-        url: `${'https://i8a804.p.ssafy.io:8443/api/sessions/'}${this.state.mySessionId}/connection`,
+        url: `${'https://i8a804.p.ssafy.io:8443/openvidu/api/sessions/'}${this.state.mySessionId}/connection`,
         headers: {
-          Authorization: `Basic ${btoa(`OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`)}`,
+          Authorization: `Basic ${EncodeBase64(`OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`)}`,
           'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET,POST',
+          'Access-Control-Allow-Methods': 'GET, POST',
         },
       })
         .then((response) => {
-          let content = response.content;
-          content.sort((a, b) => a.createdAt - b.createdAt);
-          resolve(content[0].clientData);
+          let content = response.data.content;
+          // console.log(content);
+          content.map((user) => {
+            console.log(user.clientData.split('"')[3]);
+          });
+          content.sort((a, b) => a.createdAt - b.createdAt); //들어온 순서대로 정리
+          resolve(content);
         })
         .catch((error) => reject(error));
     });
@@ -269,29 +279,30 @@ class VideoRoom extends Component {
         //사용자가 화상회의를 떠나면 Session객체에서 소멸된 stream을 받아와
         //subscribers 상태값 업데이트
         mySession.on('streamDestroyed', (event) => {
-          this.updateHost().then((clientData) => {
-            const host = JSON.parse(clientData).clientData;
+          this.deleteSubscriber(event.stream.streamManager);
+          // this.updateHost().then((clientData) => {
+          //   const host = JSON.parse(clientData).clientData;
 
-            mySession
-              .signal({
-                data: host,
-                to: [],
-                type: 'update-host',
-              })
-              .then(() => {})
-              .catch((error) => {});
-          });
+          //   mySession
+          //     .signal({
+          //       data: host,
+          //       to: [],
+          //       type: 'update-host',
+          //     })
+          //     .then(() => {})
+          //     .catch((error) => {});
+          // });
 
           // subscribers 배열에서 스트림을 제거합니다
-          this.deleteSubscriber(event.stream.streamManager);
         });
 
         mySession.on('signal:update-host', (event) => {
-          if (this.state.userName === event.data) {
-            this.setState({
-              isHost: true,
-            });
-          }
+          // console.log(event.data);
+          // if (this.state.userName === event.data) {
+          //   this.setState({
+          //     isHost: true,
+          //   });
+          // }
         });
 
         // 모든 비동기 오류마다 Session 객체에 의해 트리거 되는 이벤트
@@ -339,56 +350,27 @@ class VideoRoom extends Component {
     );
   }
 
-  //방(세션) 떠나기
-  leaveSession() {
-    // --- Disconnect 메소드를 호출하면 세션 나가기 ---
-    // 현재 세션
-    const mySession = this.state.session;
-
-    //mysession이 있을 경우 disconnect메소드 호출
-    if (mySession) {
-      mySession.disconnect();
-    }
-
+  //세션 닫기(세션의 모든 참가자 퇴장)
+  closeSession() {
     //백엔드에 퇴장 요청 보내기
-    // axios
-    //   .put('/rooms', {
-    //     roomId: this.state.mySessionId,
-    //   })
-    //   .then(() => {
-    //     // 모든 속성(프로퍼티) 초기화
-    //     this.OV = null; //Openvidu 객체 삭제
-    //     this.setState({
-    //       session: undefined,
-    //       subscribers: [],
-    //       mySessionId: 'SessionA',
-    //       myUserName: 'Participant' + Math.floor(Math.random() * 100),
-    //       mainStreamManager: undefined,
-    //       publisher: undefined,
-    //     });
-
-    //     this.props.history.push('/');
-    //     // window.location.reload();
-    //   });
-
     axios
       .delete(`${OPENVIDU_SERVER_URL}/openvidu/api/sessions/${this.state.mySessionId}`, {
         headers: {
-          Authorization: `Basic ${btoa(`OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`)}`,
+          Authorization: `Basic ${EncodeBase64(`OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`)}`,
           'Content-Type': 'application/json',
         },
       })
       .then((res) => {
-        // // 모든 속성(프로퍼티) 초기화
-        this.OV = null; //Openvidu 객체 삭제
-        this.setState({
-          session: undefined,
-          subscribers: [],
-          mySessionId: 'SessionA',
-          myUserName: 'Participant' + Math.floor(Math.random() * 100),
-          mainStreamManager: undefined,
-          publisher: undefined,
-        });
+        // //모든 속성(프로퍼티) 초기화
+        // this.OV = null; //Openvidu 객체 삭제
+        // this.setState({
+        //   // session: undefined,
+        //   subscribers: [],
+        //   mySessionId: 'SessionA',
+        //   myUserName: 'Participant' + Math.floor(Math.random() * 100),
+        //   mainStreamManager: undefined,
+        //   publisher: undefined,
+        // });
         window.location.reload();
       });
   }
@@ -483,22 +465,20 @@ class VideoRoom extends Component {
           <div id="session">
             <div id="session-header">
               <h1 id="session-title">{mySessionId}</h1>
-              <input
+              <button
                 className="btn btn-large btn-danger"
                 type="button"
-                id="buttonLeaveSession"
-                onClick={this.leaveSession}
-                value="Leave session"
-              />
+                id="buttonCloseSession"
+                onClick={this.closeSession}
+              >
+                Close Session
+              </button>
             </div>
             <div className="chat">
               {this.state.isChatOn ? (
                 <div className="chatWrapper chatbox--active">
                   <div className="chatHeader">
-                    <h1 style="text-align: center">채팅</h1>
-                    <button onClick={this.chatToggle}>
-                      <h2>{'>'}</h2>
-                    </button>
+                    <h2>채팅</h2>
                   </div>
                   <div className="chatLogBox">
                     <Messages messages={messages} />
@@ -522,6 +502,9 @@ class VideoRoom extends Component {
               ) : null}
               <div className="chatbox__button">
                 <button onClick={this.chatToggle}>채팅 열기</button>
+              </div>
+              <div>
+                <button onClick={this.getUserList}>참여자 목록</button>
               </div>
             </div>
 
@@ -575,13 +558,12 @@ class VideoRoom extends Component {
       axios
         .post(`${OPENVIDU_SERVER_URL}/openvidu/api/sessions`, data, {
           headers: {
-            Authorization: `Basic ${btoa(`OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`)}`,
+            Authorization: `Basic ${EncodeBase64(`OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`)}`,
             'Content-Type': 'application/json',
           },
         })
         .then((response) => {
           resolve(response.data.id);
-          console.log('createSession: ' + response.data.id);
         })
         .catch((response) => {
           let error = { ...response };
@@ -617,7 +599,6 @@ class VideoRoom extends Component {
           this.setState({
             token: response.data.token,
           });
-          console.log('createToken: ' + this.state.token);
         })
         .catch((error) => reject(error));
     });
