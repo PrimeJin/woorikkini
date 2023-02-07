@@ -32,7 +32,7 @@ public class Room {
     private String roomContent;
 
     @Column( length = 1)
-    @ColumnDefault("'N'")
+    @ColumnDefault("'F'")
     @NotNull
     private String roomPrivate;
 
