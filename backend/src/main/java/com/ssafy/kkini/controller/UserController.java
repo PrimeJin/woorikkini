@@ -268,7 +268,7 @@ public class UserController {
             boolean expireYn = passwordCodeService.checkExpirePasswordCode(originalPasswordCode);
             if(!expireYn) {  //비밀번호 코드 유효 검사
                 map.put("message", "success");
-                return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<Map<String, Object>>(map, HttpStatus.ACCEPTED);
             }
         }
         map.put("message", "fail");
