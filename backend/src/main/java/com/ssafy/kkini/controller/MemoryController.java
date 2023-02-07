@@ -19,7 +19,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/memory")
+@RequestMapping("/api/memory")
 public class MemoryController {
 
     private static final String SUCCESS = "success";

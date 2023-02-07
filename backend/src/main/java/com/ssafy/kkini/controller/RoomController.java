@@ -20,7 +20,7 @@ import java.util.Map;
 
 @RestController
 @Api("Room RestController V1")
-@RequestMapping("/room")
+@RequestMapping("/api/room")
 @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE})
 public class RoomController {
     private static final String SUCCESS = "success";
