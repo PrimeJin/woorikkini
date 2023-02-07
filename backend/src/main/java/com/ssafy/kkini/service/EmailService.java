@@ -47,7 +47,8 @@ public class EmailService {
 
         StringBuilder sb = new StringBuilder();
         //서버주소
-        sb.append("<a href='https://i8a804.p.ssafy.io/user/password?userEmail=");
+//        sb.append("<a href='https://i8a804.p.ssafy.io/user/password?userEmail=");
+        sb.append("<a href='https://i8a804.p.ssafy.io/api/user/password?userEmail=");
         sb.append(email);
         sb.append("&passwordCodeContent=");
         sb.append(passwordCode);
