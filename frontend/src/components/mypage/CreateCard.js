@@ -1,12 +1,14 @@
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import './CreateCard.css';
 import axios from 'axios';
 import Modal from '../Modal';
+import { string } from 'prop-types';
 
 function CreateCard(props) {
   // store에서 현재 로그인한 사용자의 userId 가져오기
   const userId = useSelector((state) => state.user.id);
+  console.log('유저아이디 타입!!', typeof userId);
   const getCardList = props.getCardList;
 
   // useState를 사용하여 open상태를 변경한다. (open일때 true로 만들어 열리는 방식)
@@ -41,12 +43,8 @@ function CreateCard(props) {
   };
 
   const deleteImg = (id) => {
-    console.log('삭제할거야', id);
-    // console.log('사진리스트', previewData[id]);
     setPreviewData(previewData.filter((img) => previewData.indexOf(img) !== id));
     setFileData(fileData.filter((img) => fileData.indexOf(img) !== id));
-    console.log('같은건가?', previewData.indexOf(previewData[id]));
-    console.log('사진리스트 삭제 후', previewData);
   };
 
   const onTitle = (event) => {
@@ -56,33 +54,47 @@ function CreateCard(props) {
     setContentData(event.currentTarget.value);
   };
 
+  interface cardData {
+    userId: string;
+    memoryTitle: string;
+    memoryContent: string;
+  }
+
   const memoryRegister = (event) => {
     event.preventDefault();
     const formData = new FormData();
     formData.append('memoryImgFiles', fileData);
-    const cardData = {
+    const newCardData: cardData = {
       userId: userId,
-      memoryImgFiles: formData,
       memoryTitle: titleData,
       memoryContent: contentData,
     };
+    formData.append('newCardData', newCardData);
+
+    // formData 확인
+    for (var entries of formData.keys()) console.log('###', entries);
+
     // 서버로 전달
-    console.log('새로운 추억', cardData);
-    axios({
-      url: 'http://i8a804.p.ssafy.io:8040/memory',
-      method: 'POST',
-      data: cardData,
-      // headers: { 'Content-Type': 'multipart/form-data' },
-    })
-      .then(() => {
+    try {
+      axios({
+        url: 'https://i8a804.p.ssafy.io/api/memory',
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST',
+        },
+      }).then(() => {
+        console.log('성공!');
         setModalOpen(false);
         alert('새로운 추억이 등록되었습니다.');
         getCardList();
-      })
-      .catch((err) => {
-        console.log(err);
-        alert('다시 시도해주시기 바랍니다.');
       });
+    } catch (err) {
+      console.log(err);
+      alert('다시 시도해주시기 바랍니다.');
+    }
   };
 
   return (
@@ -101,7 +113,7 @@ function CreateCard(props) {
           <input
             // value={fileData}
             type="file"
-            multiple
+            multiple="multiple"
             accept="image/*"
             id="profileImg"
             onChange={onFile}

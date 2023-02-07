@@ -37,7 +37,7 @@ function Form() {
       alert('올바른 이메일 형식이 아닙니다. 다시 입력해주세요.');
     } else {
       axios({
-        url: `http://i8a804.p.ssafy.io:8040/user/email/check?authCodeUserEmail=${Email}`,
+        url: `http://i8a804.p.ssafy.io/api/user/email/check?authCodeUserEmail=${Email}`,
         method: 'GET',
       })
         .then((res) => {
@@ -63,7 +63,7 @@ function Form() {
       alert('인증코드를 입력해주세요.');
     } else {
       axios({
-        url: `http://i8a804.p.ssafy.io:8040/user/email/check?authCodeContent=${Code}&authCodeUserEmail=${Email}`,
+        url: `http://i8a804.p.ssafy.io/api/user/email/check?authCodeContent=${Code}&authCodeUserEmail=${Email}`,
         method: 'POST',
       })
         .then((res) => {
@@ -119,7 +119,7 @@ function Form() {
       alert('닉네임을 입력해주세요.');
     } else {
       axios({
-        url: `http://i8a804.p.ssafy.io:8040/user/${Nickname}`,
+        url: `http://i8a804.p.ssafy.io/api/user/${Nickname}`,
         method: 'GET',
       })
         .then((res) => {
@@ -176,7 +176,7 @@ function Form() {
       };
       console.log(userData);
       axios({
-        url: 'http://i8a804.p.ssafy.io:8040/user',
+        url: 'http://i8a804.p.ssafy.io/api/user',
         method: 'POST',
         data: userData,
       })

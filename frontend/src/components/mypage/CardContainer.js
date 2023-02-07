@@ -25,21 +25,25 @@ const SwiperContainer = () => {
       // axios.get('http://i8a804.p.ssafy.io:8040/memory');
       console.log('새로운 목록 불러오기');
       axios({
-        url: `http://i8a804.p.ssafy.io:8040/memory?userId=${userId}`,
+        url: `https://i8a804.p.ssafy.io/api/memory?userId=${userId}`,
         method: 'GET',
-      }).then((res) => {
-        console.log(res);
-        const response = res;
-        const inputData = response.data.memoryList.map((rowData) => ({
-          id: rowData.memoryId,
-          // img: rowData.save_filename,
-          date: rowData.createdTime.slice(0, 10),
-          title: rowData.memoryTitle,
-          content: rowData.memoryContent,
-        }));
-        // setCardList(cardList.concat(inputData));
-        setCardList(inputData);
-      });
+      })
+        .then((res) => {
+          console.log(res);
+          const response = res;
+          const inputData = response.data.memoryList.map((rowData) => ({
+            id: rowData.memory.memoryId,
+            img: rowData.photoList,
+            date: rowData.memory.createdTime.slice(0, 10),
+            title: rowData.memory.memoryTitle,
+            content: rowData.memory.memoryContent,
+          }));
+          // setCardList(cardList.concat(inputData));
+          setCardList(inputData);
+        })
+        .then((res) => {
+          console.log('!!!', cardList);
+        });
     } catch (e) {
       console.error('*', e);
     }
@@ -56,7 +60,7 @@ const SwiperContainer = () => {
     // = card.id 가 id 인 것을 제거함
     // setCardList(cardList.filter((card) => card.id !== id));
     axios
-      .delete(`http://i8a804.p.ssafy.io:8040/memory/${id}`, {
+      .delete(`https://i8a804.p.ssafy.io/api/memory/${id}`, {
         data: {
           memoryId: id,
         },
@@ -76,13 +80,16 @@ const SwiperContainer = () => {
   const [currentCard, setCurrentCard] = useState({});
   const [modalOpen, setModalOpen] = useState(false);
   const cardUpdate = (data) => {
-    setUpdate(!update);
+    const updateModal = true;
+    setUpdate(updateModal);
     const card = data;
     setCurrentCard(card);
-    console.log('수정할거야', update);
   };
   const openModal = () => {
     setModalOpen(true);
+  };
+  const closeModal = () => {
+    setModalOpen(false);
   };
 
   return (
@@ -127,30 +134,54 @@ const SwiperContainer = () => {
                   </div>
                 </div>
               </Swiper>
-              <div>
-                <button
+              <div
+                style={{
+                  position: 'relative',
+                  textAlign: 'center',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  width: '300px',
+                }}
+              >
+                {/* <button
                   onClick={() => {
                     cardUpdate(data);
                     openModal();
                   }}
-                >
-                  수정
-                </button>
+                > */}
                 {update ? (
                   <UpdateCard
                     currentCard={currentCard}
                     getCardList={getCardList}
-                    update={update}
+                    closeModal={closeModal}
                     modalOpen={modalOpen}
-                    // cardListUpdate={cardListUpdate}
                   ></UpdateCard>
                 ) : (
-                  <div></div>
+                  <div style={{ display: 'none' }}></div>
                 )}
-                <button onClick={() => cardDelete(data.id)}>삭제</button>
-                <div>{data.date}</div>
-                <div>{data.title}</div>
-                <div>{data.content}</div>
+                <div>
+                  <div style={{ justifyContent: 'space-between', width: '400px' }}>
+                    <img
+                      src={'img/수정 아이콘.png'}
+                      onClick={() => {
+                        cardUpdate(data);
+                        openModal();
+                      }}
+                      style={{ width: 25, height: 25, margin: '2%' }}
+                    ></img>
+                    {/* </button> */}
+                    {/* <button onClick={() => cardDelete(data.id)}> */}
+                    <img
+                      src={'img/삭제 아이콘.png'}
+                      onClick={() => cardDelete(data.id)}
+                      style={{ width: 25, height: 25, margin: '2%' }}
+                    ></img>
+                    {/* </button> */}
+                  </div>
+                  <div>{data.date}</div>
+                  <div>{data.title}</div>
+                  <div>{data.content}</div>
+                </div>
               </div>
             </div>
           );
