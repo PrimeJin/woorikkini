@@ -10,6 +10,7 @@ import com.ssafy.kkini.repository.RefreshTokenRepository;
 import com.ssafy.kkini.service.TokenProviderService;
 import com.ssafy.kkini.util.CookieUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -74,11 +75,19 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         }
         refreshTokenRepository.saveAndFlush(oldRefreshToken);
 
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", oldRefreshToken.getRefreshToken())
+                .maxAge(7 * 24 * 60 * 60)
+                .path("/")
+                .secure(true)
+                .sameSite("None")
+                .httpOnly(true)
+                .build();
+        response.setHeader("Set-Cookie", cookie.toString());
+
         return UriComponentsBuilder.fromUriString(targetUrl)
                 .queryParam("userId", userPrincipalDto.getUser().getUserId())
                 .queryParam("nickName", userPrincipalDto.getUser().getUserNickname())
                 .queryParam("accessToken", token)
-                .queryParam("refreshToken", oldRefreshToken.getRefreshToken())
                 .build().toUriString();
     }
 
