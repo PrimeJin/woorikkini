@@ -42,7 +42,7 @@ public class Room {
     @NotNull
     private int roomLimitUser;
 
-    private int roomPreset;
+    private String roomPreset;
 
     @ColumnDefault("1")
     @Builder.Default

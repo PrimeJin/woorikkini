@@ -23,7 +23,7 @@ import java.util.Map;
 // -> 반환 받은 사용자 정보를 이용하여 신규회원인지 확인 -> 신규회원이면 DB에 회원 등록 -> JWT 반환,
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
     private final static long THREE_DAYS_MSEC = 1000 * 60 * 60 * 24 * 3;
     private static final String SUCCESS = "success";

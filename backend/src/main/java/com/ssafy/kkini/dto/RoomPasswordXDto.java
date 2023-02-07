@@ -15,7 +15,7 @@ public class RoomPasswordXDto {
     private String roomPrivate;
     private int roomLimitUser;
 
-    private int roomPreset;
+    private String roomPreset;
     private int roomRecentUser;
 
     public RoomPasswordXDto(Room room){
