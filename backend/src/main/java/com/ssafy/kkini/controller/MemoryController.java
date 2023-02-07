@@ -41,6 +41,7 @@ public class MemoryController {
         Map<String, Object> resultMap = new HashMap<>();
         Memory createMemory = null;
         memoryCreateFormDto.setMemoryImgFiles(memoryImgFiles);
+        
         System.out.println(memoryCreateFormDto.toString());
 
         try {
