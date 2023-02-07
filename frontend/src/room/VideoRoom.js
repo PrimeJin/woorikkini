@@ -21,7 +21,7 @@ class VideoRoom extends Component {
   //초기설정 생성자
   constructor(props) {
     super(props);
-
+    this.messagesEndRef = React.createRef(null);
     //state
     this.state = {
       mySessionId: 'SessionA',
@@ -36,6 +36,7 @@ class VideoRoom extends Component {
       token: undefined, //accessToken
       message: '', //메시지 단일입력
       messages: [], //메시지 로그
+      messagesEnd: null,
     };
 
     //method
@@ -50,6 +51,7 @@ class VideoRoom extends Component {
     this.sendMessageByClick = this.sendMessageByClick.bind(this);
     this.sendMessageByEnter = this.sendMessageByEnter.bind(this);
     this.chatToggle = this.chatToggle.bind(this);
+    this.scrollToBottom = this.scrollToBottom.bind(this);
 
     this.handleMainVideoStream = this.handleMainVideoStream.bind(this);
     this.onbeforeunload = this.onbeforeunload.bind(this);
@@ -59,9 +61,12 @@ class VideoRoom extends Component {
   componentDidMount() {
     window.addEventListener('beforeunload', this.onbeforeunload);
     //방 리스트를 띄워야 합니다
+    this.scrollToBottom();
   }
 
-  componentDidUpdate() {}
+  componentDidUpdate() {
+    this.scrollToBottom();
+  }
   //컴포넌트 언마운트 직전
   componentWillUnmount() {
     // window.location.reload(); //화면 새로고침
@@ -413,6 +418,15 @@ class VideoRoom extends Component {
     }
   }
 
+  scrollToBottom = () => {
+    //componentDidUpdate() 생명주기는 수시로 호출되기 때문에
+    //호출될 때마다 messagesEndRef.current가 없을 수도 있으므로 체크해줘야 한다
+    //안그러면 TypeError: Cannot read property 'scrollIntoView' of null가 표시될 수 있음
+    if (this.messagesEndRef.current) {
+      this.messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   render() {
     const mySessionId = this.state.mySessionId;
     const myUserName = this.state.myUserName;
@@ -473,6 +487,7 @@ class VideoRoom extends Component {
                 <div className="chatWrapper chatbox--active">
                   <div className="chatLogBox">
                     <Messages messages={messages} />
+                    <div ref={this.messagesEndRef} />
                   </div>
 
                   <div className="chatFooter">
