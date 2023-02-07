@@ -36,7 +36,7 @@ function App() {
           <Route path="/user/logout" element={<LogoutPage />} />
           <Route path="/user/modify" element={<ModifyPage />} />
           <Route path="/user/findpw" element={<PwFind />} />
-          <Route path="/user/:email/:passwordCodeContent" element={<PwChange />} />
+          <Route path="/user/password" element={<PwChange />} />
           <Route path="/user/delete" element={<DeletePage />} />
           <Route path="/oauth/callback/kakao" element={<Kakao />} />
           <Route path="/oauth/callback/naver" element={<Naver />} />

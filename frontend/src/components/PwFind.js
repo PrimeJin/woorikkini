@@ -27,7 +27,7 @@ const PwFind = () => {
 
   const getInfo = () => {
     axios({
-      url: `http://i8a804.p.ssafy.io:8040/user/${email}/password?userName=${name}`,
+      url: `https://i8a804.p.ssafy.io/api/user/${email}/password?userName=${name}`,
       method: 'GET',
     })
       .then((res) => {
