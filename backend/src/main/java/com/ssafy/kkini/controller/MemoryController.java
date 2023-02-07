@@ -21,7 +21,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/memory")
+@RequestMapping("/api/memory")
 @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE})
 public class MemoryController {
 
