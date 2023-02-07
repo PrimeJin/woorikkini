@@ -38,6 +38,8 @@ public class MemoryService {
     @Value("${upload.path}")
     private String fileDir;
 
+    private String parentDir;
+
     public List<MemoryGetFormDto> getMemory(int userId) {
         List<MemoryGetFormDto> memoryGetFormDtoList = new ArrayList<>();
         for (Memory memory : memoryRepository.findByUser_UserId(userId)) {
@@ -98,9 +100,11 @@ public class MemoryService {
         //폴더 생성
         String hostname = InetAddress.getLocalHost().getHostName();
         File uploadPath = null;
-        if(hostname. substring(0, 7).equals ("DESKTOP") ) uploadPath = new File(fileDir, uploadFolderPath); // 오늘 날짜의 경로를 문자열로 생성
 
-        else uploadPath = new File("\\images\\",uploadFolderPath);
+        if(hostname. substring(0, 7).equals ("DESKTOP") ) parentDir = fileDir;
+        else parentDir = "\\images\\";
+
+        uploadPath = new File(parentDir, uploadFolderPath); // 오늘 날짜의 경로를 문자열로 생성
 
         System.out.println("host_name = " + hostname + ", uploadPath = " + uploadPath);
 
@@ -135,12 +139,12 @@ public class MemoryService {
 
             Photo photo = new Photo();
             photo.setMemory(memory);
-            photo.setFilePath(fileDir + uploadFolderPath + new_file_name);
+            photo.setFilePath(parentDir + uploadFolderPath + new_file_name);
             photo.setOriginalFilename(originFileName);
 
             photoList.add(photoRepository.save(photo));
             // 업로드 한 파일 데이터를 지정한 파일에 저장
-            File file = new File(fileDir,uploadFolderPath + new_file_name);
+            File file = new File(parentDir,uploadFolderPath + new_file_name);
             try {
                 uploadFile.transferTo(file);
             }catch (IOException e) {
