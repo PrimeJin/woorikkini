@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
-@Async
 @Service
 @RequiredArgsConstructor
 public class EmailService {
@@ -19,6 +18,8 @@ public class EmailService {
     public void sendEmail(String to, String subject, String text) {
         this.sendEmail(to, subject, text, false);
     }
+
+    @Async
     public void sendEmail(String to, String subject, String text, boolean html) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 
