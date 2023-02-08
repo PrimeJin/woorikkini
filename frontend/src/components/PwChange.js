@@ -17,7 +17,7 @@ const PwChange = () => {
   const email = queryData.userEmail;
   const code = queryData.passwordCodeContent;
 
-  useEffect(() => {
+  function goCheck() {
     axios({
       url: `https://i8a804.p.ssafy.io/api/user/password?userEmail=${email}&passwordCodeContent=${code}`,
       method: "GET",
@@ -30,12 +30,18 @@ const PwChange = () => {
         if (res.data.message === "success") {
           setCheck(true);
         } else {
-          alert("민료된 링크입니다.");
+          alert("만료된 링크입니다.");
         }
       })
       .catch((err) => {
         console.log(err, "check 에러");
-      });
+        alert("만료된 링크입니다.")
+        }
+      );
+  }
+
+  useEffect(() => {
+    goCheck()
   }, []);
 
   const useInput = (initial, validate) => {
