@@ -19,7 +19,7 @@ public class EmailService {
         this.sendEmail(to, subject, text, false);
     }
 
-    @Async
+    @Async("threadPollTaskExecutor")
     public void sendEmail(String to, String subject, String text, boolean html) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 
