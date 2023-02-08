@@ -4,12 +4,19 @@ import axios from 'axios';
 import UserVideoComponent from './UserVideoComponent';
 import { OpenVidu } from 'openvidu-browser';
 
+//style
 import CenterLogo from '../styles/CenterLogo';
-import './UserVideo.css';
-import './VideoRoom.css';
-
+import styles from './VideoRoom.module.css';
 import Messages from './components/Messages';
-import { Button } from '../../node_modules/@mui/material/index';
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
+import Tab from '@mui/material/Tab';
+import TabPanel from '@mui/lab/TabPanel';
+import ChatIcon from '@mui/icons-material/Chat';
+import UserIcon from '@mui/icons-material/Person';
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
+import Box from '@mui/material/Box';
 
 const OPENVIDU_SERVER_URL = 'https://i8a804.p.ssafy.io:8443'; //도커에 올린 openvidu server
 const OPENVIDU_SERVER_SECRET = 'kkini'; //시크릿키값, 바꿔주면 좋음
@@ -34,15 +41,19 @@ class VideoRoom extends Component {
       isEmpty: false, //세션이 비어있는지 아닌지
       isHost: false, //
       isChatOn: false, //채팅팝업창이 켜져있는지 아닌지
-      token: undefined, //accessToken
+      isListOn: false,
+      token: '', //accessToken
       message: '', //메시지 단일입력
       messages: [], //메시지 로그
       messagesEnd: null,
+      users: [], //전체 참여자
+
+      value: '1', //1: 채팅창, 2:참여자 목록
     };
 
     //method
     this.joinSession = this.joinSession.bind(this);
-    this.leaveSession = this.leaveSession.bind(this);
+    this.closeSession = this.closeSession.bind(this);
     this.switchCamera = this.switchCamera.bind(this);
     this.handleChangeSessionId = this.handleChangeSessionId.bind(this);
     this.handleChangeUserName = this.handleChangeUserName.bind(this);
@@ -56,6 +67,11 @@ class VideoRoom extends Component {
 
     this.handleMainVideoStream = this.handleMainVideoStream.bind(this);
     this.onbeforeunload = this.onbeforeunload.bind(this);
+    this.getUserList = this.getUserList.bind(this);
+    this.userList = this.userList.bind(this);
+    this.listToggle = this.listToggle.bind(this);
+
+    this.handleChange = this.handleChange.bind(this);
   }
 
   //라이프 사이클
@@ -64,26 +80,32 @@ class VideoRoom extends Component {
   componentDidMount() {
     window.addEventListener('beforeunload', this.onbeforeunload);
     this.scrollToBottom();
+    this.getUserList();
     //방 리스트를 띄워야 합니다
   }
 
   //컴포넌트가 업데이트 될 때마다 실행
+  //디버깅용
   componentDidUpdate() {
     this.scrollToBottom();
+    // this.getUserList();
+    // console.log('createSession');
+    // console.log(this.state.session.sessionId); //현재 세션값
+    // console.log('createToken');
+    // console.log(this.state.token); //현재 토큰값
   }
 
   //컴포넌트 언마운트 직전
   componentWillUnmount() {
-    // window.location.reload(); //화면 새로고침
     window.removeEventListener('beforeunload', this.onbeforeunload);
     //세션에 아무도 없으면 퇴장
     if (!this.state.isEmpty) {
-      this.leaveSession();
+      this.closeSession();
     }
   }
 
   onbeforeunload(event) {
-    this.leaveSession();
+    this.closeSession();
   }
 
   //메소드
@@ -195,30 +217,62 @@ class VideoRoom extends Component {
     }
   }
 
-  //현재 세션의 참가자 정보 획득
-  updateHost() {
+  //현재 세션의 참가자 정보
+  getUserList() {
     return new Promise((resolve, reject) => {
       axios({
         method: 'GET',
-        url: `${'https://i8a804.p.ssafy.io:8443/api/sessions/'}${this.state.mySessionId}/connection`,
+        url: `${'https://i8a804.p.ssafy.io:8443/openvidu/api/sessions/'}${this.state.mySessionId}/connection`,
         headers: {
-          Authorization: `Basic ${btoa(`OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`)}`,
+          Authorization: `Basic ${EncodeBase64(`OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`)}`,
           'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET,POST',
+          'Access-Control-Allow-Methods': 'GET, POST',
         },
       })
         .then((response) => {
-          let content = response.content;
-          content.sort((a, b) => a.createdAt - b.createdAt);
-          resolve(content[0].clientData);
+          let content = response.data.content;
+          content.sort((a, b) => a.createdAt - b.createdAt); //들어온 순서대로 정리
+          this.setState({
+            users: content,
+          });
         })
         .catch((error) => reject(error));
     });
   }
 
+  userList(users) {
+    const list = users.map((user, index) => (
+      <li>
+        <Box sx={{ '& button': { m: 1 } }}>
+          <Stack direction="row" spacing={3}>
+            <div>{user.clientData.split('"')[3]}</div>
+            <Button variant="contained" color="error" size="small">
+              강퇴
+            </Button>
+            <Button variant="outlined" color="error" size="small">
+              신고
+            </Button>
+          </Stack>
+        </Box>
+      </li>
+    ));
+    return <ul>{list}</ul>;
+  }
+
+  listToggle() {
+    this.getUserList(); //추가로 유저가 들어왔다 나갈때도 자동으로 갱신될 수 있게
+    this.setState({ isListOn: !this.state.isListOn });
+  }
+
   //채팅창 팝업 열고 닫기
   chatToggle() {
     this.setState({ isChatOn: !this.state.isChatOn });
+  }
+
+  handleChange(event, newValue) {
+    this.setState({
+      value: newValue,
+    });
   }
 
   //submit버튼을 클릭하면 방(세션)에 참여
@@ -269,34 +323,22 @@ class VideoRoom extends Component {
         //사용자가 화상회의를 떠나면 Session객체에서 소멸된 stream을 받아와
         //subscribers 상태값 업데이트
         mySession.on('streamDestroyed', (event) => {
-          this.updateHost().then((clientData) => {
-            const host = JSON.parse(clientData).clientData;
-
-            mySession
-              .signal({
-                data: host,
-                to: [],
-                type: 'update-host',
-              })
-              .then(() => {})
-              .catch((error) => {});
-          });
-
-          // subscribers 배열에서 스트림을 제거합니다
           this.deleteSubscriber(event.stream.streamManager);
+          this.getUserList(); //참여자 목록 갱신
         });
 
         mySession.on('signal:update-host', (event) => {
-          if (this.state.userName === event.data) {
-            this.setState({
-              isHost: true,
-            });
-          }
+          // console.log(event.data);
+          // if (this.state.userName === event.data) {
+          //   this.setState({
+          //     isHost: true,
+          //   });
+          // }
         });
 
         // 모든 비동기 오류마다 Session 객체에 의해 트리거 되는 이벤트
         mySession.on('exception', (exception) => {
-          console.warn(exception);
+          // console.warn(exception);
         });
 
         // OpenVidu 환경에서 토큰 발급받기
@@ -325,6 +367,7 @@ class VideoRoom extends Component {
                 });
 
                 mySession.publish(newPublisher);
+                this.getUserList();
                 this.setState({
                   // mainStreamManager: newPublisher,
                   publisher: newPublisher,
@@ -339,50 +382,21 @@ class VideoRoom extends Component {
     );
   }
 
-  //방(세션) 떠나기
-  leaveSession() {
-    // --- Disconnect 메소드를 호출하면 세션 나가기 ---
-    // 현재 세션
-    const mySession = this.state.session;
-
-    //mysession이 있을 경우 disconnect메소드 호출
-    if (mySession) {
-      mySession.disconnect();
-    }
-
+  //세션 닫기(세션의 모든 참가자 퇴장)
+  closeSession() {
     //백엔드에 퇴장 요청 보내기
-    // axios
-    //   .put('/rooms', {
-    //     roomId: this.state.mySessionId,
-    //   })
-    //   .then(() => {
-    //     // 모든 속성(프로퍼티) 초기화
-    //     this.OV = null; //Openvidu 객체 삭제
-    //     this.setState({
-    //       session: undefined,
-    //       subscribers: [],
-    //       mySessionId: 'SessionA',
-    //       myUserName: 'Participant' + Math.floor(Math.random() * 100),
-    //       mainStreamManager: undefined,
-    //       publisher: undefined,
-    //     });
-
-    //     this.props.history.push('/');
-    //     // window.location.reload();
-    //   });
-
     axios
       .delete(`${OPENVIDU_SERVER_URL}/openvidu/api/sessions/${this.state.mySessionId}`, {
         headers: {
-          Authorization: `Basic ${btoa(`OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`)}`,
+          Authorization: `Basic ${EncodeBase64(`OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`)}`,
           'Content-Type': 'application/json',
         },
       })
       .then((res) => {
-        // // 모든 속성(프로퍼티) 초기화
+        // //모든 속성(프로퍼티) 초기화
         this.OV = null; //Openvidu 객체 삭제
         this.setState({
-          session: undefined,
+          // session: undefined,
           subscribers: [],
           mySessionId: 'SessionA',
           myUserName: 'Participant' + Math.floor(Math.random() * 100),
@@ -443,121 +457,129 @@ class VideoRoom extends Component {
 
     return (
       <div className="container">
-        <CenterLogo />
+        <div className={styles.header}>
+          <CenterLogo />
+        </div>
+        {/** 세션이 없을 경우 띄우는 화면
+         * RoomList.js가 여기를 대체할 수 있도록 하기
+         */}
+
         {this.state.session === undefined ? (
-          <div id="join">
-            <div id="join-dialog" className="jumbotron vertical-center">
-              <h1> 참여하기 </h1>
-              <form className="form-group" onSubmit={this.joinSession}>
-                <p>
-                  <label>참가자명: </label>
-                  <input
-                    className="form-control"
-                    type="text"
-                    id="userName"
-                    value={myUserName}
-                    onChange={this.handleChangeUserName}
-                    required
-                  />
-                </p>
-                <p>
-                  <label> 세션명: </label>
-                  <input
-                    className="form-control"
-                    type="text"
-                    id="sessionId"
-                    value={mySessionId}
-                    onChange={this.handleChangeSessionId}
-                    required
-                  />
-                </p>
-                <p className="text-center">
-                  <input className="btn btn-lg btn-success" name="commit" type="submit" value="JOIN" />
-                </p>
-              </form>
+          <div className={styles.main}>
+            <div className={styles.body}>
+              <div id="join">
+                <div id="join-dialog" className="jumbotron vertical-center">
+                  <h1> 참여하기 </h1>
+                  <form className="form-group" onSubmit={this.joinSession}>
+                    <p>
+                      <label>참가자명: </label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        id="userName"
+                        value={myUserName}
+                        onChange={this.handleChangeUserName}
+                        required
+                      />
+                    </p>
+                    <p>
+                      <label> 세션명: </label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        id="sessionId"
+                        value={mySessionId}
+                        onChange={this.handleChangeSessionId}
+                        required
+                      />
+                    </p>
+                    <p className="text-center">
+                      <input className="btn btn-lg btn-success" name="commit" type="submit" value="JOIN" />
+                    </p>
+                  </form>
+                </div>
+              </div>
             </div>
           </div>
-        ) : null}
-
-        {this.state.session !== undefined ? (
-          <div id="session">
-            <div id="session-header">
-              <h1 id="session-title">{mySessionId}</h1>
-              <input
+        ) : (
+          <div className={styles.main}>
+            <div className={styles.body}>
+              <h2 id="session-title">{mySessionId}</h2>
+              <button
                 className="btn btn-large btn-danger"
                 type="button"
-                id="buttonLeaveSession"
-                onClick={this.leaveSession}
-                value="Leave session"
-              />
-            </div>
-            <div className="chat">
-              {this.state.isChatOn ? (
-                <div className="chatWrapper chatbox--active">
-                  <div className="chatHeader">
-                    <h1 style="text-align: center">채팅</h1>
-                    <button onClick={this.chatToggle}>
-                      <h2>{'>'}</h2>
-                    </button>
+                id="buttonCloseSession"
+                onClick={this.closeSession}
+              >
+                Close Session
+              </button>
+              <div id="video-container" className="col-md-6">
+                {this.state.publisher !== undefined ? (
+                  <div
+                    className="stream-container col-md-6 col-xs-6"
+                    onClick={() => this.handleMainVideoStream(this.state.publisher)}
+                  >
+                    <UserVideoComponent streamManager={this.state.publisher} />
                   </div>
-                  <div className="chatLogBox">
-                    <Messages messages={messages} />
-                    <div ref={this.messagesEndRef} />
+                ) : null}
+                {this.state.subscribers.map((sub, i) => (
+                  <div
+                    key={i}
+                    className="stream-container col-md-6 col-xs-6"
+                    onClick={() => this.handleMainVideoStream(sub)}
+                  >
+                    <UserVideoComponent streamManager={sub} />
                   </div>
-
-                  <div className="chatFooter">
-                    <input
-                      id="chatInputForm"
-                      type="text"
-                      placeholder="메시지를 입력하세요"
-                      onChange={this.handleChangeChatMessage}
-                      onKeyPress={this.sendMessageByEnter}
-                      value={this.state.message}
-                    />
-                    <button className="chatSendButton" onClick={this.sendMessageByClick}>
-                      보내기
-                    </button>
-                  </div>
-                </div>
-              ) : null}
-              <div className="chatbox__button">
-                <button onClick={this.chatToggle}>채팅 열기</button>
+                ))}
               </div>
             </div>
+            <div>
+              <TabContext value={this.state.value}>
+                <TabPanel value="1">
+                  <div className={`${styles.chatWrapper} ${styles.chatbox__active}`}>
+                    <div className={styles.chatHeader}>
+                      <h2>채팅</h2>
+                    </div>
+                    <div className={styles.chatLogBox}>
+                      <Messages messages={messages} />
+                      <div ref={this.messagesEndRef} />
+                    </div>
 
-            {this.state.mainStreamManager !== undefined ? (
-              <div id="main-video" className="col-md-6">
-                <UserVideoComponent streamManager={this.state.mainStreamManager} />
-                <input
-                  className="btn btn-large btn-success"
-                  type="button"
-                  id="buttonSwitchCamera"
-                  onClick={this.switchCamera}
-                  value="Switch Camera"
-                />
-              </div>
-            ) : null}
-            <div id="video-container" className="col-md-6">
-              {this.state.publisher !== undefined ? (
-                <div
-                  className="stream-container col-md-6 col-xs-6"
-                  onClick={() => this.handleMainVideoStream(this.state.publisher)}
-                >
-                  <UserVideoComponent streamManager={this.state.publisher} />
-                </div>
-              ) : null}
-              {this.state.subscribers.map((sub, i) => (
-                <div
-                  key={i}
-                  className="stream-container col-md-6 col-xs-6"
-                  onClick={() => this.handleMainVideoStream(sub)}
-                >
-                  <UserVideoComponent streamManager={sub} />
-                </div>
-              ))}
+                    <div className={styles.chatFooter}>
+                      <input
+                        id={styles.chatInputForm}
+                        type="text"
+                        placeholder="메시지를 입력하세요"
+                        onChange={this.handleChangeChatMessage}
+                        onKeyPress={this.sendMessageByEnter}
+                        value={this.state.message}
+                      />
+                      <button className={styles.chatSendButton} onClick={this.sendMessageByClick}>
+                        보내기
+                      </button>
+                    </div>
+                  </div>
+                </TabPanel>
+                <TabPanel value="2">
+                  <div className={`${styles.chatWrapper} ${styles.chatbox__active}`}>
+                    <div className={styles.chatHeader}>
+                      <h2>참여자 목록</h2>
+                    </div>
+
+                    <div className={styles.userListBox}>
+                      {this.userList(this.state.users)}
+                      <div ref={this.messagesEndRef} />
+                    </div>
+                  </div>
+                </TabPanel>
+                <TabList onChange={this.handleChange} aria-label="icon label tabs example">
+                  <Tab icon={<ChatIcon />} label="채팅" value="1" />
+                  <Tab icon={<UserIcon />} label="참여자목록" value="2" />
+                </TabList>
+              </TabContext>
             </div>
           </div>
-        ) : null}
+        )}
       </div>
     );
   }
@@ -575,13 +597,12 @@ class VideoRoom extends Component {
       axios
         .post(`${OPENVIDU_SERVER_URL}/openvidu/api/sessions`, data, {
           headers: {
-            Authorization: `Basic ${btoa(`OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`)}`,
+            Authorization: `Basic ${EncodeBase64(`OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`)}`,
             'Content-Type': 'application/json',
           },
         })
         .then((response) => {
           resolve(response.data.id);
-          console.log('createSession: ' + response.data.id);
         })
         .catch((response) => {
           let error = { ...response };
@@ -617,7 +638,6 @@ class VideoRoom extends Component {
           this.setState({
             token: response.data.token,
           });
-          console.log('createToken: ' + this.state.token);
         })
         .catch((error) => reject(error));
     });

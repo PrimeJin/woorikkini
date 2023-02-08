@@ -10,7 +10,7 @@ import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import CenterLogo from '../styles/CenterLogo';
 import axios from 'axios';
-import '../styles/ModifyPage.css';
+import styles from '../styles/ModifyPage.module.css';
 
 function ModifyPage() {
   const [userNickname, setUserNickname] = useState(''); //닉네임 상태
@@ -132,30 +132,40 @@ function ModifyPage() {
   };
 
   return (
-    <div className="modify">
-      <div className="logo-box">
+    <div className={styles.modify}>
+      <div className={styles.logo_box}>
         <CenterLogo />
       </div>
-      <form className="modifyform">
+      <form className={styles.modifyform}>
         <h2>회원정보 수정</h2>
-        <div className="nicknameForm">
-          <input type="text" id="changeNickname" onChange={setUserNickname} placeholder=""></input>
-          <button className="checkButton" onClick={checkNickname}>
+        <div className={styles.nicknameForm}>
+          <input type="text" id={styles.changeNickname} onChange={setUserNickname} placeholder="닉네임"></input>
+          <button className={styles.checkButton} onClick={checkNickname}>
             중복확인
           </button>
         </div>
-        <div className="passwordForm">
-          <div className="passwords">
-            <input type="password" id="changePassword" onChange={onChangeNewPassword} />
+        <div className={styles.passwordForm}>
+          <div className={styles.passwords}>
+            <input
+              type="password"
+              id={styles.changePassword}
+              onChange={onChangeNewPassword}
+              placeholder="새 비밀번호"
+            />
             {newPassword.length > 0 && (
               <span className={`message ${isPassword ? 'success' : 'error'}`}>{passwordMsg}</span>
             )}
-            <input type="password" id="changePasswordCheck" onChange={onChangeConfirmNewPassword} />
+            <input
+              type="password"
+              id={styles.changePasswordCheck}
+              onChange={onChangeConfirmNewPassword}
+              placeholder="새 비밀번호 확인"
+            />
             {confirmPasswordMsg.length > 0 && (
               <span className={`message ${isConfirmPassword ? 'success' : 'error'}`}>{confirmPasswordMsg}</span>
             )}
           </div>
-          <button className="modifyButton" onClick={changeUserInfo}>
+          <button className={styles.modifyButton} onClick={changeUserInfo}>
             수정
           </button>
         </div>

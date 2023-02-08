@@ -1,4 +1,4 @@
-.mypage-logo-top {
+.mypage_logo_top {
   justify-content: center;
   display: flex;
   flex-flow: row nowrap;
@@ -6,7 +6,7 @@
   width: 130px;
 }
 
-.mypage-logo {
+.mypage_logo {
   width: 120px;
   height: 136px;
 }
