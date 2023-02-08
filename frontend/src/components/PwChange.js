@@ -125,8 +125,7 @@ const PwChange = () => {
       })
         .then((res) => {
           alert("비밀번호 변경에 성공하였습니다.");
-          // navigate("/user/login");
-          console.log(res.message)
+          navigate("/user/login");
         })
         .catch((err) => {
           console.log(err, "goPw 에러");
