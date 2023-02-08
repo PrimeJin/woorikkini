@@ -68,7 +68,6 @@ public class MemoryController {
                                                                 @RequestPart(value = "newCardData") MemoryUpdateFormDto memoryUpdateFormDto){
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
-
         Memory updateMemory = null;
 
         try {
