@@ -58,7 +58,10 @@ public class MemoryService {
             memory.setUser(user);
             Memory createMemory = memoryRepository.save(memory);
 
-            if(createMemory != null && memoryImgFiles != null && !memoryImgFiles.isEmpty() ){
+            System.out.println("createMemory  : " + createMemory.getMemoryTitle());
+
+            if(createMemory != null && !memoryImgFiles.isEmpty()){
+                System.out.println("memoryImagFiles OK");
                 uploadPhoto(memoryImgFiles,createMemory);
             }
             return createMemory;
@@ -70,7 +73,7 @@ public class MemoryService {
 
     public Memory updateMemory(MemoryUpdateFormDto memoryUpdateFormDto, List<MultipartFile> memoryImgFiles) throws IOException {
         Optional<Memory> memory = memoryRepository.findByMemoryId(memoryUpdateFormDto.getMemoryId());
-        User user = userRepository.findByUserId(memoryUpdateFormDto.getUserId());
+        User user = userRepository.findByUserId(Integer.parseInt(memoryUpdateFormDto.getUserId()));
         if(memory.isPresent() && user != null){
             Memory updateMemory = memoryUpdateFormDto.toEntity();
             updateMemory.setUser(user);
