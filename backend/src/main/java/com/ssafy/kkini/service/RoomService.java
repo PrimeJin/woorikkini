@@ -12,6 +12,7 @@ import com.ssafy.kkini.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,11 +32,13 @@ public class RoomService {
 
     public RoomPasswordXDto createRoom(RoomCreateFormDto roomCreateFormDto){
         Room room = roomCreateFormDto.toEntity();
-        List<Integer> keywordIdxList = roomCreateFormDto.getRoomKeywordList();
         roomRepository.save(room);
+
+        List<Integer> keywordIdxList = roomCreateFormDto.getRoomKeywordList();
         if(keywordIdxList != null && !keywordIdxList.isEmpty()){
             for (int keywordIdx: keywordIdxList) {
-                roomKeywordRepository.save(new RoomKeyword(room, keywordRepository.findByKeywordId(keywordIdx)));
+                RoomKeyword roomKeyword = roomKeywordRepository.save(new RoomKeyword(room, keywordRepository.findByKeywordId(keywordIdx)));
+                room.getRoomKeywords().add(roomKeyword);
             }
         }
         return new RoomPasswordXDto(room);
