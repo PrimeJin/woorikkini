@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import "./Pw.css";
+import styles from "./Pw.module.css";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import QueryString from "qs";
@@ -35,13 +35,12 @@ const PwChange = () => {
       })
       .catch((err) => {
         console.log(err, "check 에러");
-        alert("만료된 링크입니다.")
-        }
-      );
+        alert("만료된 링크입니다.");
+      });
   }
 
   useEffect(() => {
-    goCheck()
+    goCheck();
   }, []);
 
   const useInput = (initial, validate) => {
@@ -141,18 +140,18 @@ const PwChange = () => {
       {check && (
         <div>
           {/* <img className="logo" src="logo.png" alt="이미지없음" /> */}
-          <p className="logo">
+          <p className={styles.logo}>
             우리
             <br />
             끼니
           </p>
-          <div className="all">
-            <form className="pwForm">
-              <p className="pwChange">비밀번호 변경</p>
+          <div className={styles.all}>
+            <form className={styles.pwForm}>
+              <p className={styles.pwChange}>비밀번호 변경</p>
               <br />
               <div style={{ height: "60px" }}>
                 <input
-                  className="userInfo"
+                  className={styles.userInfo}
                   type="password"
                   placeholder="비밀번호"
                   value={pw}
@@ -162,7 +161,7 @@ const PwChange = () => {
                 {pwError ? <span>{pwError}</span> : ""}
               </div>
               <input
-                className="userInfo"
+                className={styles.userInfo}
                 type="password"
                 placeholder="비밀번호확인"
                 value={pw2}
@@ -175,7 +174,7 @@ const PwChange = () => {
               <input
                 type="button"
                 value="확인"
-                className="check"
+                className={styles.check}
                 style={{ cursor: "pointer" }}
                 onClick={goPw}
               />
