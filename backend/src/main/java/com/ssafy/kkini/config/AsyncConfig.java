@@ -15,7 +15,7 @@ public class AsyncConfig implements AsyncConfigurer {
     @Bean(name = "sendEmailTaskExecutor")
     public ThreadPoolTaskExecutor sendEmailTaskExecutor() {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-        taskExecutor.setCorePoolSize(3);
+        taskExecutor.setCorePoolSize(5);
         taskExecutor.setMaxPoolSize(30);
         taskExecutor.setQueueCapacity(100);  //Queue 사이즈
         taskExecutor.setThreadNamePrefix("Executor");
@@ -26,10 +26,21 @@ public class AsyncConfig implements AsyncConfigurer {
     @Bean(name = "passwordFindTaskExecutor")
     public ThreadPoolTaskExecutor passwordFindTaskExecutor() {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-        taskExecutor.setCorePoolSize(3);
+        taskExecutor.setCorePoolSize(5);
         taskExecutor.setMaxPoolSize(30);
         taskExecutor.setQueueCapacity(100);  //Queue 사이즈
         taskExecutor.setThreadNamePrefix("Executor2");
+        taskExecutor.initialize();
+        return taskExecutor;
+    }
+
+    @Bean(name = "emailCheckTaskExecutor")
+    public ThreadPoolTaskExecutor emailCheckTaskExecutor() {
+        ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+        taskExecutor.setCorePoolSize(5);
+        taskExecutor.setMaxPoolSize(30);
+        taskExecutor.setQueueCapacity(100);  //Queue 사이즈
+        taskExecutor.setThreadNamePrefix("Executor3");
         taskExecutor.initialize();
         return taskExecutor;
     }

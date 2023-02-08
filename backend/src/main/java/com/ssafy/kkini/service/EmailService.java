@@ -35,6 +35,7 @@ public class EmailService {
         }
     }
 
+    @Async("emailCheckTaskExecutor")
     public void sendEmailAuthCode(String email) {
         String code = authCodeService.createAuthCode(email).getAuthCodeContent();
         String subject = "[우리끼니] 이메일 인증코드입니다.";
