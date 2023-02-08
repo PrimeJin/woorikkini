@@ -5,6 +5,7 @@ import com.ssafy.kkini.repository.KeywordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,10 +18,16 @@ public class KeywordService {
         this.keywordRepository = keywordRepository;
     }
 
-    public Map<Integer,String> getKeyword() {
+    public List<Map<String, Object>> getKeyword() {
         List<Keyword> keywordList = keywordRepository.findAll();
-        Map<Integer, String> keywordResult = new HashMap<>();
-        keywordList.stream().forEach(keyword -> keywordResult.put(keyword.getKeywordId(), keyword.getKeyword()));
+        List<Map<String, Object>> keywordResult = new ArrayList<>();
+
+        keywordList.stream().forEach(keyword ->{
+            Map<String, Object> map = new HashMap<>();
+            map.put( "id", keyword.getKeywordId());
+            map.put("keyword", keyword.getKeyword());
+            keywordResult.add(map);
+        });
 
         return keywordResult;
     }
