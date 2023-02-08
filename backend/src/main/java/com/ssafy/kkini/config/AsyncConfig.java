@@ -12,13 +12,24 @@ import java.util.concurrent.Executor;
 @EnableAsync
 public class AsyncConfig implements AsyncConfigurer {
 
-    @Bean(name = "threadPoolTaskExecutor")
-    public Executor threadPoolTaskExecutor() {
+    @Bean(name = "sendEmailTaskExecutor")
+    public ThreadPoolTaskExecutor sendEmailTaskExecutor() {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
         taskExecutor.setCorePoolSize(3);
         taskExecutor.setMaxPoolSize(30);
         taskExecutor.setQueueCapacity(100);  //Queue 사이즈
         taskExecutor.setThreadNamePrefix("Executor");
+        taskExecutor.initialize();
+        return taskExecutor;
+    }
+
+    @Bean(name = "passwordFindTaskExecutor")
+    public ThreadPoolTaskExecutor passwordFindTaskExecutor() {
+        ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+        taskExecutor.setCorePoolSize(3);
+        taskExecutor.setMaxPoolSize(30);
+        taskExecutor.setQueueCapacity(100);  //Queue 사이즈
+        taskExecutor.setThreadNamePrefix("Executor2");
         taskExecutor.initialize();
         return taskExecutor;
     }

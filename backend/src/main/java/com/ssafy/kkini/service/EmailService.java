@@ -19,7 +19,7 @@ public class EmailService {
         this.sendEmail(to, subject, text, false);
     }
 
-    @Async("threadPollTaskExecutor")
+    @Async("sendEmailTaskExecutor")
     public void sendEmail(String to, String subject, String text, boolean html) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 
@@ -43,6 +43,7 @@ public class EmailService {
         this.sendEmail(email, subject, text);
     }
 
+    @Async("passwordFindTaskExecutor")
     public void sendEmailPasswordCode(String email, String passwordCode) {
         String subject = "[우리끼니] 비밀번호를 변경해주세요.";
 
