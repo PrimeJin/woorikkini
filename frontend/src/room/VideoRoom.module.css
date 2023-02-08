@@ -1,3 +1,8 @@
+.body {
+  display: flex;
+  justify-content: center;
+}
+
 /* CHATBOX
   =============== */
 .chatWrapper {
@@ -27,7 +32,7 @@
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
 }
 
 .chatHeader > button {
@@ -146,7 +151,7 @@
 }
 
 /* CONTENT ISOPEN */
-.chatbox--active {
+.chatbox__active {
   min-height: 60vh;
   transform: translateY(-40px);
   z-index: 123456;

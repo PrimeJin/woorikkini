@@ -5,11 +5,11 @@ import UserVideoComponent from './UserVideoComponent';
 import { OpenVidu } from 'openvidu-browser';
 
 import CenterLogo from '../styles/CenterLogo';
-import './UserVideo.css';
-import './VideoRoom.css';
+// import './UserVideo.module.css';
+import styles from './VideoRoom.module.css';
 
+//style
 import Messages from './components/Messages';
-import { Button } from '../../node_modules/@mui/material/index';
 
 const OPENVIDU_SERVER_URL = 'https://i8a804.p.ssafy.io:8443'; //도커에 올린 openvidu server
 const OPENVIDU_SERVER_SECRET = 'kkini'; //시크릿키값, 바꿔주면 좋음
@@ -426,123 +426,139 @@ class VideoRoom extends Component {
 
     return (
       <div className="container">
-        <CenterLogo />
-        {this.state.session === undefined ? (
-          <div id="join">
-            <div id="join-dialog" className="jumbotron vertical-center">
-              <h1> 참여하기 </h1>
-              <form className="form-group" onSubmit={this.joinSession}>
-                <p>
-                  <label>참가자명: </label>
-                  <input
-                    className="form-control"
-                    type="text"
-                    id="userName"
-                    value={myUserName}
-                    onChange={this.handleChangeUserName}
-                    required
-                  />
-                </p>
-                <p>
-                  <label> 세션명: </label>
-                  <input
-                    className="form-control"
-                    type="text"
-                    id="sessionId"
-                    value={mySessionId}
-                    onChange={this.handleChangeSessionId}
-                    required
-                  />
-                </p>
-                <p className="text-center">
-                  <input className="btn btn-lg btn-success" name="commit" type="submit" value="JOIN" />
-                </p>
-              </form>
-            </div>
-          </div>
-        ) : null}
-
-        {this.state.session !== undefined ? (
-          <div id="session">
-            <div id="session-header">
-              <h1 id="session-title">{mySessionId}</h1>
-              <button
-                className="btn btn-large btn-danger"
-                type="button"
-                id="buttonCloseSession"
-                onClick={this.closeSession}
-              >
-                Close Session
-              </button>
-            </div>
-            <div className="chat">
-              {this.state.isChatOn ? (
-                <div className="chatWrapper chatbox--active">
-                  <div className="chatHeader">
-                    <h2>채팅</h2>
-                  </div>
-                  <div className="chatLogBox">
-                    <Messages messages={messages} />
-                    <div ref={this.messagesEndRef} />
-                  </div>
-
-                  <div className="chatFooter">
+        <div className="header">
+          <CenterLogo />
+        </div>
+        {/** 세션이 없을 경우 띄우는 화면
+         * RoomList.js가 여기를 대체할 수 있도록 하기
+         */}
+        <div className={styles.body}>
+          {this.state.session === undefined ? (
+            <div id="join">
+              <div id="join-dialog" className="jumbotron vertical-center">
+                <h1> 참여하기 </h1>
+                <form className="form-group" onSubmit={this.joinSession}>
+                  <p>
+                    <label>참가자명: </label>
                     <input
-                      id="chatInputForm"
+                      className="form-control"
                       type="text"
-                      placeholder="메시지를 입력하세요"
-                      onChange={this.handleChangeChatMessage}
-                      onKeyPress={this.sendMessageByEnter}
-                      value={this.state.message}
+                      id="userName"
+                      value={myUserName}
+                      onChange={this.handleChangeUserName}
+                      required
                     />
-                    <button className="chatSendButton" onClick={this.sendMessageByClick}>
-                      보내기
-                    </button>
-                  </div>
-                </div>
-              ) : null}
-              <div className="chatbox__button">
-                <button onClick={this.chatToggle}>채팅 열기</button>
-              </div>
-              <div>
-                <button onClick={this.listToggle}>참여자</button>
-                {this.state.isListOn ? <div>{this.userList(this.state.users)}</div> : null}
+                  </p>
+                  <p>
+                    <label> 세션명: </label>
+                    <input
+                      className="form-control"
+                      type="text"
+                      id="sessionId"
+                      value={mySessionId}
+                      onChange={this.handleChangeSessionId}
+                      required
+                    />
+                  </p>
+                  <p className="text-center">
+                    <input className="btn btn-lg btn-success" name="commit" type="submit" value="JOIN" />
+                  </p>
+                </form>
               </div>
             </div>
+          ) : null}
 
-            {this.state.mainStreamManager !== undefined ? (
-              <div id="main-video" className="col-md-6">
-                <UserVideoComponent streamManager={this.state.mainStreamManager} />
-                <input
-                  className="btn btn-large btn-success"
+          {/* 세션이 있을 경우 띄우는 화면 */}
+          {this.state.session !== undefined ? (
+            <div id="session">
+              <div id="session-header">
+                <h1 id="session-title">{mySessionId}</h1>
+                <button
+                  className="btn btn-large btn-danger"
                   type="button"
-                  id="buttonSwitchCamera"
-                  onClick={this.switchCamera}
-                  value="Switch Camera"
-                />
-              </div>
-            ) : null}
-            <div id="video-container" className="col-md-6">
-              {this.state.publisher !== undefined ? (
-                <div
-                  className="stream-container col-md-6 col-xs-6"
-                  onClick={() => this.handleMainVideoStream(this.state.publisher)}
+                  id="buttonCloseSession"
+                  onClick={this.closeSession}
                 >
-                  <UserVideoComponent streamManager={this.state.publisher} />
+                  Close Session
+                </button>
+              </div>
+              {/* 채팅 */}
+              <div className="chat">
+                {this.state.isChatOn ? (
+                  <div className={`${styles.chatWrapper} ${styles.chatbox__active}`}>
+                    <div className={styles.chatHeader}>
+                      <h2>채팅</h2>
+                    </div>
+                    <div className={styles.chatLogBox}>
+                      <Messages messages={messages} />
+                      <div ref={this.messagesEndRef} />
+                    </div>
+
+                    <div className={styles.chatFooter}>
+                      <input
+                        id={styles.chatInputForm}
+                        type="text"
+                        placeholder="메시지를 입력하세요"
+                        onChange={this.handleChangeChatMessage}
+                        onKeyPress={this.sendMessageByEnter}
+                        value={this.state.message}
+                      />
+                      <button className={styles.chatSendButton} onClick={this.sendMessageByClick}>
+                        보내기
+                      </button>
+                    </div>
+                  </div>
+                ) : null}
+                <div className={styles.chatbox__button}>
+                  <button onClick={this.chatToggle}>채팅 열기</button>
+                </div>
+                {/* 참여자 목록 */}
+                <div>
+                  <button onClick={this.listToggle}>참여자 목록</button>
+                  {this.state.isListOn ? (
+                    <div>
+                      {this.userList(this.state.users)}
+                      <button>강퇴</button>
+                      <button>신고</button>
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+              {/** 주 발언자(mainStreamManager)가 정해지면 switchCamera 기능을 켤지말지 정한다 */}
+              {this.state.mainStreamManager !== undefined ? (
+                <div id="main-video" className="col-md-6">
+                  <UserVideoComponent streamManager={this.state.mainStreamManager} />
+                  <input
+                    className="btn btn-large btn-success"
+                    type="button"
+                    id="buttonSwitchCamera"
+                    onClick={this.switchCamera}
+                    value="Switch Camera"
+                  />
                 </div>
               ) : null}
-              {this.state.subscribers.map((sub, i) => (
-                <div
-                  key={i}
-                  className="stream-container col-md-6 col-xs-6"
-                  onClick={() => this.handleMainVideoStream(sub)}
-                >
-                  <UserVideoComponent streamManager={sub} />
-                </div>
-              ))}
+              <div id="video-container" className="col-md-6">
+                {this.state.publisher !== undefined ? (
+                  <div
+                    className="stream-container col-md-6 col-xs-6"
+                    onClick={() => this.handleMainVideoStream(this.state.publisher)}
+                  >
+                    <UserVideoComponent streamManager={this.state.publisher} />
+                  </div>
+                ) : null}
+                {this.state.subscribers.map((sub, i) => (
+                  <div
+                    key={i}
+                    className="stream-container col-md-6 col-xs-6"
+                    onClick={() => this.handleMainVideoStream(sub)}
+                  >
+                    <UserVideoComponent streamManager={sub} />
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        ) : null}
+          ) : null}
+        </div>
       </div>
     );
   }
