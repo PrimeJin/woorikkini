@@ -25,8 +25,8 @@ public class PasswordCodeService {
 
     //입력한 이메일과 이름이 찾으려는 유저정보와 일치하는지 검사
     public boolean checkEmailAndName(String userEmail, String userName) {
-        User user = userRepository.findByUserEmail(userEmail).get();
-        if(user != null) {
+        if(userRepository.findByUserEmail(userEmail).isPresent()) {
+            User user = userRepository.findByUserEmail(userEmail).get();
             if(user.getUserName().equals(userName)) {
                 return true;
             }
