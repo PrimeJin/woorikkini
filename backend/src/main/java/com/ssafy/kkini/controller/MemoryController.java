@@ -41,6 +41,8 @@ public class MemoryController {
         Map<String, Object> resultMap = new HashMap<>();
         Memory createMemory = null;
 
+        System.out.println(memoryImgFiles == null);
+        System.out.println(memoryImgFiles.isEmpty());
         try {
             createMemory = memoryService.createMemory(memoryCreateFormDto, memoryImgFiles);
             if(createMemory != null){
@@ -68,6 +70,7 @@ public class MemoryController {
         Map<String, Object> resultMap = new HashMap<>();
 
         Memory updateMemory = null;
+
         try {
             updateMemory = memoryService.updateMemory(memoryUpdateFormDto ,memoryImgFiles);
             if(updateMemory != null){

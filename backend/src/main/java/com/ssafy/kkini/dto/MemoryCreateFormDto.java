@@ -19,7 +19,6 @@ public class MemoryCreateFormDto {
     private String memoryTitle;
     private String memoryContent;
     private String userId;
-//    private List<MultipartFile> memoryImgFiles;
 
 
     public Memory toEntity(){
