@@ -55,6 +55,7 @@ class VideoRoom extends Component {
     //method
     this.joinSession = this.joinSession.bind(this);
     this.closeSession = this.closeSession.bind(this);
+    this.leaveSession = this.leaveSession.bind(this);
     this.switchCamera = this.switchCamera.bind(this);
     this.handleChangeSessionId = this.handleChangeSessionId.bind(this);
     this.handleChangeUserName = this.handleChangeUserName.bind(this);
@@ -89,7 +90,7 @@ class VideoRoom extends Component {
   //디버깅용
   componentDidUpdate() {
     this.scrollToBottom();
-    // this.getUserList();
+    this.getUserList();
     // console.log('createSession');
     // console.log(this.state.session.sessionId); //현재 세션값
     // console.log('createToken');
@@ -385,6 +386,23 @@ class VideoRoom extends Component {
     );
   }
 
+  //방 퇴장(혼자만, 세션은 그대로 있어야함)
+  leaveSession() {
+    const mySession = this.state.session;
+
+    mySession.disconnect();
+    this.OV = null; //Openvidu 객체 삭제
+    this.setState({
+      session: undefined,
+      subscribers: [],
+      mySessionId: 'SessionA',
+      myUserName: 'Participant' + Math.floor(Math.random() * 100),
+      mainStreamManager: undefined,
+      publisher: undefined,
+    });
+    window.location.reload();
+  }
+
   //세션 닫기(세션의 모든 참가자 퇴장)
   closeSession() {
     //백엔드에 퇴장 요청 보내기
@@ -573,7 +591,7 @@ class VideoRoom extends Component {
                 >
                   <Tab icon={<ChatIcon />} label="채팅" value="1" sx={{ background: '#ffd4c3' }} />
                   <Tab icon={<UserIcon />} label="참여자목록" value="2" sx={{ background: '#ffd4c3' }} />
-                  <Tab icon={<CancelIcon />} label="퇴장" onClick={this.closeSession} sx={{ background: '#ffd4c3' }} />
+                  <Tab icon={<CancelIcon />} label="퇴장" onClick={this.leaveSession} sx={{ background: '#ffd4c3' }} />
                 </TabList>
               </TabContext>
             </div>
@@ -611,8 +629,8 @@ class VideoRoom extends Component {
               console.log('이미 있는 세션입니다');
             } else if (
               window.confirm(
-                `OpenVidu Server와 연결되지 않았습니다. 인증서 오류 일 수도 있습니다. "${OPENVIDU_SERVER_URL}"\n\n 확인해주세요.` +
-                  `만약 인증 문제를 찾을 수 없다면, OpenVidu Server가 열려 있는지 확인해주세요`,
+                `OpenVidu 서버와 연결되지 않았습니다. 인증서 오류 일 수도 있습니다. "${OPENVIDU_SERVER_URL}을"\n\n 확인해주세요.` +
+                  `만약 인증 문제를 찾을 수 없다면, OpenVidu 서버가 열려 있는지 확인해주세요`,
               )
             ) {
               window.location.assign(`${OPENVIDU_SERVER_URL}/accept-certificate`);
