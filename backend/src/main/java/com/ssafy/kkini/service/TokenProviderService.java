@@ -13,10 +13,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 //토큰 관리 관련 클래스
 @Service
@@ -141,8 +146,14 @@ public class TokenProviderService {
 
     public UsernamePasswordAuthenticationToken getAuthentication(String authToken) {
         if(validateToken(authToken)) {
+            Claims claims = getTokenClaims(authToken);
+            Collection<? extends GrantedAuthority> authorities =
+                    Arrays.stream(new String[]{claims.get("role").toString()})
+                            .map(SimpleGrantedAuthority::new)
+                            .collect(Collectors.toList());
+
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(getUserIdFromToken(authToken));
-            return new UsernamePasswordAuthenticationToken(userDetails, authToken, userDetails.getAuthorities());
+            return new UsernamePasswordAuthenticationToken(userDetails, authToken, authorities);
         } else {
             throw new TokenValidFailedException();
         }
@@ -154,15 +165,19 @@ public class TokenProviderService {
             return true;
         } catch (SignatureException ex) {
             logger.error("Invalid JWT signature");
+            throw new JwtException("잘못된 JWT 시그니처");
         } catch (MalformedJwtException ex) {
             logger.error("Invalid JWT token");
+            throw new JwtException("유효하지 않은 JWT 토큰");
         } catch (ExpiredJwtException ex) {
             logger.error("Expired JWT token");
+            throw new JwtException("토큰 기한 만료");
         } catch (UnsupportedJwtException ex) {
             logger.error("Unsupported JWT token");
+            throw new JwtException("지원하지 않는 형식의 토큰");
         } catch (IllegalArgumentException ex) {
             logger.error("JWT claims string is empty.");
+            throw new JwtException("JWT token compact of handler are invalid.");
         }
-        return false;
     }
 }

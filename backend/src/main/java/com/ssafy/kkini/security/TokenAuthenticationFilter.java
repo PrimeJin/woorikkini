@@ -1,6 +1,7 @@
 package com.ssafy.kkini.security;
 
 
+import com.ssafy.kkini.dto.UserPrincipalDto;
 import com.ssafy.kkini.service.TokenProviderService;
 import com.ssafy.kkini.util.TokenUtils;
 import org.slf4j.Logger;
@@ -26,17 +27,15 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        try {
-            String jwt = TokenUtils.getJwtFromRequest(request);
-            if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-                UsernamePasswordAuthenticationToken authentication = tokenProvider.getAuthentication(jwt);
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
-        } catch (Exception ex) {
-            logger.error("Could not set user authentication in security context", ex);
+        String jwt = TokenUtils.getJwtFromRequest(request);
+        if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
+            UsernamePasswordAuthenticationToken authentication = tokenProvider.getAuthentication(jwt);
+            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
-
+        else {
+            logger.error("Could not set user authentication in security context");
+        }
         filterChain.doFilter(request, response);
     }
 }
