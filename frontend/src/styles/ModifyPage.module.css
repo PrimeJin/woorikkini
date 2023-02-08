@@ -1,6 +1,6 @@
-/* 로그인 페이지 (첫 페이지) */
 @import url('http://cdn.rawgit.com/innks/NanumSquareRound/master/nanumsquareround.min.css');
-.login {
+
+.modify {
   text-align: center;
   font-family: 'NanumSquareRound';
   /* 가로로 가운데 정렬 */
@@ -11,12 +11,16 @@
   background: #fffdfa;
 }
 
-/* Rectangle 19 */
-.loginform {
+.logo_box {
+  margin: 2%;
+}
+
+.modifyform {
   width: 450px;
-  height: 480px;
+  height: 400px;
   display: flex;
   flex-flow: column nowrap;
+
   background: #fefaef;
   mix-blend-mode: normal;
   box-shadow: 0px 100px 80px rgba(0, 0, 0, 0.07), 0px 41.7776px 33.4221px rgba(0, 0, 0, 0.0503198),
@@ -26,36 +30,7 @@
   margin-bottom: 2%;
 }
 
-/* Group 5 */
-.signUpButton {
-  margin-left: 50px;
-  width: 350px;
-  height: 56px;
-  background: #d6ebfc;
-  border-radius: 15px;
-  border: none;
-
-  font-family: 'NanumSquare';
-  font-style: normal;
-  font-weight: 700;
-  font-size: 24px;
-  line-height: 27px;
-  color: #090936;
-}
-.inputform {
-  display: flex;
-  flex-flow: row nowrap;
-  margin-right: 10%;
-  margin-left: 5%;
-}
-
-.socialLogin {
-  display: flex;
-  flex-flow: column nowrap;
-}
-
-/* Rectangle 22 */
-#userEmail {
+#changeNickname {
   width: 250px;
   height: 53px;
 
@@ -71,11 +46,9 @@
   margin-bottom: 0.5rem;
 }
 
-/* Rectangle 20 */
-#userPassword {
+#changePassword {
   width: 250px;
   height: 53px;
-  margin-bottom: 2rem;
 
   background: #ffffff;
   border-radius: 15px;
@@ -85,13 +58,54 @@
   font-weight: 300;
   font-size: 20px;
   line-height: 27px;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
-/* Group 6 */
-.loginButton {
+#changePasswordCheck {
+  width: 250px;
+  height: 53px;
+
+  background: #ffffff;
+  border-radius: 15px;
+  border: none;
+  font-family: 'NanumSquareRound';
+  font-style: normal;
+  font-weight: 300;
+  font-size: 20px;
+  line-height: 27px;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.modifyButton {
   width: 120px;
-  height: 120px;
-  margin-top: 15px;
+  height: 130px;
+  margin-top: 5px;
+
+  mix-blend-mode: normal;
+
+  background: #d6ebfc;
+  border-radius: 15px;
+  border: none;
+
+  font-family: 'NanumSquare';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 23px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.passwords {
+  background: #fefaef;
+}
+
+.checkButton {
+  width: 100px;
+  height: 53px;
+  margin: 15px;
 
   mix-blend-mode: normal;
 
@@ -109,6 +123,18 @@
   justify-content: center;
 }
 
-.logo-box {
-  margin: 2%;
+.nicknameForm {
+  display: flex;
+  flex-flow: nowrap;
+  background: #fefaef;
+  margin-right: 5%;
+  margin-left: 10%;
+}
+
+.passwordForm {
+  display: flex;
+  flex-flow: row nowrap;
+  margin-right: 10%;
+  margin-left: 5%;
+  background: #fefaef;
 }

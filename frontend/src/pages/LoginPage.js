@@ -20,7 +20,7 @@ import KakaoButton from '../components/buttons/KakaoButton';
 import NaverButton from '../components/buttons/NaverButton';
 import GoogleButton from '../components/buttons/GoogleButton';
 import logo from '../assets/우리끼니로고.png';
-import '../styles/LoginPage.css';
+import styles from '../styles/LoginPage.module.css';
 import CenterLogo from '../styles/CenterLogo';
 import axios from '../../node_modules/axios/index';
 
@@ -90,16 +90,16 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="login">
-      <div className="logo-box">
+    <div className={styles.login}>
+      <div className={styles.logo_box}>
         <CenterLogo />
         <h3>같이 밥먹을래?</h3>
       </div>
-      <form className="loginform" onSubmit={handleSubmit(onValid)}>
-        <div className="inputform">
-          <div className="inputs">
+      <form className={styles.loginform} onSubmit={handleSubmit(onValid)}>
+        <div className={styles.inputform}>
+          <div className={styles.inputs}>
             <input
-              id="userEmail"
+              id={styles.userEmail}
               type="email"
               placeholder="이메일을 입력하세요"
               {...register('userEmail', {
@@ -112,7 +112,7 @@ const LoginPage = () => {
             />
             {errors.email && <small role="alert">{errors.email.message}</small>}
             <input
-              id="userPassword"
+              id={styles.userPassword}
               type="password"
               placeholder="비밀번호를 입력하세요"
               {...register('userPassword', {
@@ -125,12 +125,12 @@ const LoginPage = () => {
             {errors.password && <small role="alert">{errors.password.message}</small>}
           </div>
 
-          <button className="loginButton" type="submit" disabled={isSubmitting}>
+          <button className={styles.loginButton} type="submit" disabled={isSubmitting}>
             로그인
           </button>
         </div>
 
-        <button className="signUpButton" onClick={onSignUp}>
+        <button className={styles.signUpButton} onClick={onSignUp}>
           회원가입
         </button>
         <Link
@@ -139,7 +139,7 @@ const LoginPage = () => {
         >
           <small>비밀번호 찾기</small>
         </Link>
-        <div className="socialLogin">
+        <div className={styles.socialLogin}>
           <NaverButton />
           <KakaoButton />
           <GoogleButton />
