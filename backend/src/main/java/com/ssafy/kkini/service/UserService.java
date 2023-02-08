@@ -64,9 +64,10 @@ public class UserService {
 
     @Transactional
     public User passwordModify(UserPasswordModifyFormDto userPasswordModifyFormDto) {
+
         User user = userRepository.findByUserId(userPasswordModifyFormDto.getUserId());
         if(user != null) {
-            user.changePassword(userPasswordModifyFormDto.getUserPassword());
+            user.changePassword(bCryptPasswordEncoder.encode(userPasswordModifyFormDto.getUserPassword()));
             return userRepository.save(user);
         }else return null;
     }
