@@ -34,6 +34,7 @@ class VideoRoom extends Component {
       isEmpty: false, //세션이 비어있는지 아닌지
       isHost: false, //
       isChatOn: false, //채팅팝업창이 켜져있는지 아닌지
+      isListOn: false,
       token: '', //accessToken
       message: '', //메시지 단일입력
       messages: [], //메시지 로그
@@ -58,6 +59,8 @@ class VideoRoom extends Component {
     this.handleMainVideoStream = this.handleMainVideoStream.bind(this);
     this.onbeforeunload = this.onbeforeunload.bind(this);
     this.getUserList = this.getUserList.bind(this);
+    this.userList = this.userList.bind(this);
+    this.listToggle = this.listToggle.bind(this);
   }
 
   //라이프 사이클
@@ -66,6 +69,7 @@ class VideoRoom extends Component {
   componentDidMount() {
     window.addEventListener('beforeunload', this.onbeforeunload);
     this.scrollToBottom();
+    this.getUserList();
     //방 리스트를 띄워야 합니다
   }
 
@@ -73,6 +77,7 @@ class VideoRoom extends Component {
   //디버깅용
   componentDidUpdate() {
     this.scrollToBottom();
+    // this.getUserList();
     // console.log('createSession');
     // console.log(this.state.session.sessionId); //현재 세션값
     // console.log('createToken');
@@ -215,15 +220,23 @@ class VideoRoom extends Component {
       })
         .then((response) => {
           let content = response.data.content;
-          // console.log(content);
-          content.map((user) => {
-            console.log(user.clientData.split('"')[3]);
-          });
           content.sort((a, b) => a.createdAt - b.createdAt); //들어온 순서대로 정리
-          resolve(content);
+          this.setState({
+            users: content,
+          });
         })
         .catch((error) => reject(error));
     });
+  }
+
+  userList(users) {
+    const list = users.map((user, index) => <li>{user.clientData.split('"')[3]}</li>);
+    return <ul>{list}</ul>;
+  }
+
+  listToggle() {
+    this.getUserList(); //추가로 유저가 들어왔다 나갈때도 자동으로 갱신될 수 있게
+    this.setState({ isListOn: !this.state.isListOn });
   }
 
   //채팅창 팝업 열고 닫기
@@ -280,20 +293,7 @@ class VideoRoom extends Component {
         //subscribers 상태값 업데이트
         mySession.on('streamDestroyed', (event) => {
           this.deleteSubscriber(event.stream.streamManager);
-          // this.updateHost().then((clientData) => {
-          //   const host = JSON.parse(clientData).clientData;
-
-          //   mySession
-          //     .signal({
-          //       data: host,
-          //       to: [],
-          //       type: 'update-host',
-          //     })
-          //     .then(() => {})
-          //     .catch((error) => {});
-          // });
-
-          // subscribers 배열에서 스트림을 제거합니다
+          this.getUserList(); //참여자 목록 갱신
         });
 
         mySession.on('signal:update-host', (event) => {
@@ -307,7 +307,7 @@ class VideoRoom extends Component {
 
         // 모든 비동기 오류마다 Session 객체에 의해 트리거 되는 이벤트
         mySession.on('exception', (exception) => {
-          console.warn(exception);
+          // console.warn(exception);
         });
 
         // OpenVidu 환경에서 토큰 발급받기
@@ -336,6 +336,7 @@ class VideoRoom extends Component {
                 });
 
                 mySession.publish(newPublisher);
+                this.getUserList();
                 this.setState({
                   // mainStreamManager: newPublisher,
                   publisher: newPublisher,
@@ -362,15 +363,15 @@ class VideoRoom extends Component {
       })
       .then((res) => {
         // //모든 속성(프로퍼티) 초기화
-        // this.OV = null; //Openvidu 객체 삭제
-        // this.setState({
-        //   // session: undefined,
-        //   subscribers: [],
-        //   mySessionId: 'SessionA',
-        //   myUserName: 'Participant' + Math.floor(Math.random() * 100),
-        //   mainStreamManager: undefined,
-        //   publisher: undefined,
-        // });
+        this.OV = null; //Openvidu 객체 삭제
+        this.setState({
+          // session: undefined,
+          subscribers: [],
+          mySessionId: 'SessionA',
+          myUserName: 'Participant' + Math.floor(Math.random() * 100),
+          mainStreamManager: undefined,
+          publisher: undefined,
+        });
         window.location.reload();
       });
   }
@@ -504,7 +505,8 @@ class VideoRoom extends Component {
                 <button onClick={this.chatToggle}>채팅 열기</button>
               </div>
               <div>
-                <button onClick={this.getUserList}>참여자 목록</button>
+                <button onClick={this.listToggle}>참여자</button>
+                {this.state.isListOn ? <div>{this.userList(this.state.users)}</div> : null}
               </div>
             </div>
 
