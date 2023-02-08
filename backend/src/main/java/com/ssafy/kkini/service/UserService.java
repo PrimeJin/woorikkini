@@ -118,4 +118,8 @@ public class UserService {
         }
         return userListDto;
     }
+    //이메일 인증시 가입된 회원인지 확인하기 위한 메소드
+    public Optional<User> getUserByUserEmail(String email) {
+        return userRepository.findByUserEmail(email);
+    }
 }

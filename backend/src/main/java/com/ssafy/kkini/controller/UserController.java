@@ -187,11 +187,15 @@ public class UserController {
     @ApiOperation(value = "이메일 인증코드 발송", notes = "입력한 이메일이 기존회원이 아니라면 이메일 인증코드 발송" )
     @GetMapping("/email/check")
     public ResponseEntity<Map<String, Object>> sendEmailCheck(@ApiParam(value = "회원가입에서 입력한 이메일" )@RequestParam String authCodeUserEmail) {
-        emailService.sendEmailAuthCode(authCodeUserEmail);
         Map<String, Object> map = new HashMap<>();
-
-        map.put("message", "success");
-        return new ResponseEntity<Map<String, Object>>(map, HttpStatus.ACCEPTED);
+        if(userService.getUserByUserEmail(authCodeUserEmail).isPresent()) {  //기존 회원이면 중복이므로 실패처리
+            map.put("message", "fail");
+            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
+        } else {
+            emailService.sendEmailAuthCode(authCodeUserEmail);
+            map.put("message", "success");
+            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.ACCEPTED);
+        }
     }
 
     @ApiOperation(value = "입력한 이메일 인증코드 일치확인", notes = "발급된 이메일 인증코드와 입력한 이메일 인증코드 일치 여부와 인증코드 만료여부 확인")
