@@ -80,7 +80,7 @@ public class UserService {
     public User updatePasswordByEmail(String email, String newPassword) {
         User user = userRepository.findByUserEmail(email).get();
         UserInfoDto userInfoDto = new UserInfoDto(user);
-        userInfoDto.setUserPassword(newPassword);
+        userInfoDto.setUserPassword(bCryptPasswordEncoder.encode(newPassword));
 
         return userRepository.save(userInfoDto.toEntity());
     }
