@@ -4,12 +4,19 @@ import axios from 'axios';
 import UserVideoComponent from './UserVideoComponent';
 import { OpenVidu } from 'openvidu-browser';
 
-import CenterLogo from '../styles/CenterLogo';
-// import './UserVideo.module.css';
-import styles from './VideoRoom.module.css';
-
 //style
+import CenterLogo from '../styles/CenterLogo';
+import styles from './VideoRoom.module.css';
 import Messages from './components/Messages';
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
+import Tab from '@mui/material/Tab';
+import TabPanel from '@mui/lab/TabPanel';
+import ChatIcon from '@mui/icons-material/Chat';
+import UserIcon from '@mui/icons-material/Person';
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
+import Box from '@mui/material/Box';
 
 const OPENVIDU_SERVER_URL = 'https://i8a804.p.ssafy.io:8443'; //도커에 올린 openvidu server
 const OPENVIDU_SERVER_SECRET = 'kkini'; //시크릿키값, 바꿔주면 좋음
@@ -40,6 +47,8 @@ class VideoRoom extends Component {
       messages: [], //메시지 로그
       messagesEnd: null,
       users: [], //전체 참여자
+
+      value: '1', //1: 채팅창, 2:참여자 목록
     };
 
     //method
@@ -61,6 +70,8 @@ class VideoRoom extends Component {
     this.getUserList = this.getUserList.bind(this);
     this.userList = this.userList.bind(this);
     this.listToggle = this.listToggle.bind(this);
+
+    this.handleChange = this.handleChange.bind(this);
   }
 
   //라이프 사이클
@@ -230,7 +241,21 @@ class VideoRoom extends Component {
   }
 
   userList(users) {
-    const list = users.map((user, index) => <li>{user.clientData.split('"')[3]}</li>);
+    const list = users.map((user, index) => (
+      <li>
+        <Box sx={{ '& button': { m: 1 } }}>
+          <Stack direction="row" spacing={3}>
+            <div>{user.clientData.split('"')[3]}</div>
+            <Button variant="contained" color="error" size="small">
+              강퇴
+            </Button>
+            <Button variant="outlined" color="error" size="small">
+              신고
+            </Button>
+          </Stack>
+        </Box>
+      </li>
+    ));
     return <ul>{list}</ul>;
   }
 
@@ -242,6 +267,12 @@ class VideoRoom extends Component {
   //채팅창 팝업 열고 닫기
   chatToggle() {
     this.setState({ isChatOn: !this.state.isChatOn });
+  }
+
+  handleChange(event, newValue) {
+    this.setState({
+      value: newValue,
+    });
   }
 
   //submit버튼을 클릭하면 방(세션)에 참여
@@ -426,65 +457,85 @@ class VideoRoom extends Component {
 
     return (
       <div className="container">
-        <div className="header">
+        <div className={styles.header}>
           <CenterLogo />
         </div>
         {/** 세션이 없을 경우 띄우는 화면
          * RoomList.js가 여기를 대체할 수 있도록 하기
          */}
-        <div className={styles.body}>
-          {this.state.session === undefined ? (
-            <div id="join">
-              <div id="join-dialog" className="jumbotron vertical-center">
-                <h1> 참여하기 </h1>
-                <form className="form-group" onSubmit={this.joinSession}>
-                  <p>
-                    <label>참가자명: </label>
-                    <input
-                      className="form-control"
-                      type="text"
-                      id="userName"
-                      value={myUserName}
-                      onChange={this.handleChangeUserName}
-                      required
-                    />
-                  </p>
-                  <p>
-                    <label> 세션명: </label>
-                    <input
-                      className="form-control"
-                      type="text"
-                      id="sessionId"
-                      value={mySessionId}
-                      onChange={this.handleChangeSessionId}
-                      required
-                    />
-                  </p>
-                  <p className="text-center">
-                    <input className="btn btn-lg btn-success" name="commit" type="submit" value="JOIN" />
-                  </p>
-                </form>
+
+        {this.state.session === undefined ? (
+          <div className={styles.main}>
+            <div className={styles.body}>
+              <div id="join">
+                <div id="join-dialog" className="jumbotron vertical-center">
+                  <h1> 참여하기 </h1>
+                  <form className="form-group" onSubmit={this.joinSession}>
+                    <p>
+                      <label>참가자명: </label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        id="userName"
+                        value={myUserName}
+                        onChange={this.handleChangeUserName}
+                        required
+                      />
+                    </p>
+                    <p>
+                      <label> 세션명: </label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        id="sessionId"
+                        value={mySessionId}
+                        onChange={this.handleChangeSessionId}
+                        required
+                      />
+                    </p>
+                    <p className="text-center">
+                      <input className="btn btn-lg btn-success" name="commit" type="submit" value="JOIN" />
+                    </p>
+                  </form>
+                </div>
               </div>
             </div>
-          ) : null}
-
-          {/* 세션이 있을 경우 띄우는 화면 */}
-          {this.state.session !== undefined ? (
-            <div id="session">
-              <div id="session-header">
-                <h1 id="session-title">{mySessionId}</h1>
-                <button
-                  className="btn btn-large btn-danger"
-                  type="button"
-                  id="buttonCloseSession"
-                  onClick={this.closeSession}
-                >
-                  Close Session
-                </button>
+          </div>
+        ) : (
+          <div className={styles.main}>
+            <div className={styles.body}>
+              <h2 id="session-title">{mySessionId}</h2>
+              <button
+                className="btn btn-large btn-danger"
+                type="button"
+                id="buttonCloseSession"
+                onClick={this.closeSession}
+              >
+                Close Session
+              </button>
+              <div id="video-container" className="col-md-6">
+                {this.state.publisher !== undefined ? (
+                  <div
+                    className="stream-container col-md-6 col-xs-6"
+                    onClick={() => this.handleMainVideoStream(this.state.publisher)}
+                  >
+                    <UserVideoComponent streamManager={this.state.publisher} />
+                  </div>
+                ) : null}
+                {this.state.subscribers.map((sub, i) => (
+                  <div
+                    key={i}
+                    className="stream-container col-md-6 col-xs-6"
+                    onClick={() => this.handleMainVideoStream(sub)}
+                  >
+                    <UserVideoComponent streamManager={sub} />
+                  </div>
+                ))}
               </div>
-              {/* 채팅 */}
-              <div className="chat">
-                {this.state.isChatOn ? (
+            </div>
+            <div>
+              <TabContext value={this.state.value}>
+                <TabPanel value="1">
                   <div className={`${styles.chatWrapper} ${styles.chatbox__active}`}>
                     <div className={styles.chatHeader}>
                       <h2>채팅</h2>
@@ -508,57 +559,27 @@ class VideoRoom extends Component {
                       </button>
                     </div>
                   </div>
-                ) : null}
-                <div className={styles.chatbox__button}>
-                  <button onClick={this.chatToggle}>채팅 열기</button>
-                </div>
-                {/* 참여자 목록 */}
-                <div>
-                  <button onClick={this.listToggle}>참여자 목록</button>
-                  {this.state.isListOn ? (
-                    <div>
-                      {this.userList(this.state.users)}
-                      <button>강퇴</button>
-                      <button>신고</button>
+                </TabPanel>
+                <TabPanel value="2">
+                  <div className={`${styles.chatWrapper} ${styles.chatbox__active}`}>
+                    <div className={styles.chatHeader}>
+                      <h2>참여자 목록</h2>
                     </div>
-                  ) : null}
-                </div>
-              </div>
-              {/** 주 발언자(mainStreamManager)가 정해지면 switchCamera 기능을 켤지말지 정한다 */}
-              {this.state.mainStreamManager !== undefined ? (
-                <div id="main-video" className="col-md-6">
-                  <UserVideoComponent streamManager={this.state.mainStreamManager} />
-                  <input
-                    className="btn btn-large btn-success"
-                    type="button"
-                    id="buttonSwitchCamera"
-                    onClick={this.switchCamera}
-                    value="Switch Camera"
-                  />
-                </div>
-              ) : null}
-              <div id="video-container" className="col-md-6">
-                {this.state.publisher !== undefined ? (
-                  <div
-                    className="stream-container col-md-6 col-xs-6"
-                    onClick={() => this.handleMainVideoStream(this.state.publisher)}
-                  >
-                    <UserVideoComponent streamManager={this.state.publisher} />
+
+                    <div className={styles.userListBox}>
+                      {this.userList(this.state.users)}
+                      <div ref={this.messagesEndRef} />
+                    </div>
                   </div>
-                ) : null}
-                {this.state.subscribers.map((sub, i) => (
-                  <div
-                    key={i}
-                    className="stream-container col-md-6 col-xs-6"
-                    onClick={() => this.handleMainVideoStream(sub)}
-                  >
-                    <UserVideoComponent streamManager={sub} />
-                  </div>
-                ))}
-              </div>
+                </TabPanel>
+                <TabList onChange={this.handleChange} aria-label="icon label tabs example">
+                  <Tab icon={<ChatIcon />} label="채팅" value="1" />
+                  <Tab icon={<UserIcon />} label="참여자목록" value="2" />
+                </TabList>
+              </TabContext>
             </div>
-          ) : null}
-        </div>
+          </div>
+        )}
       </div>
     );
   }
