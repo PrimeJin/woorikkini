@@ -51,15 +51,15 @@ public class MemoryService {
         return memoryGetFormDtoList;
     }
 
-    public Memory createMemory(MemoryCreateFormDto memoryCreateFormDto) throws IOException {
-        User user = userRepository.findByUserId(memoryCreateFormDto.getUserId());
+    public Memory createMemory(MemoryCreateFormDto memoryCreateFormDto, List<MultipartFile> memoryImgFiles) throws IOException {
+        User user = userRepository.findByUserId(Integer.parseInt(memoryCreateFormDto.getUserId()));
         Memory memory = memoryCreateFormDto.toEntity();
         if(user != null){
             memory.setUser(user);
             Memory createMemory = memoryRepository.save(memory);
 
-            if(createMemory != null && memoryCreateFormDto.getMemoryImgFiles() != null && !memoryCreateFormDto.getMemoryImgFiles().isEmpty() ){
-                uploadPhoto(memoryCreateFormDto.getMemoryImgFiles(),createMemory);
+            if(createMemory != null && memoryImgFiles != null && !memoryImgFiles.isEmpty() ){
+                uploadPhoto(memoryImgFiles,createMemory);
             }
             return createMemory;
         }else {
@@ -68,7 +68,7 @@ public class MemoryService {
     }
 
 
-    public Memory updateMemory(MemoryUpdateFormDto memoryUpdateFormDto) throws IOException {
+    public Memory updateMemory(MemoryUpdateFormDto memoryUpdateFormDto, List<MultipartFile> memoryImgFiles) throws IOException {
         Optional<Memory> memory = memoryRepository.findByMemoryId(memoryUpdateFormDto.getMemoryId());
         User user = userRepository.findByUserId(memoryUpdateFormDto.getUserId());
         if(memory.isPresent() && user != null){
@@ -77,8 +77,8 @@ public class MemoryService {
             updateMemory = memoryRepository.save(updateMemory);
             if(updateMemory != null){
                 deletePhoto(memoryUpdateFormDto.getMemoryId());
-                if(memoryUpdateFormDto.getMemoryImgFiles() != null && memoryUpdateFormDto.getMemoryImgFiles().size() != 0){
-                    uploadPhoto(memoryUpdateFormDto.getMemoryImgFiles(),updateMemory);
+                if(memoryImgFiles != null && memoryImgFiles.size() != 0){
+                    uploadPhoto(memoryImgFiles,updateMemory);
                 }
 
             }

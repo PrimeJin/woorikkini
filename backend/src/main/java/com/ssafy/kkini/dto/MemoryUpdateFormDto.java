@@ -21,7 +21,7 @@ public class MemoryUpdateFormDto {
     private String memoryTitle;
     private String memoryContent;
     private int userId;
-    private List<MultipartFile> memoryImgFiles;
+//    private List<MultipartFile> memoryImgFiles;
 
     public Memory toEntity(){
         return Memory.builder().title(this.memoryTitle)
