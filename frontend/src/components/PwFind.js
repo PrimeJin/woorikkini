@@ -36,8 +36,11 @@ const PwFind = () => {
         alert("해당 이메일로 비밀번호 변경 페이지의 링크를 보냈습니다.");
       })
       .catch((err) => {
-        console.log(err, "getInfo에러");
-        // alert("해당 하는 회원이 없습니다. 확인 후 다시 입력해주세요");
+        alert("해당 하는 회원이 없습니다. 확인 후 다시 입력해주세요");
+        if (err.response.data.message !== "fail") {
+          // message가 fail로 온 게 아니라 다른 문제가 있을 때
+          console.log(err, "getInfo에러");
+        }
       });
   };
 
