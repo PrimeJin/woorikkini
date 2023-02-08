@@ -9,6 +9,7 @@ import com.ssafy.kkini.repository.ReportRepository;
 import com.ssafy.kkini.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ public class ReportService {
         this.userRepository = userRepository;
     }
 
+    @Transactional
     //신고당한횟수 +1시키기
     public void plusReportedCount(int reportedUser) {
         User reportedUserInfo = userRepository.findByUserId(reportedUser);
@@ -31,6 +33,7 @@ public class ReportService {
         userRepository.save(userInfoDto.toEntity());
     }
 
+    @Transactional
     //신고하기 (저장)
     public Report createReport(ReportCreateFormDto reportCreateFormDto) {
         this.plusReportedCount(reportCreateFormDto.getReportedUser());
@@ -57,6 +60,7 @@ public class ReportService {
         return reportListDto;
     }
 
+    @Transactional
     //활동정지 시키기
     public User userSuspend(int userId) {
         User user = userRepository.findByUserId(userId);
