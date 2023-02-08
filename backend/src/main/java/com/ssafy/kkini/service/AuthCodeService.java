@@ -38,9 +38,9 @@ public class AuthCodeService {
     @Transactional
     //회원가입시 인증코드 발송할 때 인증코드 생성
     public AuthCode createAuthCode(String email) {
-        if(userRepository.findByUserEmail(email).isPresent()) {
-            throw new IllegalStateException("이미 가입된 이메일입니다.");
-        }
+//        if(userRepository.findByUserEmail(email).isPresent()) {
+//            throw new IllegalStateException("이미 가입된 이메일입니다.");
+//        }
 
         String authCodeContent = this.getAuthCodeContent(email);  //인증코드 내용 가져오기
         LocalDateTime authCodeExpireDate = LocalDateTime.now().plusHours(1);  //지금으로부터 1시간 뒤로 코드만료 시간설정
