@@ -112,7 +112,7 @@ public class RoomController {
     public ResponseEntity<?> getKeyword() {
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
-        Map<Integer, String> keywordList = keywordService.getKeyword();
+        List<Map<String, Object>> keywordList = keywordService.getKeyword();
         if (keywordList == null){
             status = HttpStatus.NOT_FOUND;
             resultMap.put("message", FAIL);

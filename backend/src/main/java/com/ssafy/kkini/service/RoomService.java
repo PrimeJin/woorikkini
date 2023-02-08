@@ -68,7 +68,7 @@ public class RoomService {
     }
 
     public int enterRoom(int roomId, RoomEnterFormDto roomEnterFormDto) {
-        if(roomEnterFormDto.getRoomPrivate().equals("T")){
+        if(roomEnterFormDto.getRoomPrivate().equals("true")){
                 if(!roomRepository.findByRoomId(roomId).getRoomPassword().equals(roomEnterFormDto.getRoomPassword())){
                     return 0;
                 }
