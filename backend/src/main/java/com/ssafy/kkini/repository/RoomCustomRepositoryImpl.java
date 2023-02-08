@@ -37,7 +37,7 @@ public class RoomCustomRepositoryImpl implements RoomCustomRepository{
             QRoomKeyword rk = new QRoomKeyword("rk");
             QRoom r= new QRoom("r");
             return queryFactory.select(Projections.constructor(RoomPasswordXDto.class,
-                            r))
+                            r)).distinct()
                     .from(rk)
                     .innerJoin(rk.roomId, r)
                     .innerJoin(rk.keywordId, k)
