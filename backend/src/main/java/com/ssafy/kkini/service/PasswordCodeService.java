@@ -7,6 +7,7 @@ import com.ssafy.kkini.entity.User;
 import com.ssafy.kkini.repository.PasswordCodeRepository;
 import com.ssafy.kkini.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -38,6 +39,7 @@ public class PasswordCodeService {
         return encryptService.encryptMD5(email + LocalDateTime.now()).substring(0,6);
     }
 
+    @Transactional
     //비밀번호 코드 생성
     public PasswordCode createPasswordCode(String email) {
         User user = userRepository.findByUserEmail(email).get();
@@ -61,6 +63,7 @@ public class PasswordCodeService {
         return passwordCodeRepository.findFirstByUserOrderByCreatedTimeDesc(user);
     }
 
+    @Transactional
     //비밀번호코드 사용처리 (N->Y)
     public void usePasswordCode(PasswordCode passwordCode) {
         PasswordCodeUpdateDto passwordCodeUpdateDto = new PasswordCodeUpdateDto(passwordCode);
