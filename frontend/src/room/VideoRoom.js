@@ -14,6 +14,7 @@ import Tab from '@mui/material/Tab';
 import TabPanel from '@mui/lab/TabPanel';
 import ChatIcon from '@mui/icons-material/Chat';
 import UserIcon from '@mui/icons-material/Person';
+import CancelIcon from '@mui/icons-material/Cancel';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
@@ -217,7 +218,7 @@ class VideoRoom extends Component {
     }
   }
 
-  //현재 세션의 참가자 정보
+  //userList 호출
   getUserList() {
     return new Promise((resolve, reject) => {
       axios({
@@ -240,17 +241,18 @@ class VideoRoom extends Component {
     });
   }
 
+  //참여자 리스트 리턴
   userList(users) {
     const list = users.map((user, index) => (
       <li>
-        <Box sx={{ '& button': { m: 1 } }}>
+        <Box sx={{ '& Button': { m: 0.5 } }}>
           <Stack direction="row" spacing={3}>
             <div>{user.clientData.split('"')[3]}</div>
-            <Button variant="contained" color="error" size="small">
-              강퇴
-            </Button>
-            <Button variant="outlined" color="error" size="small">
+            <Button value={index} variant="contained" color="error" size="small">
               신고
+            </Button>
+            <Button value={index} variant="contained" color="error" size="small" disabled>
+              강퇴
             </Button>
           </Stack>
         </Box>
@@ -269,6 +271,7 @@ class VideoRoom extends Component {
     this.setState({ isChatOn: !this.state.isChatOn });
   }
 
+  //채팅, 리스트 전환용 토글
   handleChange(event, newValue) {
     this.setState({
       value: newValue,
@@ -456,21 +459,21 @@ class VideoRoom extends Component {
     const messages = this.state.messages;
 
     return (
-      <div className="container">
+      <div className={styles.container}>
         <div className={styles.header}>
           <CenterLogo />
+          <h2 id="session-title">{mySessionId}</h2>
         </div>
         {/** 세션이 없을 경우 띄우는 화면
          * RoomList.js가 여기를 대체할 수 있도록 하기
          */}
 
         {this.state.session === undefined ? (
-          <div className={styles.main}>
-            <div className={styles.body}>
+          <div className={styles.omain}>
+            <div className={styles.obody}>
               <div id="join">
                 <div id="join-dialog" className="jumbotron vertical-center">
-                  <h1> 참여하기 </h1>
-                  <form className="form-group" onSubmit={this.joinSession}>
+                  <form className={styles.form_group} onSubmit={this.joinSession}>
                     <p>
                       <label>참가자명: </label>
                       <input
@@ -504,16 +507,7 @@ class VideoRoom extends Component {
         ) : (
           <div className={styles.main}>
             <div className={styles.body}>
-              <h2 id="session-title">{mySessionId}</h2>
-              <button
-                className="btn btn-large btn-danger"
-                type="button"
-                id="buttonCloseSession"
-                onClick={this.closeSession}
-              >
-                Close Session
-              </button>
-              <div id="video-container" className="col-md-6">
+              <div id="video-container" className={`${styles.videobox} ${'col-md-9'}`}>
                 {this.state.publisher !== undefined ? (
                   <div
                     className="stream-container col-md-6 col-xs-6"
@@ -533,9 +527,9 @@ class VideoRoom extends Component {
                 ))}
               </div>
             </div>
-            <div>
-              <TabContext value={this.state.value}>
-                <TabPanel value="1">
+            <div className={styles.sidebar}>
+              <TabContext value={this.state.value} sx={{ background: '#ffd4c3' }}>
+                <TabPanel value="1" sx={{ background: '#ffd4c3' }}>
                   <div className={`${styles.chatWrapper} ${styles.chatbox__active}`}>
                     <div className={styles.chatHeader}>
                       <h2>채팅</h2>
@@ -560,7 +554,7 @@ class VideoRoom extends Component {
                     </div>
                   </div>
                 </TabPanel>
-                <TabPanel value="2">
+                <TabPanel value="2" sx={{ background: '#ffd4c3' }}>
                   <div className={`${styles.chatWrapper} ${styles.chatbox__active}`}>
                     <div className={styles.chatHeader}>
                       <h2>참여자 목록</h2>
@@ -572,9 +566,14 @@ class VideoRoom extends Component {
                     </div>
                   </div>
                 </TabPanel>
-                <TabList onChange={this.handleChange} aria-label="icon label tabs example">
-                  <Tab icon={<ChatIcon />} label="채팅" value="1" />
-                  <Tab icon={<UserIcon />} label="참여자목록" value="2" />
+                <TabList
+                  onChange={this.handleChange}
+                  aria-label="icon label tabs example"
+                  sx={{ background: '#ffd4c3' }}
+                >
+                  <Tab icon={<ChatIcon />} label="채팅" value="1" sx={{ background: '#ffd4c3' }} />
+                  <Tab icon={<UserIcon />} label="참여자목록" value="2" sx={{ background: '#ffd4c3' }} />
+                  <Tab icon={<CancelIcon />} label="퇴장" onClick={this.closeSession} sx={{ background: '#ffd4c3' }} />
                 </TabList>
               </TabContext>
             </div>
