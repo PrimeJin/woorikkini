@@ -60,7 +60,7 @@ public class MemoryService {
 
             System.out.println("createMemory  : " + createMemory.getMemoryTitle());
 
-            if(createMemory != null && !memoryImgFiles.isEmpty()){
+            if(createMemory != null &&!memoryImgFiles.isEmpty()){
                 System.out.println("memoryImagFiles OK");
                 uploadPhoto(memoryImgFiles,createMemory);
             }
