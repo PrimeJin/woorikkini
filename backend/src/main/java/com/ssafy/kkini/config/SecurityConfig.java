@@ -3,6 +3,8 @@ package com.ssafy.kkini.config;
 import com.ssafy.kkini.handler.oauth2.OAuth2AuthenticationFailureHandler;
 import com.ssafy.kkini.handler.oauth2.OAuth2AuthenticationSuccessHandler;
 import com.ssafy.kkini.repository.HttpCookieOAuth2AuthorizationRequestRepository;
+import com.ssafy.kkini.security.JwtExceptionFilter;
+import com.ssafy.kkini.security.RestAuthenticationEntryPoint;
 import com.ssafy.kkini.security.TokenAuthenticationFilter;
 import com.ssafy.kkini.service.CustomOAuth2UserService;
 import com.ssafy.kkini.service.CustomOidcUserService;
@@ -20,6 +22,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -36,15 +41,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private CustomOidcUserService customOidcUserService;
 
+    private JwtExceptionFilter jwtExceptionFilter;
 
     private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 
     private OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
 
-    public SecurityConfig(CustomUserDetailsService customUserDetailsService, CustomOAuth2UserService customOAuth2UserService, CustomOidcUserService customOidcUserService, OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler, OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler) {
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService, CustomOAuth2UserService customOAuth2UserService, CustomOidcUserService customOidcUserService
+            , JwtExceptionFilter jwtExceptionFilter, OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler, OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler) {
         this.customUserDetailsService = customUserDetailsService;
         this.customOAuth2UserService = customOAuth2UserService;
         this.customOidcUserService = customOidcUserService;
+        this.jwtExceptionFilter = jwtExceptionFilter;
         this.oAuth2AuthenticationSuccessHandler = oAuth2AuthenticationSuccessHandler;
         this.oAuth2AuthenticationFailureHandler = oAuth2AuthenticationFailureHandler;
     }
@@ -86,7 +94,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         SessionCreationPolicy.STATELESS
                 )
                 .and()
+                .cors().configurationSource(corsConfigurationSource())
+
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(new RestAuthenticationEntryPoint())
+
+                .and()
                 .authorizeRequests()
+                
+                .antMatchers("/api/test/**").hasRole("ADMIN")
                 .anyRequest().permitAll()
                 .and()
                 .oauth2Login()
@@ -105,9 +122,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .failureHandler(oAuth2AuthenticationFailureHandler);
 
         httpSecurity.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-
+        httpSecurity.addFilterBefore(jwtExceptionFilter, TokenAuthenticationFilter.class);
     }
 
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedOrigin("https://i8a804.p.ssafy.io:3000");
+        configuration.addAllowedOrigin("https://i8a804.p.ssafy.io");
+        configuration.addAllowedHeader("*");
+        configuration.addAllowedMethod("*");
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
+    }
 
 
     @Override
