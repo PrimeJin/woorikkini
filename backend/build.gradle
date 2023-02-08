@@ -37,6 +37,7 @@ dependencies {
 	implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
 	// https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui
 	implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.7'
+	implementation 'commons-io:commons-io:2.6'
 
 
 	compileOnly 'org.projectlombok:lombok'

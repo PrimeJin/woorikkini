@@ -51,7 +51,7 @@ public class MemoryService {
         return memoryGetFormDtoList;
     }
 
-    public Memory createMemory(MemoryCreateFormDto memoryCreateFormDto, MultipartFile[] memoryImgFiles) throws IOException {
+    public Memory createMemory(MemoryCreateFormDto memoryCreateFormDto, List<MultipartFile> memoryImgFiles) throws IOException {
         User user = userRepository.findByUserId(Integer.parseInt(memoryCreateFormDto.getUserId()));
         Memory memory = memoryCreateFormDto.toEntity();
         if(user != null){
@@ -60,7 +60,7 @@ public class MemoryService {
 
             System.out.println("createMemory  : " + createMemory.getMemoryTitle());
 
-            if(createMemory != null && memoryImgFiles.length != 0){
+            if(createMemory != null && !memoryImgFiles.isEmpty()){
                 System.out.println("memoryImagFiles OK");
                 uploadPhoto(memoryImgFiles,createMemory);
             }
@@ -71,7 +71,7 @@ public class MemoryService {
     }
 
 
-    public Memory updateMemory(MemoryUpdateFormDto memoryUpdateFormDto, MultipartFile[] memoryImgFiles) throws IOException {
+    public Memory updateMemory(MemoryUpdateFormDto memoryUpdateFormDto, List<MultipartFile> memoryImgFiles) throws IOException {
         Optional<Memory> memory = memoryRepository.findByMemoryId(memoryUpdateFormDto.getMemoryId());
         User user = userRepository.findByUserId(Integer.parseInt(memoryUpdateFormDto.getUserId()));
         if(memory.isPresent() && user != null){
@@ -80,7 +80,7 @@ public class MemoryService {
             updateMemory = memoryRepository.save(updateMemory);
             if(updateMemory != null){
                 deletePhoto(memoryUpdateFormDto.getMemoryId());
-                if(memoryImgFiles.length != 0){
+                if(!memoryImgFiles.isEmpty()){
                     uploadPhoto(memoryImgFiles,updateMemory);
                 }
 
@@ -92,7 +92,7 @@ public class MemoryService {
     }
 
     @Transactional
-    public ArrayList<Photo> uploadPhoto(MultipartFile[] memoryImgFiles, Memory memory) throws IllegalStateException, IOException {
+    public ArrayList<Photo> uploadPhoto(List<MultipartFile> memoryImgFiles, Memory memory) throws IllegalStateException, IOException {
 
         // 년/월/일 폴더의 생성으로 한 폴더에 너무 많은 파일이 들어가지 않도록 제어
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
