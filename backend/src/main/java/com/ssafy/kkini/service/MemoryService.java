@@ -72,14 +72,14 @@ public class MemoryService {
 
 
     public Memory updateMemory(MemoryUpdateFormDto memoryUpdateFormDto, List<MultipartFile> memoryImgFiles) throws IOException {
-        Optional<Memory> memory = memoryRepository.findByMemoryId(memoryUpdateFormDto.getMemoryId());
+        Optional<Memory> memory = memoryRepository.findByMemoryId(Integer.parseInt(memoryUpdateFormDto.getMemoryId()));
         User user = userRepository.findByUserId(Integer.parseInt(memoryUpdateFormDto.getUserId()));
         if(memory.isPresent() && user != null){
             Memory updateMemory = memoryUpdateFormDto.toEntity();
             updateMemory.setUser(user);
             updateMemory = memoryRepository.save(updateMemory);
             if(updateMemory != null){
-                deletePhoto(memoryUpdateFormDto.getMemoryId());
+                deletePhoto(Integer.parseInt(memoryUpdateFormDto.getMemoryId()));
                 if(!memoryImgFiles.isEmpty()){
                     uploadPhoto(memoryImgFiles,updateMemory);
                 }
