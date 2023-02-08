@@ -80,7 +80,7 @@ public class MemoryService {
             updateMemory = memoryRepository.save(updateMemory);
             if(updateMemory != null){
                 deletePhoto(memoryUpdateFormDto.getMemoryId());
-                if(memoryImgFiles != null && memoryImgFiles.size() != 0){
+                if(!memoryImgFiles.isEmpty()){
                     uploadPhoto(memoryImgFiles,updateMemory);
                 }
 
