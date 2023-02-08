@@ -5,6 +5,7 @@ import com.ssafy.kkini.entity.Room;
 import lombok.Getter;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -33,6 +34,7 @@ public class RoomCreateFormDto {
                 .roomContent(roomContent)
                 .roomPrivate(roomPrivate)
                 .roomPassword(roomPassword)
+                .roomKeywords(new ArrayList<>())
                 .roomPreset(roomPreset)
                 .roomLimitUser(roomLimitUser)
                 .build();
