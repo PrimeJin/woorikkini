@@ -1,5 +1,4 @@
-import React from 'react';
-import './Notice.css';
+import React from "react";
 
 function NoticeList(props) {
   const noticeDetail = `notice/${props.notice.noticeId}`;
@@ -11,7 +10,10 @@ function NoticeList(props) {
     <tr>
       <td>{id}</td>
       <td>
-        <a href={noticeDetail} style={{ textDecoration: 'none', color: 'black' }}>
+        <a
+          href={noticeDetail}
+          style={{ textDecoration: "none", color: "black" }}
+        >
           {title}
         </a>
       </td>

@@ -48,7 +48,6 @@ function App() {
           <Route path="/room" element={<Room />} />
           <Route path="/room/:roomId" element={<RoomDetail />} />
           <Route path="/*" element={<ErrorPage />} />
-          <Route path="/pwchange" element={<PwChange />} />
         </Routes>
       </BrowserRouter>
     </>
