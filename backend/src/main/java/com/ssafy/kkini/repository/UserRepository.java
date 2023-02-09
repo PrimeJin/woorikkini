@@ -18,4 +18,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findAllByUserId(int userId);
 
     User findByUserNickname(String userNickname);
+
+    int countAllByGender(String female);
+
+    int countAllByAge(String female);
 }
