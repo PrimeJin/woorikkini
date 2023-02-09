@@ -34,8 +34,12 @@ const PwChange = () => {
         }
       })
       .catch((err) => {
-        console.log(err, "check 에러");
-        alert("만료된 링크입니다.");
+        if (err.response.data.message === "fail") {
+          alert("만료된 링크입니다.");
+        } else {
+          alert("유효하지 않은 요청입니다.");
+          console.log(err, "pwchange check 에러");
+        }
       });
   }
 
