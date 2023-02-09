@@ -128,7 +128,7 @@ class MemoryServiceTest {
                 ,"밍"
                 ,"F"
                 ,19980901);
-        MemoryUpdateFormDto memoryUpdateFormDto = new MemoryUpdateFormDto(1,"오늘 식단", "성공적", "1");
+        MemoryUpdateFormDto memoryUpdateFormDto = new MemoryUpdateFormDto("1","오늘 식단", "성공적", "1");
         Memory memory = memoryUpdateFormDto.toEntity();
         Optional<User> user = Optional.ofNullable(userCreateFormDto.toEntity());
 //        when(userRepository.findAllByUserId(any())).thenReturn(user);

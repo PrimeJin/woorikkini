@@ -1,5 +1,6 @@
 package com.ssafy.kkini.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ssafy.kkini.entity.Memory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,10 +21,11 @@ public class MemoryCreateFormDto {
     private String memoryContent;
     private String userId;
 
-
     public Memory toEntity(){
         return Memory.builder().title(this.memoryTitle)
                 .content(this.memoryContent).build();
     }
+
+
 
 }
