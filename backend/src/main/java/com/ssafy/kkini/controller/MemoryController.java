@@ -35,7 +35,7 @@ public class MemoryController {
     @ApiOperation(value = "추억카드 등록", notes = "추억카드 등록")
     @PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<Map<String,Object>> createMemory(@Valid @ApiParam(value = "추억 제목,내용, 사진", required = true, example = "0")
-                                                               @RequestPart(value = "memoryImgFiles", required = false) List<MultipartFile> memoryImgFiles,
+                                                               @RequestPart(value = "memoryImgFiles", required = false) MultipartFile memoryImgFiles,
                                                                @RequestPart(value = "newCardData", required = false) MemoryCreateFormDto memoryCreateFormDto){
 
         HttpStatus status = null;
