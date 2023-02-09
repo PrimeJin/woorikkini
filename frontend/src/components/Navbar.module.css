@@ -11,34 +11,31 @@ nav {
   align-items: flex-end;
   line-height: 26px;
 }
-.toggle-menu {
-  /* Rectangle 349 */
-
+.toggle_menu {
   width: 100%;
   height: 50px;
 
   background: #ffffff;
-  border: 0.1px solid rgba(0, 0, 0, 0.66);
+  border: 0.1px solid rgba(0, 0, 0, 0.3);
   font-size: 80%;
   font-weight: 600;
 }
+.toggle_menu div:hover {
+  background-color: #eb6123;
+  color: #ffffff;
+}
 
-.logout-btn {
-  /* Rectangle 189 */
-
-  /* position: absolute; */
+.logout_btn {
   width: 80px;
   height: 25px;
   border: none;
   background: #eb6123;
   border-radius: 15px;
-  /* LOGOUT */
 
   font-family: 'NanumSquareRound';
   font-weight: 800;
   font-size: 13px;
 
-  align-items: center;
   color: #ffffff;
   float: right;
 }

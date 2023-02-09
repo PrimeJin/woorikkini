@@ -1,6 +1,6 @@
 @import url('http://cdn.rawgit.com/innks/NanumSquareRound/master/nanumsquareround.min.css');
 
-.Signup-all {
+.Signup_all {
   text-align: center;
   font-family: 'NanumSquareRound';
   justify-content: center;
@@ -9,7 +9,7 @@
   background-color: #fffdfa;
 }
 
-.woori-logo {
+.woori_logo {
   margin-top: 5%;
   width: 100px;
   height: 110px;
@@ -17,7 +17,7 @@
   display: flex;
 }
 
-.text-type {
+.text_type {
   font-weight: 900;
   font-size: 22px;
   padding-top: 3%;
@@ -25,7 +25,7 @@
   color: #090936;
 }
 
-.signup-form {
+.signup_form {
   width: 360px;
   height: auto;
 
@@ -57,7 +57,7 @@
   padding-left: 18%;
 }
 
-.input-form-top {
+.input_form_top {
   border: none;
   width: 230px;
   height: 35px;
@@ -71,7 +71,7 @@
   font-weight: 500;
   font-size: 13px;
 }
-.input-form {
+.input_form {
   border: none;
   width: 230px;
   height: 35px;
@@ -85,7 +85,7 @@
   padding-right: 4%; */
   padding: 0 15px;
 }
-.date-input {
+.date_input {
   border: none;
   width: 230px;
   height: 35px;
@@ -111,7 +111,7 @@ input[type='date']:valid::before {
   display: none;
 }
 
-.check-box {
+.check_box {
   width: 260px;
   height: 50px;
   display: flex;
@@ -169,7 +169,7 @@ label input {
   margin-top: 3%;
 }
 
-.check-btn {
+.check_btn {
   align-items: center;
   border: none;
   position: absolute;

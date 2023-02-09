@@ -7,7 +7,7 @@ function NoticeIcon() {
     navigate(`/notice/`);
   };
   return (
-    <div className="notice" style={{ margin: '2rem', display: 'inline', position: 'fixed', bottom: 0 }}>
+    <div style={{ margin: '2rem', display: 'inline', position: 'fixed', bottom: 0 }}>
       <img
         onClick={NoticeGo}
         className="notice-icon"

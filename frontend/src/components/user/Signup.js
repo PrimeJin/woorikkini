@@ -1,4 +1,4 @@
-import './Signup.css';
+import styles from './Signup.module.css';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Logo from './UserPagesLogo';
@@ -42,8 +42,14 @@ function Form() {
       })
         .then((res) => {
           console.log(res.data.message);
-          setEmailCheck(true);
-          alert('인증코드가 전송되었습니다.');
+          if (res.data.message === 'success') {
+            setEmailCheck(true);
+            alert('인증코드가 전송되었습니다.');
+          } else if (res.data.message === 'fail') {
+            alert('이미 가입된 이메일 입니다.');
+          } else {
+            alert('다시 시도해주시기 바랍니다.');
+          }
         })
         .catch((err) => {
           alert('다시 시도해주시기 바랍니다.');
@@ -193,18 +199,32 @@ function Form() {
   };
 
   return (
-    <form className="signup-form">
-      <p className="text-type">회원가입</p>
+    <form className={styles.signup_form}>
+      <p className={styles.text_type}>회원가입</p>
       <div style={{ position: 'relative' }}>
-        <input type="email" value={Email} onChange={onEmail} className="input-form-top" placeholder="이메일" required />
-        <button type="click" className="check-btn" onClick={onEmailClick} value={emailCheck}>
+        <input
+          type="email"
+          value={Email}
+          onChange={onEmail}
+          className={styles.input_form_top}
+          placeholder="이메일"
+          required
+        />
+        <button type="click" className={styles.check_btn} onClick={onEmailClick} value={emailCheck}>
           코드 전송
         </button>
       </div>
       <p></p>
       <div style={{ position: 'relative' }}>
-        <input type="code" value={Code} onChange={onCode} className="input-form" placeholder="인증코드" required />
-        <button className="check-btn" onClick={onCodeClick} value={codeCheck}>
+        <input
+          type="code"
+          value={Code}
+          onChange={onCode}
+          className={styles.input_form}
+          placeholder="인증코드"
+          required
+        />
+        <button className={styles.check_btn} onClick={onCodeClick} value={codeCheck}>
           인증하기
         </button>
       </div>
@@ -214,43 +234,50 @@ function Form() {
         type="password"
         value={Password}
         onChange={onPassword}
-        className="input-form"
+        className={styles.input_form}
         placeholder="비밀번호"
         required
       />
-      {pwVisible ? <span className="impossible">* 8 ~ 12자의 비밀번호를 입력해야 합니다.</span> : <p></p>}
+      {pwVisible ? <span className={styles.impossible}>* 8 ~ 12자의 비밀번호를 입력해야 합니다.</span> : <p></p>}
       <input
         type="password"
         value={ConfirmPassword}
         onChange={onConfirmPassword}
-        className="input-form"
+        className={styles.input_form}
         placeholder="비밀번호 확인"
         required
       />
-      {pwcheckVisible ? <span className="impossible">* 비밀번호가 일치하지 않습니다.</span> : <p></p>}
-      <input type="text" value={Name} onChange={onName} className="input-form" placeholder="이름" required />
+      {pwcheckVisible ? <span className={styles.impossible}>* 비밀번호가 일치하지 않습니다.</span> : <p></p>}
+      <input type="text" value={Name} onChange={onName} className={styles.input_form} placeholder="이름" required />
       <p></p>
       <div style={{ position: 'relative' }}>
         <input
           type="text"
           value={Nickname}
           onChange={onNickname}
-          className="input-form"
+          className={styles.input_form}
           placeholder="닉네임"
           required
         />
-        <button className="check-btn" onClick={onNickCheck}>
+        <button className={styles.check_btn} onClick={onNickCheck}>
           중복 확인
         </button>
       </div>
-      {nickVisible && <span className="impossible">* 최대 10자의 닉네임을 사용할 수 있습니다.</span>}
-      {possible && <span className="possible">* 사용할 수 있는 닉네임 입니다.</span>}
-      {impossible && <span className="impossible">* 중복되는 닉네임 입니다.</span>}
+      {nickVisible && <span className={styles.impossible}>* 최대 10자의 닉네임을 사용할 수 있습니다.</span>}
+      {possible && <span className={styles.possible}>* 사용할 수 있는 닉네임 입니다.</span>}
+      {impossible && <span className={styles.impossible}>* 중복되는 닉네임 입니다.</span>}
       <p></p>
-      <input type="date" value={Date} onChange={onDate} className="date-input" data-placeholder="생년월일" required />
+      <input
+        type="date"
+        value={Date}
+        onChange={onDate}
+        className={styles.date_input}
+        data-placeholder="생년월일"
+        required
+      />
       <p></p>
-      <div className="check-box">
-        <p className="gender">성별</p>
+      <div className={styles.check_box}>
+        <p className={styles.gender}>성별</p>
         <fieldset>
           <label>
             <input type="radio" value="female" name="gender" onClick={onGender} />
@@ -266,7 +293,7 @@ function Form() {
           </label>
         </fieldset>
       </div>
-      <button onClick={onSubmit} className="accept">
+      <button onClick={onSubmit} className={styles.accept}>
         가입하기
       </button>
     </form>
@@ -279,7 +306,7 @@ function Signup() {
       <div>
         <Logo></Logo>
       </div>
-      <div className="Signup-all">
+      <div className={styles.Signup_all}>
         <Form></Form>
       </div>
     </div>
