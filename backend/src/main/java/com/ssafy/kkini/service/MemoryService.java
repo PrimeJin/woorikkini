@@ -9,8 +9,6 @@ import com.ssafy.kkini.entity.User;
 import com.ssafy.kkini.repository.MemoryRepository;
 import com.ssafy.kkini.repository.PhotoRepository;
 import com.ssafy.kkini.repository.UserRepository;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,20 +23,22 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
 @Service
 public class MemoryService {
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    MemoryRepository memoryRepository;
-    @Autowired
-    PhotoRepository photoRepository;
+    private final UserRepository userRepository;
+    private final MemoryRepository memoryRepository;
+    private final PhotoRepository  photoRepository;
 
     @Value("${upload.path}")
     private String fileDir;
 
     private String parentDir;
+
+    public MemoryService(UserRepository userRepository,MemoryRepository memoryRepository,PhotoRepository photoRepository){
+        this.userRepository = userRepository;
+        this.memoryRepository = memoryRepository;
+        this.photoRepository = photoRepository;
+    }
 
     public List<MemoryGetFormDto> getMemory(int userId) {
         List<MemoryGetFormDto> memoryGetFormDtoList = new ArrayList<>();
@@ -105,7 +105,7 @@ public class MemoryService {
         File uploadPath = null;
 
         if(hostname. substring(0, 7).equals ("DESKTOP") ) parentDir = fileDir;
-        else parentDir = "\\images\\";
+        else parentDir = "./images";
 
         uploadPath = new File(parentDir, uploadFolderPath); // 오늘 날짜의 경로를 문자열로 생성
 
