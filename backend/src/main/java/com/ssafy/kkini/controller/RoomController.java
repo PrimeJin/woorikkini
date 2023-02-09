@@ -60,8 +60,8 @@ public class RoomController {
                                             String roomId) {
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
-        Map<String, String> roomDetail = roomService.detailRoom(Integer.valueOf(roomId));
-        if (roomDetail == null || roomDetail.isEmpty()){
+        RoomDetailDto roomDetail = roomService.detailRoom(Integer.valueOf(roomId));
+        if (roomDetail == null){
             status = HttpStatus.NOT_FOUND;
             resultMap.put("message", FAIL);
         } else {

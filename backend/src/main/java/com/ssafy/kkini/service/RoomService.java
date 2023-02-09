@@ -1,9 +1,6 @@
 package com.ssafy.kkini.service;
 
-import com.ssafy.kkini.dto.RoomCreateFormDto;
-import com.ssafy.kkini.dto.RoomEnterFormDto;
-import com.ssafy.kkini.dto.RoomPasswordXDto;
-import com.ssafy.kkini.dto.RoomSearchDto;
+import com.ssafy.kkini.dto.*;
 import com.ssafy.kkini.entity.Room;
 import com.ssafy.kkini.entity.RoomKeyword;
 import com.ssafy.kkini.repository.KeywordRepository;
@@ -45,15 +42,13 @@ public class RoomService {
         return new RoomPasswordXDto(room);
     }
 
-    public Map<String, String> detailRoom(int roomId){
+    public RoomDetailDto detailRoom(int roomId){
         Room room = roomRepository.findByRoomId(roomId);
         if(room == null){
             return null;
         }
-        Map<String, String> roomDetail = new HashMap<>();
-        roomDetail.put("roomTitle", room.getRoomTitle());
-        roomDetail.put("roomContent", room.getRoomContent());
-        return roomDetail;
+        RoomDetailDto roomDetailDto = new RoomDetailDto(room);
+        return roomDetailDto;
     }
 
     public List<RoomPasswordXDto> getAllRoom(){
