@@ -7,6 +7,8 @@ import com.ssafy.kkini.entity.Memory;
 import com.ssafy.kkini.service.MemoryService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,8 @@ public class MemoryController {
     private static final String FAIL = "fail";
     private final MemoryService memoryService;
 
+    private static final Logger logger = LoggerFactory.getLogger(MemoryController.class);
+
     public MemoryController(MemoryService memoryService){
         this.memoryService = memoryService;
     }
@@ -35,12 +39,18 @@ public class MemoryController {
     @ApiOperation(value = "추억카드 등록", notes = "추억카드 등록")
     @PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<Map<String,Object>> createMemory(@Valid @ApiParam(value = "추억 제목,내용, 사진", required = true, example = "0")
-                                                               @RequestPart(value = "memoryImgFiles", required = false) List<MultipartFile> memoryImgFiles,
+                                                               @RequestPart(value = "memoryImgFiles", required = false) MultipartFile[] memoryImgFiles,
                                                                @RequestPart(value = "newCardData", required = false) MemoryCreateFormDto memoryCreateFormDto){
 
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
         Memory createMemory = null;
+
+        logger.debug(String.valueOf(memoryImgFiles.length));
+        if(memoryImgFiles.length > 0){
+            logger.debug(String.valueOf(memoryImgFiles[0]));
+        }
+
 
         try {
             createMemory = memoryService.createMemory(memoryCreateFormDto, memoryImgFiles);
@@ -62,11 +72,16 @@ public class MemoryController {
     @ApiOperation(value = "추억카드 수정", notes = "추억카드 수정")
     @PatchMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<Map<String,Object>> updateMemory(@Valid @ApiParam(value = "추억 아이디, 제목, 내용 사진", required = true, example = "0")
-                                                               @RequestPart(value = "memoryImgFiles", required = false) List<MultipartFile> memoryImgFiles,
+                                                               @RequestPart(value = "memoryImgFiles", required = false) MultipartFile[] memoryImgFiles,
                                                                @RequestPart(value = "newCardData", required = false) MemoryUpdateFormDto memoryUpdateFormDto){
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
         Memory updateMemory = null;
+
+        logger.debug(String.valueOf(memoryImgFiles.length));
+        if(memoryImgFiles.length > 0){
+            logger.debug(String.valueOf(memoryImgFiles[0]));
+        }
 
         try {
             updateMemory = memoryService.updateMemory(memoryUpdateFormDto ,memoryImgFiles);
