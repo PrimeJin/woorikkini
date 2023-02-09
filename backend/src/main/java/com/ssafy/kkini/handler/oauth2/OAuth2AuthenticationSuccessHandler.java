@@ -21,7 +21,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.util.Optional;
 
 import static com.ssafy.kkini.repository.HttpCookieOAuth2AuthorizationRequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME;
@@ -75,20 +77,18 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         }
         refreshTokenRepository.saveAndFlush(oldRefreshToken);
 
-        ResponseCookie cookie = ResponseCookie.from("refreshToken", oldRefreshToken.getRefreshToken())
-                .maxAge(7 * 24 * 60 * 60)
-                .path("/")
-                .secure(true)
-                .sameSite("None")
-                .httpOnly(true)
-                .build();
-        response.setHeader("Set-Cookie", cookie.toString());
 
-        return UriComponentsBuilder.fromUriString(targetUrl)
-                .queryParam("userId", userPrincipalDto.getUser().getUserId())
-                .queryParam("nickName", userPrincipalDto.getUser().getUserNickname())
-                .queryParam("accessToken", token)
-                .build().toUriString();
+        CookieUtils.addCookie(response, "refreshToken", oldRefreshToken.getRefreshToken(),180);
+        try {
+            String nickName = URLEncoder.encode(userPrincipalDto.getUser().getUserNickname(), "UTF-8");
+            return UriComponentsBuilder.fromUriString(targetUrl)
+                    .queryParam("userId", userPrincipalDto.getUser().getUserId())
+                    .queryParam("nickName", nickName)
+                    .queryParam("accessToken", token)
+                    .build().toUriString();
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected void clearAuthenticationAttributes(HttpServletRequest request, HttpServletResponse response) {

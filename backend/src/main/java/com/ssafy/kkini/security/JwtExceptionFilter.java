@@ -28,7 +28,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
     }
 
     public void setErrorResponse(HttpServletRequest request, HttpServletResponse response, Throwable ex) throws IOException {
-
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json; charset=UTF-8");
 
 
@@ -38,6 +38,6 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(response.getOutputStream(), resultMap);
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
     }
 }
