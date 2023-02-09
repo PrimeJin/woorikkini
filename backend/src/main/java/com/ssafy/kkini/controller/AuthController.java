@@ -38,11 +38,14 @@ public class AuthController {
 
         // 사용자에게 받은 refresh token 유효성 검증
         String userRefreshToken = requestBody.get("refreshToken");
-        if (!tokenProvider.validateToken(userRefreshToken)) {
+        try{
+            tokenProvider.validateToken(userRefreshToken);
+        } catch (Exception ex){
+            resultMap.put("message", "accessToken " + ex.getMessage());
             status = HttpStatus.UNAUTHORIZED;
-            resultMap.put("message", FAIL);
             return new ResponseEntity<Map<String, Object>>(resultMap, status);
         }
+
 
         // 사용자에게 받은 refresh token 존재 여부 검증
         RefreshToken refreshToken = refreshTokenRepository.findByRefreshToken(userRefreshToken);
