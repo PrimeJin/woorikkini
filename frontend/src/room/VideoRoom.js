@@ -19,6 +19,9 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 
+import { SET_VOTE, RESET_VOTE } from '../store/Vote';
+import { connect } from 'react-redux';
+
 const OPENVIDU_SERVER_URL = 'https://i8a804.p.ssafy.io:8443'; //도커에 올린 openvidu server
 const OPENVIDU_SERVER_SECRET = 'kkini'; //시크릿키값, 바꿔주면 좋음
 
@@ -26,10 +29,33 @@ const EncodeBase64 = (data) => {
   return Buffer.from(data).toString('base64');
 };
 
+//useSelector 선언할곳
+// const dispatch = useDispatch();
+
+//redux를 이용한 store에서 state와 reducer 가져오기
+//this.props.authData 같은 식으로 사용 가능
+const mapStateToProps = (state) => ({
+  voteTotal: state.vote.total,
+  voteAgree: state.vote.yes,
+  voteDisagree: state.vote.no,
+});
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setVote: (data) => {
+      dispatch(SET_VOTE(data));
+    },
+    resetVote: () => {
+      dispatch(RESET_VOTE());
+    },
+  };
+};
+
 class VideoRoom extends Component {
   //초기설정 생성자
   constructor(props) {
     super(props);
+
     this.messagesEndRef = React.createRef(null);
     //state
     this.state = {
@@ -43,6 +69,7 @@ class VideoRoom extends Component {
       isHost: false, //
       isChatOn: false, //채팅팝업창이 켜져있는지 아닌지
       isListOn: false,
+      isVoteOn: false, //투표창이 켜져있는지 아닌지
       token: '', //accessToken
       message: '', //메시지 단일입력
       messages: [], //메시지 로그
@@ -50,6 +77,8 @@ class VideoRoom extends Component {
       users: [], //전체 참여자
 
       value: '1', //1: 채팅창, 2:참여자 목록
+
+      eventData: '',
     };
 
     //method
@@ -74,6 +103,13 @@ class VideoRoom extends Component {
     this.listToggle = this.listToggle.bind(this);
 
     this.handleChange = this.handleChange.bind(this);
+
+    //투표
+    this.startVote = this.startVote.bind(this);
+    this.showVoteModal = this.showVoteModal.bind(this);
+    this.voteComplete = this.voteComplete.bind(this);
+    this.agree = this.agree.bind(this);
+    this.disagree = this.disagree.bind(this);
   }
 
   //라이프 사이클
@@ -89,8 +125,8 @@ class VideoRoom extends Component {
   //컴포넌트가 업데이트 될 때마다 실행
   //디버깅용
   componentDidUpdate() {
-    this.scrollToBottom();
-    this.getUserList();
+    // this.scrollToBottom();
+    // this.getUserList();
     // console.log('createSession');
     // console.log(this.state.session.sessionId); //현재 세션값
     // console.log('createToken');
@@ -284,106 +320,232 @@ class VideoRoom extends Component {
     // --- 1) OpenVidu 객체 호출 ---
     this.OV = new OpenVidu();
 
-    // --- 2) 세션 초기화 ---
-    this.setState(
-      {
-        session: this.OV.initSession(),
-      },
+    this.setState({ session: this.OV.initSession() }, () => {
       //관심있는 세션 이벤트 구독(subscribe)
-      () => {
-        let mySession = this.state.session;
+      this.state.session.on('streamCreated', (event) => {
+        let newSubscriber = this.state.session.subscribe(
+          event.stream,
+          JSON.parse(event.stream.connection.data).clientData,
+        );
+        let newSubscribers = this.state.subscribers;
+        newSubscribers.push(newSubscriber);
 
-        // session객체가 각각 새로운 stream을 구독후,
-        // 반환된 구독자 객체를 subscribers에 저장함으로써 상태값 업데이트
-        mySession.on('streamCreated', (event) => {
-          let newSubscriber = mySession.subscribe(event.stream, JSON.parse(event.stream.connection.data).clientData);
-          let newSubscribers = this.state.subscribers;
-          newSubscribers.push(newSubscriber);
+        this.setState({
+          subscribers: [...newSubscribers],
+        });
 
+        console.log('subscribers ' + this.subscribers); //등록 확인용
+      });
+
+      this.state.session.on('signal:chat', (event) => {
+        let chatdata = event.data.split(','); //위에서 송신한 `${this.state.myUserName}, ${this.state.message}`를 분리
+
+        if (chatdata[0] !== this.state.myUserName) {
           this.setState({
-            subscribers: [...newSubscribers],
+            messages: [
+              ...this.state.messages,
+              {
+                userName: chatdata[0],
+                text: chatdata[1],
+                chatClass: 'messages__item--visitor',
+              },
+            ],
           });
+        }
+      });
 
-          console.log('subscribers ' + this.subscribers); //등록 확인용
+      //사용자가 화상회의를 떠나면 Session객체에서 소멸된 stream을 받아와
+      //subscribers 상태값 업데이트
+      this.state.session.on('streamDestroyed', (event) => {
+        this.deleteSubscriber(event.stream.streamManager);
+        this.getUserList(); //참여자 목록 갱신
+      });
+
+      //투표 시작 signal 받기
+      this.state.session.on('signal:voteStart', (event) => {
+        //투표창 모달 띄우기
+        console.log('투표 시작모달 띄우기');
+        //event.data에 누구를 추방할지에 대한 정보
+        //각 사용자에게 투표 모달창을 띄움
+        console.log(event.data);
+        this.setState({
+          isVoteOn: true,
+          eventData: event.data,
         });
+        console.log(this.state.eventData);
+      });
 
-        mySession.on('signal:chat', (event) => {
-          let chatdata = event.data.split(','); //위에서 송신한 `${this.state.myUserName}, ${this.state.message}`를 분리
+      //누군가가 투표버튼을 누르면 모든 사용자에게 event 송신
+      this.state.session.on('signal:sendVote', (event) => {
+        console.log('누군가 투표함');
+        console.log(JSON.parse(event.data));
+        this.setVoteUser(JSON.parse(event.data)); //store의 voteresult값을 1 늘려줌(store/vote.js 참고)
 
-          if (chatdata[0] !== this.state.myUserName) {
-            this.setState({
-              messages: [
-                ...this.state.messages,
-                {
-                  userName: chatdata[0],
-                  text: chatdata[1],
-                  chatClass: 'messages__item--visitor',
-                },
-              ],
-            });
+        //투표후 결과값을 받아와보자
+        // console.log('투표 수: ', total, yes, no); //확인용
+        setTimeout(() => {
+          const total = this.props.voteTotal;
+          const yes = this.props.voteAgree;
+          const no = this.props.voteDisagree;
+          const result = {
+            who: '', //누굴 추방할지
+            total: total, //전체 투표수
+            yes: yes, //찬성 수
+            no: no, //반대 수
+          };
+          console.log(this.props.voteTotal);
+          console.log(this.props.voteAgree);
+          console.log(this.props.voteDisagree);
+          //모두 투표했을 경우 투표 종료
+          if (total == this.state.subscribers.length + 1) {
+            this.voteComplete(result);
+            this.resetVoteUser(); //투표값 초기화
           }
-        });
+        }, 1000);
+      });
 
-        //사용자가 화상회의를 떠나면 Session객체에서 소멸된 stream을 받아와
-        //subscribers 상태값 업데이트
-        mySession.on('streamDestroyed', (event) => {
-          this.deleteSubscriber(event.stream.streamManager);
-          this.getUserList(); //참여자 목록 갱신
-        });
+      // OpenVidu 환경에서 토큰 발급받기
+      this.getToken().then((token) => {
+        // First param is the token got from the OpenVidu deployment. Second param can be retrieved by every user on event
+        // 'streamCreated' (property Stream.connection.data), and will be appended to DOM as the user's nickname
+        this.state.session
+          .connect(token, { clientData: this.state.myUserName })
+          .then(async () => {
+            this.OV.getUserMedia({
+              audioSource: false,
+              videoSource: undefined,
+              resolution: '640x480',
+              frameRate: 30,
+            }).then((mediaStream) => {
+              let videoTrack = mediaStream.getVideoTracks()[0];
 
-        mySession.on('signal:update-host', (event) => {
-          // console.log(event.data);
-          // if (this.state.userName === event.data) {
-          //   this.setState({
-          //     isHost: true,
-          //   });
-          // }
-        });
-
-        // 모든 비동기 오류마다 Session 객체에 의해 트리거 되는 이벤트
-        mySession.on('exception', (exception) => {
-          // console.warn(exception);
-        });
-
-        // OpenVidu 환경에서 토큰 발급받기
-        this.getToken().then((token) => {
-          // First param is the token got from the OpenVidu deployment. Second param can be retrieved by every user on event
-          // 'streamCreated' (property Stream.connection.data), and will be appended to DOM as the user's nickname
-          mySession
-            .connect(token, { clientData: this.state.myUserName })
-            .then(async () => {
-              this.OV.getUserMedia({
-                audioSource: false,
-                videoSource: undefined,
-                resolution: '640x480',
-                frameRate: 30,
-              }).then((mediaStream) => {
-                let videoTrack = mediaStream.getVideoTracks()[0];
-
-                //stream 게시(화면 출력)
-                let newPublisher = this.OV.initPublisher(this.state.myUserName, {
-                  audioSource: undefined,
-                  videoSource: videoTrack,
-                  publishAudio: true,
-                  publishVideo: true,
-                  insertMode: 'APPEND',
-                  mirror: true, //좌우반전 옵션
-                });
-
-                mySession.publish(newPublisher);
-                this.getUserList();
-                this.setState({
-                  // mainStreamManager: newPublisher,
-                  publisher: newPublisher,
-                });
+              //stream 게시(화면 출력)
+              let newPublisher = this.OV.initPublisher(this.state.myUserName, {
+                audioSource: undefined,
+                videoSource: videoTrack,
+                publishAudio: true,
+                publishVideo: true,
+                insertMode: 'APPEND',
+                mirror: true, //좌우반전 옵션
               });
-            })
-            .catch((error) => {
-              console.log('세션연결 오류:', error.code, error.message);
+
+              this.state.session.publish(newPublisher);
+              // this.getUserList();
+              this.setState({
+                // mainStreamManager: newPublisher,
+                publisher: newPublisher,
+              });
             });
-        });
-      },
+          })
+          .catch((error) => {
+            console.log('세션연결 오류:', error.code, error.message);
+          });
+      });
+    });
+  }
+
+  //투표시작 신호(강퇴버튼을 누르면 시작함)
+  //추방할 사람
+  startVote(voteWho) {
+    this.resetVoteUser();
+    const voteResult = {
+      who: voteWho,
+      total: this.props.voteTotal,
+      yes: this.props.voteAgree,
+      no: this.props.voteDisagree,
+    };
+
+    console.log('투표 시작: ');
+    console.log(voteResult);
+    this.state.session.signal({
+      data: JSON.stringify(voteResult),
+      to: [], //투표 당사자 제외해야하는거 아닌가?
+      type: 'voteStart', //signal:voteStart로 연결
+    });
+  }
+
+  setVoteUser = (data) => {
+    this.props.setVote(data);
+  };
+
+  resetVoteUser = () => {
+    this.props.resetVote();
+  };
+
+  //찬성표(유저 전체에게 신호가 감)
+  agree(voteInfo) {
+    voteInfo.total += 1;
+    voteInfo.yes += 1;
+    this.state.session.signal({
+      data: JSON.stringify(voteInfo),
+      to: [],
+      type: 'sendVote',
+    });
+    this.setState({
+      isVoteOn: false,
+    });
+  }
+
+  //반대표(유저 전체에게 신호가 감)
+  disagree(voteInfo) {
+    voteInfo.total += 1;
+    voteInfo.no += 1;
+    this.state.session.signal({
+      data: JSON.stringify(voteInfo),
+      to: [],
+      type: 'sendVote',
+    });
+    this.setState({
+      isVoteOn: false,
+    });
+  }
+  //참여자 모두에게 보낼 추방투표 모달
+  showVoteModal(data) {
+    //voteInfo(누굴 추방할지)에 대한 투표모달창을 띄움
+    const voteInfo = JSON.parse(data);
+    console.log('모달 띄움');
+    console.log(voteInfo);
+
+    return (
+      <div>
+        <header>투표하기</header>
+        <main>
+          <div>{voteInfo.voteWho}님의 강제 퇴장을 찬성하시나요?</div>
+          <p>이 창은 30초 후 자동으로 닫힙니다.</p>
+        </main>
+        <footer>
+          <button value="Yes" className={styles.ok_btn} onClick={() => this.agree(voteInfo)}>
+            찬성
+          </button>
+          <div style={{ width: 30 }}></div>
+          <button value="No" className={styles.close_bottom} onClick={() => this.disagree(voteInfo)}>
+            반대
+          </button>
+        </footer>
+      </div>
     );
+
+    // this.state.session
+    //   .signal({
+    //     data: voteInfo,
+    //     to: [],
+    //     type: 'sendVote',
+    //   })
+    //   .then(() => {
+    //     console.log('투표 완료!');
+    //   })
+    //   .catch((error) => console.log('투표 결과 전송오류'));
+  }
+
+  //투표 결과 집계
+  voteComplete(result) {
+    //과반수 이상이 찬성
+    if (result.yes / result.total >= 0.5) {
+      //백엔드 및 openvidu 서버에 추방 요청을 보냄
+      alert(`${result.who}님이 추방되었습니다`);
+    } else {
+      alert(`추방 투표가 부결되었습니다`);
+    }
   }
 
   //방 퇴장(혼자만, 세션은 그대로 있어야함)
@@ -526,6 +688,8 @@ class VideoRoom extends Component {
           <div className={styles.main}>
             <div className={styles.body}>
               <div id="video-container" className={`${styles.videobox} ${'col-md-9'}`}>
+                <button onClick={() => this.startVote('추방할 사람')}>투표 시작</button>
+                {this.state.isVoteOn ? this.showVoteModal(this.state.eventData) : null}
                 {this.state.publisher !== undefined ? (
                   <div
                     className="stream-container col-md-6 col-xs-6"
@@ -580,7 +744,7 @@ class VideoRoom extends Component {
 
                     <div className={styles.userListBox}>
                       {this.userList(this.state.users)}
-                      <div ref={this.messagesEndRef} />
+                      {/* <div ref={this.messagesEndRef} /> */}
                     </div>
                   </div>
                 </TabPanel>
@@ -661,4 +825,4 @@ class VideoRoom extends Component {
   }
 }
 
-export default VideoRoom;
+export default connect(mapStateToProps, mapDispatchToProps)(VideoRoom);
