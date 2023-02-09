@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import styles from "./Notice.module.css";
+import styles from "./AdminNotice.module.css";
 
-const NoticeCreate = (props) => {
+const AdminNoticeCreate = (props) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
@@ -18,7 +18,7 @@ const NoticeCreate = (props) => {
     } else {
       axios({
         method: "post",
-        url: "http://i8a804.p.ssafy.io:8050/notice/",
+        url: "https://i8a804.p.ssafy.io/api/notice/",
         data: {
           noticeTitle: title,
           noticeContent: content,
@@ -80,4 +80,4 @@ const NoticeCreate = (props) => {
   );
 };
 
-export default NoticeCreate;
+export default AdminNoticeCreate;

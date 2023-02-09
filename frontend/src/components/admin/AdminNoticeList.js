@@ -1,6 +1,6 @@
 import React from "react";
 
-function NoticeList(props) {
+function AdminNoticeList(props) {
   const noticeDetail = `notice/${props.notice.noticeId}`;
   const id = props.notice.noticeId;
   const title = props.notice.noticeTitle;
@@ -22,4 +22,4 @@ function NoticeList(props) {
   );
 }
 
-export default NoticeList;
+export default AdminNoticeList;

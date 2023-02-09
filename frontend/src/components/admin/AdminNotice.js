@@ -1,5 +1,5 @@
-import NoticeList from "./NoticeList";
-import styles from "./Notice.module.css";
+import AdminNoticeList from "./AdminNoticeList";
+import styles from "./AdminNotice.module.css";
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -12,7 +12,7 @@ function Notice() {
 
   function getList() {
     axios({
-      url: `http://i8a804.p.ssafy.io:8050/notice/?page=${page - 1}`,
+      url: `https://i8a804.p.ssafy.io/api/notice?page=${page - 1}&limit=10`,
       method: "GET",
     })
       .then((res) => {
@@ -68,7 +68,7 @@ function Notice() {
             <th style={{ width: "20%" }}>작성일자</th>
           </tr>
           {list.map((notice, index) => (
-            <NoticeList key={index} notice={notice} />
+            <AdminNoticeList key={index} notice={notice} />
           ))}
         </table>
         <Pagination count={count} page={page} onChange={pageChange} />

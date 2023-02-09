@@ -15,9 +15,9 @@ import ErrorPage from './pages/ErrorPage';
 import PwFind from './components/PwFind';
 import PwChange from './components/PwChange';
 import VideoRoom from './room/VideoRoom';
-import Notice from './components/admin/Notice';
-import NoticeDetail from './components/admin/NoticeDetail';
-import NoticeCreate from './components/admin/NoticeCreate';
+import AdminNotice from './components/admin/AdminNotice';
+import AdminNoticeDetail from './components/admin/AdminNoticeDetail';
+import AdminNoticeCreate from './components/admin/AdminNoticeCreate';
 import Room from './components/Room';
 import RoomDetail from './components/RoomDetail';
 
@@ -42,9 +42,9 @@ function App() {
           <Route path="/oauth/callback/naver" element={<Naver />} />
           <Route path="/oauth/callback/google" element={<Google />} />
           <Route path="/test" element={<VideoRoom />} />
-          <Route path="/admin/notice" element={<Notice />} />
-          <Route path="/admin/notice/:noticeId" element={<NoticeDetail />} />
-          <Route path="/admin/notice/create" element={<NoticeCreate />} />
+          <Route path="/admin/notice" element={<AdminNotice />} />
+          <Route path="/admin/notice/:noticeId" element={<AdminNoticeDetail />} />
+          <Route path="/admin/notice/create" element={<AdminNoticeCreate />} />
           <Route path="/room" element={<Room />} />
           <Route path="/room/:roomId" element={<RoomDetail />} />
           <Route path="/*" element={<ErrorPage />} />
