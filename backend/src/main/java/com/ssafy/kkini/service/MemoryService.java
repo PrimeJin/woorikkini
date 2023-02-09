@@ -51,7 +51,7 @@ public class MemoryService {
         return memoryGetFormDtoList;
     }
 
-    public Memory createMemory(MemoryCreateFormDto memoryCreateFormDto, MultipartFile memoryImgFiles) throws IOException {
+    public Memory createMemory(MemoryCreateFormDto memoryCreateFormDto, List<MultipartFile> memoryImgFiles) throws IOException {
         User user = userRepository.findByUserId(Integer.parseInt(memoryCreateFormDto.getUserId()));
         Memory memory = memoryCreateFormDto.toEntity();
         if(user != null){
@@ -81,7 +81,7 @@ public class MemoryService {
             if(updateMemory != null){
                 deletePhoto(Integer.parseInt(memoryUpdateFormDto.getMemoryId()));
                 if(!memoryImgFiles.isEmpty()){
-//                    uploadPhoto(memoryImgFiles,updateMemory);
+                    uploadPhoto(memoryImgFiles,updateMemory);
                 }
 
             }
@@ -92,7 +92,7 @@ public class MemoryService {
     }
 
     @Transactional
-    public ArrayList<Photo> uploadPhoto(MultipartFile memoryImgFiles, Memory memory) throws IllegalStateException, IOException {
+    public ArrayList<Photo> uploadPhoto(List<MultipartFile> memoryImgFiles, Memory memory) throws IllegalStateException, IOException {
 
         // 년/월/일 폴더의 생성으로 한 폴더에 너무 많은 파일이 들어가지 않도록 제어
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -116,8 +116,7 @@ public class MemoryService {
         }
 
         ArrayList<Photo> photoList = new ArrayList<>();
-        MultipartFile uploadFile = memoryImgFiles;
-//        for (MultipartFile uploadFile : memoryImgFiles) {
+        for (MultipartFile uploadFile : memoryImgFiles) {
             String originFileName = uploadFile.getOriginalFilename();
             // 파일의 확장자 추출
             String originalFileExtension;
@@ -125,8 +124,7 @@ public class MemoryService {
 
             // 확장자명이 존재하지 않을 경우 처리 x
             if(contentType == null) {
-                return null;
-//                break;
+                break;
             }
             else {  // 확장자가 jpeg, png인 파일들만 받아서 처리
                 if(contentType.contains("image/jpg"))
@@ -136,8 +134,7 @@ public class MemoryService {
                 else if(contentType.contains("image/png"))
                     originalFileExtension = ".png";
                 else  // 다른 확장자일 경우 처리 x
-                return null;
-//                    break;
+                    break;
             }
 
             // 파일명 중복 피하고자 나노초까지 얻어와 지정
@@ -156,7 +153,7 @@ public class MemoryService {
             }catch (IOException e) {
                 throw new RuntimeException(e);
             }
-//        }
+        }
         return photoList;
     }
 
