@@ -2,13 +2,17 @@ package com.ssafy.kkini.dto;
 
 
 import com.ssafy.kkini.entity.Room;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class RoomCreateFormDto {
 
     @NotNull(message = "방 제목을 입력해주세요.")
