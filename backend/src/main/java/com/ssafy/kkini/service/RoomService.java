@@ -11,6 +11,7 @@ import com.ssafy.kkini.repository.RoomKeywordRepository;
 import com.ssafy.kkini.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -77,6 +78,11 @@ public class RoomService {
     }
     public int exitRoom(int roomId) {
         return roomRepository.decreaseRecentUserInRoom(roomId);
+    }
+
+    @Transactional
+    public int deleteRoom(int roomId) {
+        return roomRepository.deleteByRoomId(roomId);
     }
 
 //    public List<RoomPasswordXDto> getFilteredRoom(RoomFilterFormDto roomFilterFormDto){
