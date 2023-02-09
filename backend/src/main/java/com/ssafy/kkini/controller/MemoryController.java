@@ -57,7 +57,6 @@ public class MemoryController {
             status = HttpStatus.BAD_REQUEST;
         }
 
-
         return new ResponseEntity<Map<String,Object>>(resultMap,status);
     }
     @ApiOperation(value = "추억카드 수정", notes = "추억카드 수정")
