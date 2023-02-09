@@ -1,9 +1,9 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import styles from "./Notice.module.css";
+import styles from "./AdminNotice.module.css";
 
-const NoticeDetail = () => {
+const AdminNoticeDetail = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [time, setTime] = useState("");
@@ -13,7 +13,7 @@ const NoticeDetail = () => {
 
   function getDetail() {
     axios({
-      url: `http://i8a804.p.ssafy.io:8050/notice/${params.noticeId}`,
+      url: `https://i8a804.p.ssafy.io/api/notice/${params.noticeId}`,
       methods: "GET",
     })
       .then((res) => {
@@ -56,7 +56,7 @@ const NoticeDetail = () => {
   function noticeDelete() {
     axios({
       method: "DELETE",
-      url: `http://i8a804.p.ssafy.io:8050/notice/${params.noticeId}/`,
+      url: `https://i8a804.p.ssafy.io/api/notice/${params.noticeId}/`,
       data: {
         noticeId: params.noticeId,
       },
@@ -87,7 +87,7 @@ const NoticeDetail = () => {
     } else {
       axios({
         method: "put",
-        url: `http://i8a804.p.ssafy.io:8050/notice/${params.noticeId}`,
+        url: `https://i8a804.p.ssafy.io/api/notice/${params.noticeId}`,
         data: {
           noticeId: params.noticeId,
           noticeTitle: inputTitle,
@@ -204,4 +204,4 @@ const NoticeDetail = () => {
   );
 };
 
-export default NoticeDetail;
+export default AdminNoticeDetail;
