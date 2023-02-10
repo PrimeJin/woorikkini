@@ -29,9 +29,6 @@ public class MemoryController {
     private static final String SUCCESS = "success";
     private static final String FAIL = "fail";
     private final MemoryService memoryService;
-
-    private static final Logger logger = LoggerFactory.getLogger(MemoryController.class);
-
     public MemoryController(MemoryService memoryService){
         this.memoryService = memoryService;
     }
@@ -44,19 +41,12 @@ public class MemoryController {
 
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
-        Memory createMemory = null;
-
-        logger.debug(String.valueOf(memoryImgFiles.size()));
-        if(!memoryImgFiles.isEmpty()){
-            logger.debug(String.valueOf(memoryImgFiles.get(0)));
-        }
-
 
         try {
-            createMemory = memoryService.createMemory(memoryCreateFormDto, memoryImgFiles);
+            Memory createMemory = memoryService.createMemory(memoryCreateFormDto, memoryImgFiles);
             if(createMemory != null){
                 resultMap.put("message", SUCCESS);
-                status = HttpStatus.ACCEPTED;
+                status = HttpStatus.OK;
             }
             else {
                 resultMap.put("message", FAIL);
@@ -76,15 +66,9 @@ public class MemoryController {
                                                                @RequestPart(value = "newCardData", required = false) MemoryUpdateFormDto memoryUpdateFormDto){
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
-        Memory updateMemory = null;
-
-        logger.debug(String.valueOf(memoryImgFiles.size()));
-        if(!memoryImgFiles.isEmpty()){
-            logger.debug(String.valueOf(memoryImgFiles.get(0)));
-        }
 
         try {
-            updateMemory = memoryService.updateMemory(memoryUpdateFormDto ,memoryImgFiles);
+            Memory updateMemory = memoryService.updateMemory(memoryUpdateFormDto ,memoryImgFiles);
             if(updateMemory != null){
                 resultMap.put("message", SUCCESS);
                 status = HttpStatus.ACCEPTED;

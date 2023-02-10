@@ -58,23 +58,26 @@ public class MemoryService {
             memory.setUser(user);
             Memory createMemory = memoryRepository.save(memory);
 
-            System.out.println("createMemory  : " + createMemory.getMemoryTitle());
-
-            if(createMemory != null && !memoryImgFiles.isEmpty()){
-                System.out.println("memoryImagFiles OK");
-                uploadPhoto(memoryImgFiles,createMemory);
+            if(createMemory != null){
+                if(!memoryImgFiles.isEmpty()){
+                    List<Photo> photoList =  uploadPhoto(memoryImgFiles,createMemory);
+                    if(photoList.isEmpty()){
+                        deleteMemory(createMemory.getMemoryId());
+                        return null;
+                    }
+                }
+                return createMemory;
             }
-            return createMemory;
-        }else {
-            return null;
         }
+        return null;
     }
 
 
     public Memory updateMemory(MemoryUpdateFormDto memoryUpdateFormDto, List<MultipartFile> memoryImgFiles) throws IOException {
-        Optional<Memory> memory = memoryRepository.findByMemoryId(Integer.parseInt(memoryUpdateFormDto.getMemoryId()));
+        Memory memory = memoryRepository.findByMemoryId(Integer.parseInt(memoryUpdateFormDto.getMemoryId()));
         User user = userRepository.findByUserId(Integer.parseInt(memoryUpdateFormDto.getUserId()));
-        if(memory.isPresent() && user != null){
+
+        if(memory != null && user != null){
             Memory updateMemory = memoryUpdateFormDto.toEntity();
             updateMemory.setUser(user);
             updateMemory = memoryRepository.save(updateMemory);
@@ -102,15 +105,12 @@ public class MemoryService {
         uploadFolderPath = uploadFolderPath + File.separator;
         //폴더 생성
         String hostname = InetAddress.getLocalHost().getHostName();
-        File uploadPath = null;
 
         if(hostname.substring(0, 7).equals ("DESKTOP") ) parentDir = fileDir;
         else if (hostname.contains("MacBookAir")) parentDir = fileDir;
         else parentDir = "./images";
 
-        uploadPath = new File(parentDir, uploadFolderPath); // 오늘 날짜의 경로를 문자열로 생성
-
-        System.out.println("host_name = " + hostname + ", uploadPath = " + uploadPath);
+        File uploadPath = new File(parentDir, uploadFolderPath); // 오늘 날짜의 경로를 문자열로 생성
 
         if (uploadPath.exists() == false) {
             uploadPath.mkdirs();
@@ -161,7 +161,7 @@ public class MemoryService {
     @Transactional
     public void deletePhoto(int memoryId){
         List<Photo> photoList = photoRepository.findAllByMemory_MemoryId(memoryId);
-        if(!photoList.isEmpty() && photoList.size() != 0){
+        if(!photoList.isEmpty()){
             for (Photo photo : photoList) {
                 //현재 게시판에 존재하는 파일객체를 만듬
                 File file = new File(photo.getFilePath());
@@ -171,17 +171,15 @@ public class MemoryService {
                 }
                 photoRepository.delete(photo);
             }
-
         }
-
     }
 
 
     public int deleteMemory(int memoryId) {
-        Optional<Memory> deleteMemory = memoryRepository.findByMemoryId(memoryId);
-        if(deleteMemory.isPresent()){
+        Memory deleteMemory = memoryRepository.findByMemoryId(memoryId);
+        if(deleteMemory != null){
             deletePhoto(memoryId);
-            memoryRepository.delete(deleteMemory.get());
+            memoryRepository.delete(deleteMemory);
             return 1;
         }
         return 0;
