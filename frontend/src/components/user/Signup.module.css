@@ -1,14 +1,15 @@
 @import url('http://cdn.rawgit.com/innks/NanumSquareRound/master/nanumsquareround.min.css');
 
-.Signup-all {
+.Signup_all {
   text-align: center;
   font-family: 'NanumSquareRound';
   justify-content: center;
   display: flex;
   flex-flow: row nowrap;
+  background-color: #fffdfa;
 }
 
-.woori-logo {
+.woori_logo {
   margin-top: 5%;
   width: 100px;
   height: 110px;
@@ -16,7 +17,7 @@
   display: flex;
 }
 
-.text-type {
+.text_type {
   font-weight: 900;
   font-size: 22px;
   padding-top: 3%;
@@ -24,7 +25,7 @@
   color: #090936;
 }
 
-.signup-form {
+.signup_form {
   width: 360px;
   height: auto;
 
@@ -39,7 +40,7 @@
   margin-top: 2%;
 }
 
-form span {
+.impossible {
   justify-content: left;
   display: flex;
   font-weight: 100;
@@ -47,8 +48,16 @@ form span {
   color: red;
   padding-left: 18%;
 }
+.possible {
+  justify-content: left;
+  display: flex;
+  font-weight: 100;
+  font-size: 2px;
+  color: blue;
+  padding-left: 18%;
+}
 
-.input-form-top {
+.input_form_top {
   border: none;
   width: 230px;
   height: 35px;
@@ -62,7 +71,21 @@ form span {
   font-weight: 500;
   font-size: 13px;
 }
-.input-form {
+.input_form {
+  border: none;
+  width: 230px;
+  height: 35px;
+  background: #ffffff;
+  border-radius: 10px;
+  font-family: 'NanumSquareRound';
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 27px;
+  /* padding-left: 4%;
+  padding-right: 4%; */
+  padding: 0 15px;
+}
+.date_input {
   border: none;
   width: 230px;
   height: 35px;
@@ -74,9 +97,21 @@ form span {
   line-height: 27px;
   padding-left: 4%;
   padding-right: 4%;
+  /* -webkit-appearance: none;
+  display: none; */
 }
 
-.check-box {
+input[type='date']::before {
+  content: attr(data-placeholder);
+  width: 100%;
+}
+
+input[type='date']:focus::before,
+input[type='date']:valid::before {
+  display: none;
+}
+
+.check_box {
   width: 260px;
   height: 50px;
   display: flex;
@@ -134,11 +169,11 @@ label input {
   margin-top: 3%;
 }
 
-.check-btn {
+.check_btn {
   align-items: center;
   border: none;
   position: absolute;
-  left: 117em;
+  /* left: 117em; */
   margin: 6px;
 
   width: 60px;
@@ -151,4 +186,6 @@ label input {
   font-family: 'NanumSquareRound';
   justify-content: center;
   color: #090936;
+  top: 0;
+  right: 50px;
 }

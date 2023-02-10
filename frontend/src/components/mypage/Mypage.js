@@ -1,4 +1,4 @@
-import './Mypage.css';
+import styles from './Mypage.module.css';
 import React from 'react';
 import Logo from '../PageLogo';
 import NoticeIcon from '../NoticeIcon';
@@ -8,12 +8,12 @@ import CardContainer from './CardContainer';
 function Mypage() {
   return (
     <div>
-      <div className="mypage">
+      <div className={styles.mypage}>
         <Logo />
-        <div className="title">
+        <div className={styles.title}>
           <p style={{ fontSize: 50, marginBottom: 0 }}>나의 먹기록</p>
           <br />
-          <p style={{ marginTop: 0 }}>내가 기록하고 싶은 순간들</p>
+          <p style={{ marginTop: 0, fontSize: 20 }}>내가 기록하고 싶은 순간들</p>
         </div>
         <Nav></Nav>
       </div>

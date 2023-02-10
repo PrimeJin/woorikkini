@@ -16,17 +16,6 @@
   cursor: pointer;
 }
 
-/* 공지사항 */
-h1 {
-  font-family: "NanumSquareRound";
-  font-weight: 400;
-  font-size: 50px;
-  line-height: 57px;
-
-  align-items: center;
-  text-align: center;
-}
-
 table {
   width: 100%;
   border-collapse: collapse;
@@ -42,13 +31,6 @@ table th {
 table td {
   border-bottom: 1px solid black;
   padding: 10px;
-}
-
-div {
-  background-color: white;
-}
-html {
-  background-color: white;
 }
 
 .detail {
@@ -102,7 +84,7 @@ html {
   border-radius: 20px;
 }
 
-label {
+.noticeLabel {
   width: 117px;
   height: 26px;
 

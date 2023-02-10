@@ -1,22 +1,26 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./Room.module.css";
+import LockIcon from "@mui/icons-material/Lock";
+import axios from "axios";
 
 const RoomList = (props) => {
-  const id = props.room.roomId;
+  const roomId = props.room.roomId;
   const title = props.room.roomTitle;
   const content = props.room.roomContent;
-  const keywords = props.room.roomKeyword;
+  const keywords = props.room.roomKeywordList;
   const limit = props.room.roomLimitUser;
-  const password = props.room.roomPassword;
+  // const password = props.room.roomPassword;
   const preset = props.room.roomPreset;
-  const isPrivate = props.room.roomPrivate;
-  // const recent = props.room.roomRecentUser;
-  const recent = 1;
+  const isPrivate = JSON.parse(props.room.roomPrivate);
+  const recent = props.room.roomRecentUser;
   const keywordList = props.keywordList;
   const navigate = useNavigate();
   const [modal, setModal] = useState(false);
   const [inputPassword, setInputPassword] = useState("");
+
+  // 임시 지정
+  const userId = 1;
 
   function modalChange() {
     modal ? setModal(false) : setModal(true);
@@ -24,13 +28,26 @@ const RoomList = (props) => {
 
   function goDetail() {
     if (isPrivate) {
-      if (password === Number(inputPassword)) {
-        navigate(`${id}`);
-      } else {
-        alert("비밀번호가 일치하지 않습니다.");
-      }
+      axios({
+        url: `https://i8a804.p.ssafy.io/api/room/enter/${roomId}/${userId}`,
+        method: "POST",
+        data: {
+          roomPrivate: isPrivate,
+          roomPassword: inputPassword,
+        },
+      })
+        .then((res) => {
+          navigate(`${roomId}`);
+        })
+        .catch((err) => {
+          if (err.response.data.message === "fail") {
+            alert("비밀번호가 일치하지 않습니다.");
+          } else {
+            console.log("goDetail에러", err);
+          }
+        });
     } else {
-      navigate(`${id}`);
+      navigate(`${roomId}`);
     }
   }
 
@@ -43,13 +60,13 @@ const RoomList = (props) => {
         justifyContent: "center",
       }}
     >
+      {" "}
       {modal && (
         <div className={styles.roomEnter}>
           <div className={styles.enterModal}>
             <h2>{title}</h2>
-            <div className={styles.enterContent}>
-              {content} {password}
-            </div>
+            <pre className={styles.enterContent}>{content}</pre>
+            {/* <span className={styles.enterContent}>{content}</span> */}
             {isPrivate && (
               <div
                 style={{
@@ -103,21 +120,23 @@ const RoomList = (props) => {
         <h2>{title}</h2>
         {keywords.map((keyword, index) => (
           <span style={{ margin: "1%" }} key={index}>
-            # {keywordList[keyword - 1].value}
+            # {keywordList[keyword - 1].keyword}
           </span>
         ))}
 
         <p
           style={{
             position: "absolute",
-            right: "5%",
+            right: "10%",
             bottom: "5%",
+            display: "flex",
+            alignItems: "center",
           }}
         >
           {isPrivate && (
-            <img className={styles.img} src="/자물쇠.png" alt="비공개" />
-          )}{" "}
-          &nbsp; {recent}/{limit ? limit : "인원제한"}
+            <LockIcon style={{ fontSize: "90%", marginInline: "20%" }} />
+          )}
+          {recent}/{limit ? limit : "인원제한"}
         </p>
       </div>
     </div>

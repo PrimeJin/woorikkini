@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import "./Notice.css";
+import styles from "./AdminNotice.module.css";
 
-const NoticeCreate = (props) => {
+const AdminNoticeCreate = (props) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
@@ -18,7 +18,7 @@ const NoticeCreate = (props) => {
     } else {
       axios({
         method: "post",
-        url: "http://i8a804.p.ssafy.io:8050/notice/",
+        url: "https://i8a804.p.ssafy.io/api/notice/",
         data: {
           noticeTitle: title,
           noticeContent: content,
@@ -48,30 +48,30 @@ const NoticeCreate = (props) => {
           marginBottom: "2%",
         }}
       >
-        <div className="update">
-          <label>제목</label>
+        <div className={styles.update}>
+          <label className={styles.noticeLabel}>제목</label>
           <br />
           <input
-            className="inputTitle"
+            className={styles.inputTitle}
             type="text"
             value={title}
             name="title"
             onChange={(e) => setTitle(e.target.value)}
           ></input>
           <br />
-          <label>내용</label>
+          <label className={styles.noticeLabel}>내용</label>
           <br />
           <textarea
-            className="inputContent"
+            className={styles.inputContent}
             type="text"
             value={content}
             onChange={(e) => setContent(e.target.value)}
           />
           <br />
-          <button className="upBtn" onClick={save}>
+          <button className={styles.upBtn} onClick={save}>
             저장
           </button>
-          <button className="upBtn" onClick={back}>
+          <button className={styles.upBtn} onClick={back}>
             취소
           </button>
         </div>
@@ -80,4 +80,4 @@ const NoticeCreate = (props) => {
   );
 };
 
-export default NoticeCreate;
+export default AdminNoticeCreate;

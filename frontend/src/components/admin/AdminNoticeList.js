@@ -1,7 +1,6 @@
-import React from 'react';
-import './Notice.css';
+import React from "react";
 
-function NoticeList(props) {
+function AdminNoticeList(props) {
   const noticeDetail = `notice/${props.notice.noticeId}`;
   const id = props.notice.noticeId;
   const title = props.notice.noticeTitle;
@@ -11,7 +10,10 @@ function NoticeList(props) {
     <tr>
       <td>{id}</td>
       <td>
-        <a href={noticeDetail} style={{ textDecoration: 'none', color: 'black' }}>
+        <a
+          href={noticeDetail}
+          style={{ textDecoration: "none", color: "black" }}
+        >
           {title}
         </a>
       </td>
@@ -20,4 +22,4 @@ function NoticeList(props) {
   );
 }
 
-export default NoticeList;
+export default AdminNoticeList;
