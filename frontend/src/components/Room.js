@@ -14,22 +14,7 @@ const Room = () => {
   const [search, setSearch] = useState("");
   const [isSearch, setIsSearch] = useState(true);
   const [searchStatus, setSearchStatus] = useState(false);
-
   const [keywordList, setKeywordList] = useState([]);
-  // const keywordList = [
-  //   {
-  //     id: 1,
-  //     value: "성인만",
-  //   },
-  //   {
-  //     id: 2,
-  //     value: "침묵",
-  //   },
-  //   {
-  //     id: 3,
-  //     value: "다이어트",
-  //   },
-  // ];
 
   function getKeywordList() {
     axios({
@@ -46,15 +31,12 @@ const Room = () => {
 
   function getList() {
     axios({
-      // url: "https://my-json-server.typicode.com/yjw9397/demo/room",
       url: "https://i8a804.p.ssafy.io/api/room",
       methods: "GET",
     })
       .then((res) => {
         setList(res.data.result);
         setFiltered(res.data.result);
-        // setList(res.data);
-        // setFiltered(res.data);
       })
       .catch((err) => {
         console.log(err, "방 목록 에러");
@@ -83,13 +65,13 @@ const Room = () => {
     }
   }
 
-  function goSearch(e) {
+  function goSearch() {
     axios({
-      url: `https://i8a804.p.ssafy.io/api/room/search?subject=title&content=${e.target.name}`,
+      url: `https://i8a804.p.ssafy.io/api/room/search?subject=title&content=${search}`,
       method: "GET",
       data: {
         subject: "title",
-        content: e.target.name,
+        content: search,
       },
     }).then((res) => {
       setList(res.data.result);
@@ -208,7 +190,6 @@ const Room = () => {
               style={{
                 width: "80px",
                 height: "40px",
-                background: "#FFFFFF",
                 border: "0.5px solid #EB6123",
                 borderRadius: "50px",
                 textAlign: "center",
@@ -226,12 +207,9 @@ const Room = () => {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className={styles.searchInput}
+                  onKeyDown={(e) => e.key === "Enter" && goSearch()}
                 />
-                <button
-                  className={styles.searchBtn}
-                  name={search}
-                  onClick={goSearch}
-                >
+                <button className={styles.searchBtn} onClick={goSearch}>
                   검색
                 </button>
               </div>
@@ -244,6 +222,7 @@ const Room = () => {
                     width: "400px",
                     height: "40px",
                     textAlign: "center",
+                    borderRadius: "50px",
                   }}
                 >
                   <option value="" selected>
@@ -264,43 +243,35 @@ const Room = () => {
         </div>
         <br />
         <div style={{ display: "flex", justifyContent: "center" }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginInline: "10px",
-            }}
-          >
+          <label className={styles.filterLabel}>
+            {" "}
             <input
               type="checkbox"
               onChange={(e) =>
                 e.target.checked ? setFullCheck(true) : setFullCheck(false)
               }
-              style={{ margin: "10px" }}
+              style={{
+                margin: "10px",
+                accentColor: "#eb6123",
+              }}
             />
-            <span style={{ fontSize: "18px", fontWeight: "600" }}>
-              입장 가능한 방만 보기
-            </span>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginInline: "10px",
-            }}
-          >
+            입장 가능한 방만 보기
+          </label>
+
+          <label className={styles.filterLabel}>
             <input
               type="checkbox"
               name="isPrivate"
               onChange={(e) =>
                 e.target.checked ? setIsPrivate(true) : setIsPrivate(false)
               }
-              style={{ margin: "10px" }}
+              style={{
+                margin: "10px",
+                accentColor: "#eb6123",
+              }}
             />
-            <span style={{ fontSize: "18px", fontWeight: "600" }}>
-              공개방만 보기
-            </span>
-          </div>
+            공개방만 보기
+          </label>
         </div>
         <div
           style={{
