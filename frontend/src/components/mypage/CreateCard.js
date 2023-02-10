@@ -1,9 +1,13 @@
 import React, { useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import './CreateCard.css';
 import axios from 'axios';
 import Modal from '../Modal';
 
 function CreateCard() {
+  // store에서 현재 로그인한 사용자의 userId 가져오기
+  const userId = useSelector((state) => state.user.id);
+
   // useState를 사용하여 open상태를 변경한다. (open일때 true로 만들어 열리는 방식)
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -54,8 +58,9 @@ function CreateCard() {
 
     // 서버로 전달
     axios
-      .post('http:// /memory', {
+      .post('http://i8a804.p.ssafy.io:8040/memory', {
         data: {
+          userId: userId,
           memoryImgFile: fileData,
           memoryTitle: titleData,
           memoryContent: contentData,

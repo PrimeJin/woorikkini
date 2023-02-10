@@ -60,7 +60,7 @@ const SwiperContainer = () => {
     axios
       .delete(`http://.../memory/${id}`, {
         data: {
-          id,
+          memoryId: id,
         },
       })
       .then(() => {
