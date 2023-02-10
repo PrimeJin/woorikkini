@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import axios from 'axios';
 import UserVideoComponent from './UserVideoComponent';
 import { OpenVidu } from 'openvidu-browser';
+
+// modal
+import ReportModal from './components/ReportModal';
 
 //style
 import CenterLogo from '../styles/CenterLogo';
@@ -30,15 +34,14 @@ const EncodeBase64 = (data) => {
   return Buffer.from(data).toString('base64');
 };
 
-//useSelector 선언할곳
-// const dispatch = useDispatch();
-
 //redux를 이용한 store에서 state와 reducer 가져오기
 //this.props.authData 같은 식으로 사용 가능
 const mapStateToProps = (state) => ({
   voteTotal: state.vote.total,
   voteAgree: state.vote.agree,
   voteDisagree: state.vote.disagree,
+  currentUserId: state.user.id,
+  currentUserNickname: state.user.nickname,
 });
 
 const mapDispatchToProps = (dispatch) => {
@@ -52,6 +55,7 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
+
 class VideoRoom extends Component {
   //초기설정 생성자
   constructor(props) {
@@ -61,7 +65,8 @@ class VideoRoom extends Component {
     //state
     this.state = {
       mySessionId: 'SessionA',
-      myUserName: 'Participant' + Math.floor(Math.random() * 100),
+      myUserName: this.props.currentUserNickname,
+      myUserId: this.props.currentUserId,
       session: undefined, //현재 접속해있는 세션
       mainStreamManager: undefined, // 스트림 종합한 페이지의 메인 비디오
       publisher: undefined, //로컬 웹캠 스트림
@@ -76,10 +81,12 @@ class VideoRoom extends Component {
       messages: [], //메시지 로그
       messagesEnd: null,
       users: [], //전체 참여자
-
       value: '1', //1: 채팅창, 2:참여자 목록
-
       eventData: '',
+      reportModalOpen: false,
+      voteModalOpen: false,
+      banModalOpen: false,
+      reportedUser: '',
     };
 
     //method
@@ -89,6 +96,10 @@ class VideoRoom extends Component {
     this.switchCamera = this.switchCamera.bind(this);
     this.handleChangeSessionId = this.handleChangeSessionId.bind(this);
     this.handleChangeUserName = this.handleChangeUserName.bind(this);
+
+    // modal 관련 함수들
+    this.openModal = this.openModal.bind(this);
+    this.closeModal = this.closeModal.bind(this);
 
     //chat
     this.handleChangeChatMessage = this.handleChangeChatMessage.bind(this);
@@ -144,6 +155,35 @@ class VideoRoom extends Component {
 
   onbeforeunload(event) {
     this.closeSession();
+  }
+
+  // 모달 관련 함수들
+  openModal(e) {
+    console.log('여는거야', e.target.name);
+    if (e.target.name === 'report') {
+      this.setState({
+        reportModalOpen: true,
+      });
+      this.setState({
+        reportedUser: e.target.value,
+      });
+      console.log('현재 사용자 누구야', this.props.currentUserId);
+      console.log('신고 당한 사람 누구야', e.target.value);
+      console.log('?', this.state.reportModalOpen);
+    } else if (e.target.name === 'vote') {
+      this.setState({
+        voteModalOpen: true,
+      });
+    }
+  }
+
+  closeModal(e) {
+    console.log('닫는거야', e.target.value);
+    if (e.target.value === 'No') {
+      this.setState({
+        reportModalOpen: false,
+      });
+    }
   }
 
   //메소드
@@ -284,16 +324,28 @@ class VideoRoom extends Component {
       <li>
         <Box>
           <Stack direction="row" spacing={3}>
-            <div>{user.clientData.split('"')[3]}</div>
-            <Button value={index} variant="contained" color="error" size="small">
+            {/* userId */}
+            {/* <div>1{user.clientData.split(',')[0].split(':')[1]}</div> */}
+            {/* userNickname */}
+            <div>{user.clientData.split(',')[1].split(':')[1].split('"')[1]}</div>
+            <Button
+              name="report"
+              value={user.clientData.split(',')[0].split(':')[1]}
+              variant="contained"
+              color="error"
+              size="small"
+              onClick={this.openModal}
+            >
               신고
             </Button>
             <Button
               onClick={() => this.startVote(user.clientData)}
-              value={index}
+              name="vote"
+              value={user.clientData.split(',')[0].split(':')[1]}
               variant="contained"
               color="error"
               size="small"
+              onClick={this.openModal}
             >
               강퇴
             </Button>
@@ -434,7 +486,6 @@ class VideoRoom extends Component {
                 insertMode: 'APPEND',
                 mirror: true, //좌우반전 옵션
               });
-
               this.state.session.publish(newPublisher);
               this.getUserList();
               this.setState({
@@ -651,6 +702,7 @@ class VideoRoom extends Component {
     const mySessionId = this.state.mySessionId;
     const myUserName = this.state.myUserName;
     const messages = this.state.messages;
+    const myUserId = this.state.myUserId;
 
     return (
       <div className={styles.container}>
@@ -670,27 +722,39 @@ class VideoRoom extends Component {
                   <div id="join-dialog" className="jumbotron vertical-center">
                     <form className={styles.form_group} onSubmit={this.joinSession}>
                       <p>
-                        <label>참가자명: </label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          id="userName"
-                          value={myUserName}
-                          onChange={this.handleChangeUserName}
-                          required
-                        />
-                      </p>
-                      <p>
-                        <label> 세션명: </label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          id="sessionId"
-                          value={mySessionId}
-                          onChange={this.handleChangeSessionId}
-                          required
-                        />
-                      </p>
+                      <label>참가자명: </label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        id="userName"
+                        value={myUserName}
+                        onChange={this.handleChangeUserName}
+                        required
+                      />
+                    </p>
+                    <p>
+                      <label> 세션명: </label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        id="sessionId"
+                        value={mySessionId}
+                        onChange={this.handleChangeSessionId}
+                        required
+                      />
+                    </p>
+                    <p>
+                      <label>참가자Id: </label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        id="userId"
+                        value={myUserId}
+                        // onChange={this.handleChangeUserName}
+                        // required
+                        disabled
+                      />
+                    </p>
                       <p className="text-center">
                         <input className="btn btn-lg btn-success" name="commit" type="submit" value="JOIN" />
                       </p>
@@ -770,6 +834,16 @@ class VideoRoom extends Component {
                   <Tab icon={<CancelIcon />} label="퇴장" onClick={this.leaveSession} sx={{ background: '#ffd4c3' }} />
                 </TabList>
               </TabContext>
+              {this.state.reportModalOpen ? (
+                <ReportModal
+                  reportModalOpen={this.state.reportModalOpen}
+                  closeModal={this.closeModal}
+                  currentUserId={this.props.currentUserId}
+                  reportedUser={this.state.reportedUser}
+                ></ReportModal>
+              ) : (
+                <div style={{ display: 'none' }}></div>
+              )}
             </div>
           </div>
         )}
@@ -838,3 +912,4 @@ class VideoRoom extends Component {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(VideoRoom);
+

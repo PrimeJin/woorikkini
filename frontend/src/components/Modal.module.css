@@ -17,20 +17,22 @@
   border: 0;
   background-color: #d6ebfc;
 }
-.close {
+.close_top {
   outline: none;
   cursor: pointer;
   border: 0;
-  background-color: #ff8d89;
+  /* background-color: #ff8d89; */
+  padding-top: 4.5%;
+  margin-right: 4.5%;
 }
 .modal > section {
   width: 400px;
-  height: 600px;
+  height: 650px;
   width: 90%;
-  max-width: 450px;
+  max-width: 400px;
   margin: 0 auto;
-  border-radius: 0.3rem;
-  background-color: #fff;
+  border-radius: 50px;
+  background: #fefaef;
   /* 팝업이 열릴때 스르륵 열리는 효과 */
   animation: modal-show 0.3s;
   overflow: hidden;
@@ -39,9 +41,11 @@
 }
 .modal > section > header {
   position: relative;
-  padding: 16px 64px 16px 16px;
-  background-color: #f1f1f1;
-  font-weight: 700;
+  padding: 30px 40px 16px 16px;
+  font-weight: 900;
+  font-size: x-large;
+  font-family: 'NanumSquareRound';
+  color: #090936;
 }
 .modal > section > header button {
   position: absolute;
@@ -51,43 +55,48 @@
   font-size: 21px;
   font-weight: 700;
   text-align: center;
-  color: #999;
+  color: #090936;
   background-color: transparent;
 }
 .modal > section > main {
-  padding: 16px;
-  border-bottom: 1px solid #dee2e6;
-  border-top: 1px solid #dee2e6;
+  padding: 5px;
+  margin-top: 5%;
+  /* align-items: center; */
+  display: flex;
+  justify-content: center;
 }
 .modal > section > footer {
   padding: 12px 16px;
   text-align: center;
+  justify-content: center;
+  display: flex;
 }
 .register {
   padding: 6px 12px;
   color: #fff;
   background-color: #d6ebfc;
-  height: 30px;
-  width: 80px;
+  height: 40px;
+  width: 100px;
   border-radius: 10px;
-  font-size: 13px;
+  font-size: 18px;
   font-family: 'NanumSquareRound';
   font-style: normal;
   font-weight: 900;
   color: #090936;
 }
-.close {
+.close_bottom {
   padding: 6px 12px;
   color: #fff;
   background-color: #ff8d89;
-  height: 30px;
-  width: 80px;
+  height: 40px;
+  width: 100px;
   border-radius: 10px;
-  font-size: 13px;
+  font-size: 18px;
   font-family: 'NanumSquareRound';
   font-style: normal;
   font-weight: 900;
   color: #090936;
+  border: 0;
 }
 
 .modal.openModal {
