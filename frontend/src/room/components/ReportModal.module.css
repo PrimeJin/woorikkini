@@ -13,7 +13,7 @@
 }
 .modal > section {
   width: 400px;
-  height: 650px;
+  height: auto;
   width: 90%;
   max-width: 400px;
   margin: 0 auto;
@@ -48,8 +48,8 @@
   padding: 5px;
   margin-top: 5%;
   /* align-items: center; */
-  display: flex;
-  justify-content: center;
+  /* display: flex; */
+  /* justify-content: center; */
 }
 .modal > section > footer {
   padding: 12px 16px;
@@ -81,4 +81,45 @@
   to {
     opacity: 1;
   }
+}
+.yes_btn {
+  padding: 6px 12px;
+  /* color: #fff; */
+  background-color: #d6ebfc;
+  height: 30px;
+  width: 80px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-family: 'NanumSquareRound';
+  font-style: normal;
+  font-weight: 900;
+  color: #090936;
+  border: none;
+}
+.no_btn {
+  padding: 6px 12px;
+  color: #fff;
+  background-color: #ff8d89;
+  height: 30px;
+  width: 80px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-family: 'NanumSquareRound';
+  font-style: normal;
+  font-weight: 900;
+  color: #090936;
+  border: none;
+}
+fieldset {
+  /* display: inline; */
+  border: none;
+  margin-left: 10%;
+  margin-right: 10%;
+  color: #090936;
+  font-weight: 700;
+  font-style: inherit;
+}
+label {
+  width: auto;
+  margin-bottom: 2%;
 }
