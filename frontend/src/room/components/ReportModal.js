@@ -9,11 +9,9 @@ const ReportUser = (props) => {
   const [reason, setReason] = useState('');
   const [reasonDetail, setReasonDetail] = useState('');
   const onReason = (e) => {
-    console.log('이유가 뭐야', e.target.value);
     setReason(e.target.value);
   };
   const onContent = (e) => {
-    console.log('자세한 이유?', e.currentTarget.value);
     setReasonDetail(e.currentTarget.value);
   };
   const onSubmit = (e) => {
@@ -34,6 +32,7 @@ const ReportUser = (props) => {
         data: reportData,
       })
         .then((res) => {
+          console.log(res);
           if (res.data.message === 'success') {
             alert('신고가 접수되었습니다.');
             // 모달창 닫기
