@@ -3,6 +3,7 @@ package com.ssafy.kkini.service;
 import com.ssafy.kkini.dto.*;
 import com.ssafy.kkini.entity.User;
 import com.ssafy.kkini.repository.UserRepository;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,11 +25,6 @@ public class UserService {
     }
 
     @Transactional
-    public User createUser(UserCreateFormDto userCreateFormDto) {
-        return userRepository.save(userCreateFormDto.toEntity());
-    }
-
-    @Transactional
     public User join(UserCreateFormDto userCreateFormDto){
         userCreateFormDto.setUserPassword(bCryptPasswordEncoder.encode(userCreateFormDto.getUserPassword()));
         User user = userCreateFormDto.toEntity();
@@ -37,10 +33,14 @@ public class UserService {
     }
 
     public User login(UserLoginFormDto userLoginFormDto) {
-        if (userLoginFormDto.getUserEmail() == null || userLoginFormDto.getUserPassword() == null) return null;
         Optional<User> user = userRepository.findByUserEmail(userLoginFormDto.getUserEmail());
-        if(bCryptPasswordEncoder.matches(userLoginFormDto.getUserPassword(), user.get().getUserPassword())) return user.get();
-        else return null;
+        if(user.isPresent()){
+            if(user.get().getUserActivation().isAfter(LocalDateTime.now())){
+                throw new LockedException("Your Account is denied");
+            }
+            if(bCryptPasswordEncoder.matches(userLoginFormDto.getUserPassword(), user.get().getUserPassword())) return user.get();
+        }
+        return null;
     }
 
     @Transactional
@@ -55,7 +55,7 @@ public class UserService {
 
     @Transactional
     public User nicknameModify(UserNicknameModifyFormDto userNicknameModifyFormDto) {
-        User user = userRepository.findById(userNicknameModifyFormDto.getUserId()).get();
+        User user = userRepository.findByUserId(userNicknameModifyFormDto.getUserId());
         if(user != null) {
             user.changeNickname(userNicknameModifyFormDto.getUserNickname());
             return userRepository.save(user);
