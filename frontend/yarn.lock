@@ -9548,6 +9548,11 @@ react-cookie@^4.1.1:
     hoist-non-react-statics "^3.0.0"
     universal-cookie "^4.0.0"
 
+react-countdown-circle-timer@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/react-countdown-circle-timer/-/react-countdown-circle-timer-3.1.0.tgz#394737817a7bec9cb9162e4c3e80f8f18ef20820"
+  integrity sha512-vU3fQ+Te7abhSmvTT5N0+4aOJhXAg6wVWvpEd5snkB7lFrAlEBl5dqzLSGnPZDI4MWbp7ayMDkcLWALWE+flQQ==
+
 react-dev-utils@^8.0.0:
   version "8.0.0"
   resolved "https://registry.yarnpkg.com/react-dev-utils/-/react-dev-utils-8.0.0.tgz#7c5b227a45a32ea8ff7fbc318f336cf9e2c6e34c"
