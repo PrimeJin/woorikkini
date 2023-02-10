@@ -30,10 +30,6 @@ const EncodeBase64 = (data) => {
   return Buffer.from(data).toString('base64');
 };
 
-//useSelector 선언할곳
-// store에서 현재 로그인한 사용자의 id 가져오기
-// const userId = useSelector((state) => state.user.id);
-
 // 스토어가 가진 상태 값을 props로 받아오기 위한 함수
 const mapStateToProps = (state) => ({
   // [전달 받을 props 이름] : state.[리덕스 state]
@@ -72,7 +68,7 @@ class VideoRoom extends Component {
       voteModalOpen: false,
       banModalOpen: false,
 
-      reportedUser: '',
+      reportedUserId: '',
     };
 
     //method
@@ -139,17 +135,13 @@ class VideoRoom extends Component {
 
   // 모달 관련 함수들
   openModal(e) {
-    console.log('여는거야', e.target.name);
     if (e.target.name === 'report') {
       this.setState({
         reportModalOpen: true,
       });
       this.setState({
-        reportedUser: e.target.value,
+        reportedUserId: e.target.value,
       });
-      console.log('현재 사용자 누구야', this.props.currentUserId);
-      console.log('신고 당한 사람 누구야', e.target.value);
-      console.log('?', this.state.reportModalOpen);
     } else if (e.target.name === 'vote') {
       this.setState({
         voteModalOpen: true,
@@ -158,8 +150,7 @@ class VideoRoom extends Component {
   }
 
   closeModal(e) {
-    console.log('닫는거야', e.target.value);
-    if (e.target.value === 'No') {
+    if (e == 'close' || e.target.value === 'No') {
       this.setState({
         reportModalOpen: false,
       });
@@ -685,7 +676,7 @@ class VideoRoom extends Component {
                   reportModalOpen={this.state.reportModalOpen}
                   closeModal={this.closeModal}
                   currentUserId={this.props.currentUserId}
-                  reportedUser={this.state.reportedUser}
+                  reportedUserId={this.state.reportedUserId}
                 ></ReportModal>
               ) : (
                 <div style={{ display: 'none' }}></div>
