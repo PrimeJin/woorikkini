@@ -173,7 +173,7 @@ class VideoRoom extends Component {
   }
 
   closeModal(e) {
-    if (e.target.value === 'No') {
+    if (e == 'close' || e.target.value === 'No') {
       this.setState({
         reportModalOpen: false,
       });
