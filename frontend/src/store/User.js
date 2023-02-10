@@ -13,7 +13,7 @@ export const userSlice = createSlice({
     //매개변수 state는 기존 state(initialState)
     //action은 state를 변화시키기 위한 action
     SET_USER: (state, action) => {
-      state.id = parseInt(action.payload.id);
+      state.id = action.payload.id;
       state.name = action.payload.name;
       state.nickname = action.payload.nickname;
     },

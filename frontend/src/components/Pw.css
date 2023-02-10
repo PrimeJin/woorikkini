@@ -11,10 +11,9 @@
   display: flex;
   flex-flow: row nowrap;
   justify-content: center;
-  margin-bottom: 3%;
 }
 
-.pwForm {
+form {
   justify-content: center;
   width: 482px;
   height: 422px;
@@ -43,7 +42,6 @@
   font-style: normal;
   font-weight: 300;
   border: none;
-  margin-bottom: 3px;
 }
 
 .pwChange {
@@ -71,3 +69,11 @@
   background: #d6ebfc;
   border-radius: 17px;
 }
+
+/* Group 4 */
+/* 
+position: absolute;
+width: 123px;
+height: 56px;
+left: 629px;
+top: 759px; */

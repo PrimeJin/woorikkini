@@ -13,7 +13,7 @@
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-const BASE_URL = 'http://i8a804.p.ssafy.io:8040';
+const BASE_URL = 'http://i8a804.p.ssafy.io:8040'; //API 테스트용 프록시 URL
 
 //Promise 요청 타임아웃 시간 설정
 const TIME_OUT = 300 * 1000;

@@ -13,16 +13,13 @@ import { setRefreshToken } from '../storage/Cookies';
 import { Link } from 'react-router-dom';
 
 import { loginUser } from '../api/Users';
-import { SET_USER } from '../store/User';
 import { SET_TOKEN } from '../store/Auth';
 
 import KakaoButton from '../components/buttons/KakaoButton';
 import NaverButton from '../components/buttons/NaverButton';
 import GoogleButton from '../components/buttons/GoogleButton';
-import logo from '../assets/우리끼니로고.png';
-import styles from '../styles/LoginPage.module.css';
-import CenterLogo from '../styles/CenterLogo';
-import axios from '../../node_modules/axios/index';
+import Logo from '../components/PageLogo';
+import '../styles/LoginPage.css';
 
 const LoginPage = () => {
   //React Hooks
@@ -40,44 +37,26 @@ const LoginPage = () => {
   const onValid = async ({ userEmail, userPassword }) => {
     //response 객체
     //참고: /api/Users.js
-    const data = {
-      userEmail,
-      userPassword,
-    };
+    const response = await loginUser({ userEmail, userPassword });
 
-    axios({
-      url: `https://i8a804.p.ssafy.io/api/user/login`,
-      method: 'POST',
-      headers: {
-        'Content-type': 'application/json',
-      },
-      data,
-    })
-      .then((response) => {
-        //요청 응답이 오면 응답상태를 체크
-        //response.status가 true면 응답이 200번대(성공)
-        if (response.status === 202) {
-          console.log(response);
-          //Cookie에 Refresh Token 저장
-          setRefreshToken(response.data.refreshToken);
-          //store에 Access Token 저장하도록 Action Dispatch
-          //참고: /store/Auth.js
-          dispatch(SET_TOKEN(response.data.accessToken));
-          dispatch(SET_USER({ id: response.data.userId, nickname: response.data.userNickname }));
-          //화면 이동(메인)
-          navigate('/');
-        } else {
-          window.confirm('로그인 에러');
+    //요청 응답이 오면 응답상태를 체크
+    //response.status가 true면 응답이 200번대(성공)
+    if (response.status) {
+      console.log(response);
+      //Cookie에 Refresh Token 저장
+      setRefreshToken(response.json.refresh_token);
+      //store에 Access Token 저장하도록 Action Dispatch
+      //참고: /store/Auth.js
+      dispatch(SET_TOKEN(response.json.access_token));
 
-          navigate('/user/login');
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      //화면 이동(메인)
+      return navigate('/');
+    } else {
+      console.log(response.json);
+      window.alert(response.json.error);
+    }
 
     //input폼 비워주는 코드
-    setValue('userId', '');
     setValue('userPassword', '');
   };
 
@@ -85,21 +64,14 @@ const LoginPage = () => {
     navigate('/user/signup');
   };
 
-  const goHome = () => {
-    navigate('/');
-  };
-
   return (
-    <div className={styles.login}>
-      <div className={styles.logo_box}>
-        <CenterLogo />
-        <h3>같이 밥먹을래?</h3>
-      </div>
-      <form className={styles.loginform} onSubmit={handleSubmit(onValid)}>
-        <div className={styles.inputform}>
-          <div className={styles.inputs}>
+    <div className="login">
+      <Logo />
+      <form className="loginform" onSubmit={handleSubmit(onValid)}>
+        <div className="inputform">
+          <div className="inputs">
             <input
-              id={styles.userEmail}
+              id="userEmail"
               type="email"
               placeholder="이메일을 입력하세요"
               {...register('userEmail', {
@@ -112,34 +84,31 @@ const LoginPage = () => {
             />
             {errors.email && <small role="alert">{errors.email.message}</small>}
             <input
-              id={styles.userPassword}
+              id="userPassword"
               type="password"
               placeholder="비밀번호를 입력하세요"
               {...register('userPassword', {
                 minLength: {
-                  value: 4,
-                  message: '4자리 이상 비밀번호를 사용해주세요.',
+                  value: 8,
+                  message: '8자리 이상 비밀번호를 사용해주세요.',
                 },
               })}
             />
             {errors.password && <small role="alert">{errors.password.message}</small>}
           </div>
 
-          <button className={styles.loginButton} type="submit" disabled={isSubmitting}>
+          <button className="loginButton" type="submit" disabled={isSubmitting}>
             로그인
           </button>
         </div>
 
-        <button className={styles.signUpButton} onClick={onSignUp}>
+        <button className="signUpButton" onClick={onSignUp}>
           회원가입
         </button>
-        <Link
-          to="/user/findpw"
-          style={{ color: 'blue', textDecoration: 'none', textAlign: 'right', marginRight: '50px', padding: '5px' }}
-        >
-          <small>비밀번호 찾기</small>
+        <Link to="FindPassword" style={{ color: 'blue', textDecoration: 'none' }}>
+          <small>비밀번호를 잊으셨나요?</small>
         </Link>
-        <div className={styles.socialLogin}>
+        <div className="socialLogin">
           <NaverButton />
           <KakaoButton />
           <GoogleButton />

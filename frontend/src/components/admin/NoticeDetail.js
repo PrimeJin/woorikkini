@@ -1,15 +1,13 @@
 import axios from 'axios';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import './Notice.css';
 
 const NoticeDetail = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [time, setTime] = useState('');
   const params = useParams();
   const [update, setUpdate] = useState('');
-  const [modal, setModal] = useState(false);
 
   function getDetail() {
     axios({
@@ -19,7 +17,6 @@ const NoticeDetail = () => {
       .then((res) => {
         setTitle(res.data.notice.noticeTitle);
         setContent(res.data.notice.noticeContent);
-        setTime(res.data.notice.createdTime.substr(0, 10));
       })
       .catch((err) => {
         console.log(err, '공지사항 디테일 에러');
@@ -28,8 +25,7 @@ const NoticeDetail = () => {
 
   useEffect(() => {
     getDetail();
-    console.log(content);
-  }, [update]);
+  }, []);
 
   const [inputTitle, setInputTitle] = useState('');
   const [inputContent, setInputContent] = useState('');
@@ -37,7 +33,7 @@ const NoticeDetail = () => {
   useEffect(() => {
     setInputTitle(title);
     setInputContent(content);
-  }, [title, content, update]);
+  }, [title, content]);
 
   const navigate = useNavigate();
 
@@ -70,15 +66,6 @@ const NoticeDetail = () => {
       });
   }
 
-  function DeleteModal() {
-    setModal(true);
-  }
-  function modalClose() {
-    if (modal === true) {
-      setModal(false);
-    }
-  }
-
   function updateConfirm() {
     if (inputTitle.trim() === '') {
       alert('제목을 입력해주세요');
@@ -96,7 +83,7 @@ const NoticeDetail = () => {
       })
         .then((res) => {
           alert('수정이 완료되었습니다.');
-          setUpdate('');
+          window.location.replace(`${params.noticeId}`);
         })
         .catch((err) => {
           console.log('공지사항 수정 에러', err);
@@ -104,58 +91,68 @@ const NoticeDetail = () => {
     }
   }
 
+  //   if (!update) {
+  //     return (
+  //       <div style={{ display: "flex", flexWrap: "wrap" }}>
+  //         <h1>공지사항</h1>
+  //         <div className="detail">
+  //           제목: {title}
+  //           <br />
+  //           내용: {content}
+  //           <br />
+  //           <button onClick={goToUpdate}>수정</button>
+  //           <button onClick={noticeDelete}>삭제</button>
+  //         </div>
+  //         <button onClick={list}>목록으로</button>
+  //       </div>
+  //     );
+  //   } else {
+  //     return (
+  //       <div>
+  //         <h1>공지사항</h1>
+  //         <div>
+  //           <label>제목</label>
+  //           <br />
+  //           <input
+  //             type="text"
+  //             value={inputTitle}
+  //             onChange={(e) => setInputTitle(e.target.value)}
+  //           />
+  //           <br />
+  //           <label>내용</label>
+  //           <br />
+  //           <input
+  //             type="text"
+  //             value={inputContent}
+  //             onChange={(e) => setInputContent(e.target.value)}
+  //           />
+  //           <br />
+  //           <button onClick={updateConfirm}>확인</button>
+  //           <button onClick={back}>취소</button>
+  //         </div>
+  //         <button onClick={list}>목록으로</button>
+  //       </div>
+  //     );
+  //   }
+  // };
+
   return (
     <div>
       <h1>공지사항</h1>
-
-      {/* 모달 시작 */}
-      {modal ? (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            width: '100%',
-            position: 'fixed',
-            backgroundColor: 'rgba(0,0,0,0)',
-            top: '30%',
-          }}
-        >
-          <div className="delete">
-            <p style={{ width: '100%', marginBottom: 0 }}>해당 글을 삭제하시겠습니까?</p>
-            <button className="modalBtn" onClick={noticeDelete}>
-              확인
-            </button>
-            <button className="modalBtn" onClick={modalClose}>
-              취소
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div></div>
-      )}
-      {/* 모달 끝 */}
-
-      <div style={{ display: 'flex', justifyContent: 'center' }} onClick={modalClose}>
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
         {!update ? (
-          //
-          // 디테일
           <div className="detail">
             <p className="title">{title}</p>
-            <div style={{ marginLeft: '80%', marginBottom: '2%' }}>
-              <small>작성일자: {time}</small>
-            </div>
             <hr />
-            <pre className="content">{content}</pre>
+            <p className="content">{content}</p>
             <button className="btn" onClick={goToUpdate}>
               수정
             </button>
-            <button className="btn" onClick={DeleteModal} style={{ backgroundColor: '#FF8D89' }}>
+            <button className="btn" onClick={noticeDelete} style={{ backgroundColor: '#FF8D89' }}>
               삭제
             </button>
           </div>
         ) : (
-          //
-          // 수정
           <div className="update">
             <label>제목</label>
             <br />
@@ -168,7 +165,7 @@ const NoticeDetail = () => {
             <br />
             <label>내용</label>
             <br />
-            <textarea
+            <input
               className="inputContent"
               type="text"
               value={inputContent}

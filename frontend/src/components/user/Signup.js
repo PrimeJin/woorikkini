@@ -2,7 +2,6 @@ import './Signup.css';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Logo from './UserPagesLogo';
-import axios from 'axios';
 
 // 회원가입 폼
 function Form() {
@@ -26,7 +25,6 @@ function Form() {
     setEmail(event.currentTarget.value);
   };
   // 해당 이메일로 인증 코드 전송
-  const [emailCheck, setEmailCheck] = useState(false);
   const onEmailClick = (event) => {
     event.preventDefault();
     const emailRegex =
@@ -36,48 +34,54 @@ function Form() {
     } else if (!emailRegex.test(Email)) {
       alert('올바른 이메일 형식이 아닙니다. 다시 입력해주세요.');
     } else {
-      axios({
-        url: `https://i8a804.p.ssafy.io/api/user/email/check?authCodeUserEmail=${Email}`,
+      fetch('http:// /user/email/check', {
         method: 'GET',
+        body: {
+          authCodeUserEmail: Email,
+        },
       })
         .then((res) => {
-          console.log(res.data.message);
-          setEmailCheck(true);
-          alert('인증코드가 전송되었습니다.');
+          if (res === 'success') {
+            alert('인증코드가 전송되었습니다.');
+          } else {
+            alert('인증코드가 전송되지 않았습니다.');
+          }
         })
         .catch((err) => {
           alert('다시 시도해주시기 바랍니다.');
           console.log(err);
         });
     }
-    console.log('이메일 인증 ->', emailCheck);
   };
   // 인증 코드 입력
   const onCode = (event) => {
     setCode(event.currentTarget.value);
   };
   // 인증하기
-  const [codeCheck, setCodeCheck] = useState(false);
   const onCodeClick = (event) => {
     event.preventDefault();
     if (Code === '') {
       alert('인증코드를 입력해주세요.');
     } else {
-      axios({
-        url: `https://i8a804.p.ssafy.io/api/user/email/check?authCodeContent=${Code}&authCodeUserEmail=${Email}`,
+      fetch('http:// /user/email/check', {
         method: 'POST',
+        body: {
+          authCodeUserEmail: Email,
+          authCodeContent: Code,
+        },
       })
         .then((res) => {
-          console.log(res.data.message);
-          setCodeCheck(true);
-          alert('인증되었습니다.');
+          if (res === 'success') {
+            alert('인증되었습니다.');
+          } else {
+            alert('인증되지 않았습니다.');
+          }
         })
         .catch((err) => {
           console.log(err);
           alert('다시 시도해주시기 바랍니다.');
         });
     }
-    console.log('코드 인증 ->', codeCheck);
   };
   // 비밀번호 입력
   const onPassword = (event) => {
@@ -120,23 +124,16 @@ function Form() {
     if (Nickname === '') {
       alert('닉네임을 입력해주세요.');
     } else {
-      axios({
-        url: `https://i8a804.p.ssafy.io/api/user/${Nickname}`,
+      fetch(`http:// /user/${Nickname}`, {
         method: 'GET',
-      })
-        .then((res) => {
-          console.log('??', res.data.message);
-          if (res.data.message === 'success') {
-            console.log('!!');
-            setPossible(true);
-          } else {
-            setImpossible(true);
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-          alert('다시 시도해주시기 바랍니다.');
-        });
+        body: { Nickname },
+      }).then((res) => {
+        if (res === 'success') {
+          setPossible(true);
+        } else {
+          setImpossible(true);
+        }
+      });
     }
   };
   // 생년월일 입력
@@ -154,56 +151,44 @@ function Form() {
     }
   };
   // 가입하기
-  const navigate = useNavigate();
   const onSubmit = (event) => {
-    console.log('닉네임 중복 확인 ->', possible);
-    if (Email == '' || Password == '' || Name == '' || Nickname == '' || Date == '' || Gender == '') {
-      alert('빈 칸을 입력해주세요.');
-    } else if (emailCheck == false || codeCheck == false || possible == false) {
-      alert('인증을 진행해주세요.');
-    } else {
-      event.preventDefault();
-      const Year = Date.slice(0, 4);
-      console.log(Year);
-      const userData = {
+    const navigate = useNavigate();
+    event.preventDefault();
+    fetch('http:// /user/', {
+      method: 'POST',
+      body: {
         userEmail: Email,
         userPassword: Password,
         userName: Name,
         userNickname: Nickname,
-        userBirth: Year,
+        userBirth: Date,
         userGender: Gender,
-      };
-      console.log(userData);
-      axios({
-        url: 'https://i8a804.p.ssafy.io/api/user',
-        method: 'POST',
-        data: userData,
+      },
+    })
+      .then((res) => {
+        if (res === 500) {
+          navigate(`http://localhost:3000/`);
+        } else {
+          alert('가입에 실패하였습니다. 다시 시도해주시기 바랍니다.');
+        }
       })
-        .then((res) => {
-          console.log(res);
-          alert('가입되었습니다.');
-          navigate('/');
-        })
-        .catch((err) => {
-          console.log(err);
-          alert('다시 시도해주시기 바랍니다.');
-        });
-    }
+      .catch((err) => {
+        console.log(err);
+        alert('다시 시도해주시기 바랍니다.');
+      });
   };
 
   return (
     <form className="signup-form">
       <p className="text-type">회원가입</p>
-      <div style={{ justifyContent: 'center', display: 'flex' }}>
-        <input type="email" value={Email} onChange={onEmail} className="input-form-top" placeholder="이메일" required />
-        <button type="click" className="check-btn" onClick={onEmailClick} value={emailCheck}>
-          코드 전송
-        </button>
-      </div>
+      <input type="email" value={Email} onChange={onEmail} className="input-form-top" placeholder="이메일" required />
+      <button type="click" className="check-btn" onClick={onEmailClick}>
+        코드 전송
+      </button>
       <p></p>
 
       <input type="code" value={Code} onChange={onCode} className="input-form" placeholder="인증코드" required />
-      <button className="check-btn" onClick={onCodeClick} value={codeCheck}>
+      <button className="check-btn" onClick={onCodeClick}>
         인증하기
       </button>
 
@@ -216,7 +201,7 @@ function Form() {
         placeholder="비밀번호"
         required
       />
-      {pwVisible ? <span>* 8 ~ 12자의 비밀번호를 입력해야 합니다.</span> : <p></p>}
+      {pwVisible ? <text>* 8 ~ 12자의 비밀번호를 입력해야 합니다.</text> : <p></p>}
       <input
         type="password"
         value={ConfirmPassword}
@@ -225,18 +210,26 @@ function Form() {
         placeholder="비밀번호 확인"
         required
       />
-      {pwcheckVisible ? <span>* 비밀번호가 일치하지 않습니다.</span> : <p></p>}
+      {pwcheckVisible ? <text>* 비밀번호가 일치하지 않습니다.</text> : <p></p>}
       <input type="text" value={Name} onChange={onName} className="input-form" placeholder="이름" required />
       <p></p>
       <input type="text" value={Nickname} onChange={onNickname} className="input-form" placeholder="닉네임" required />
       <button className="check-btn" onClick={onNickCheck}>
         중복 확인
       </button>
-      {nickVisible ? <span>* 최대 10자의 닉네임을 사용할 수 있습니다.</span> : <p></p>}
-      {possible && <span>* 사용할 수 있는 닉네임 입니다.</span>}
-      {impossible && <span>* 중복되는 닉네임 입니다.</span>}
-      {/* <p></p> */}
-      <input type="date" value={Date} onChange={onDate} className="input-form" placeholder="생년월일" required />
+      {nickVisible ? <text>* 최대 10자의 닉네임을 사용할 수 있습니다.</text> : <p></p>}
+      {possible && <text>* 사용할 수 있는 닉네임 입니다.</text>}
+      {impossible && <text>* 중복되는 닉네임 입니다.</text>}
+      <p></p>
+      <input
+        type="date"
+        value={Date}
+        onChange={onDate}
+        className="input-form"
+        placeholder="생년월일"
+        required
+        // style={{ display: 0 }}
+      />
       <p></p>
       <div className="check-box">
         <p className="gender">성별</p>
@@ -251,7 +244,7 @@ function Form() {
           </label>
           <label>
             <input type="radio" value="" name="gender" onClick={onGender} />
-            선택 X
+            선택 안함
           </label>
         </fieldset>
       </div>

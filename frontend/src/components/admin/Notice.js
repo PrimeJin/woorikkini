@@ -1,7 +1,8 @@
 import NoticeList from './NoticeList';
 import './Notice.css';
 import axios from 'axios';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Pagination } from '@mui/material';
 
@@ -39,7 +40,7 @@ function Notice() {
 
   return (
     <div>
-      <h1 style={{ margin: '1%', marginTop: '3%' }}>공지사항</h1>
+      <h1 style={{ marginTop: '2%', marginBottom: 0 }}>공지사항</h1>
       <div
         style={{
           justifyContent: 'right',
@@ -65,7 +66,7 @@ function Notice() {
           <tr>
             <th style={{ width: '10%' }}>번호</th>
             <th style={{ width: '70%' }}>제목</th>
-            <th style={{ width: '20%' }}>작성일자</th>
+            <th style={{ width: '20%' }}>작성 날짜</th>
           </tr>
           {list.map((notice, index) => (
             <NoticeList key={index} notice={notice} />

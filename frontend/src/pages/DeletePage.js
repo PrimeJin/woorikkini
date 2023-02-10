@@ -23,7 +23,7 @@ function DeletePage() {
   };
 
   const deleteUser = (userId) => {
-    const url = `https://i8a804.p.ssafy.io/api/user/${userId}`;
+    const url = `http://i8a804.p.ssafy.io:8040/user/${userId}`;
 
     fetch(url, {
       method: 'DELETE',

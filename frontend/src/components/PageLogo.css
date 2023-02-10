@@ -1,7 +1,7 @@
 .mypage-logo-top {
-  display: flex;
   justify-content: left;
-  flex-flow: nowrap;
+  display: flex;
+  flex-flow: row nowrap;
   margin: 2%;
   width: 130px;
 }

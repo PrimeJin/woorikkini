@@ -8,7 +8,7 @@ const NaverButton = () => {
   return (
     <Link to="http://i8a804.p.ssafy.io:8040/oauth2/authorize/naver?redirect_uri=http://localhost:3000/oauth/callback/naver">
       <button type="button" className="naver-button">
-        <img src={'img/naver_login.png'} width="222" height="50" alt="" />
+        <img src="https://static.nid.naver.com/oauth/big_g.PNG?version=js-2.0.1" width="222" alt="" />
       </button>
     </Link>
   );

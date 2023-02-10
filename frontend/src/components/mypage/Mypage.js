@@ -8,8 +8,8 @@ import CardContainer from './CardContainer';
 function Mypage() {
   return (
     <div>
-      <div className="mypage">
-        <Logo />
+      <div className="all">
+        <Logo></Logo>
         <div className="title">
           <p style={{ fontSize: 50, marginBottom: 0 }}>나의 먹기록</p>
           <br />

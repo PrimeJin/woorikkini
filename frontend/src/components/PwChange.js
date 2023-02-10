@@ -1,48 +1,12 @@
 import React, { useEffect, useState, useCallback } from "react";
-import styles from "./Pw.module.css";
+import "./Pw.css";
 import axios from "axios";
-import { useLocation, useNavigate } from "react-router-dom";
-import QueryString from "qs";
+import { useNavigate } from "react-router-dom";
 
 const PwChange = () => {
   // function confirmToken() {
 
   // }
-  const [check, setCheck] = useState(false);
-
-  const queryData = QueryString.parse(useLocation().search, {
-    ignoreQueryPrefix: true,
-  });
-
-  const email = queryData.userEmail;
-  const code = queryData.passwordCodeContent;
-
-  function goCheck() {
-    axios({
-      url: `https://i8a804.p.ssafy.io/api/user/password?userEmail=${email}&passwordCodeContent=${code}`,
-      method: "GET",
-      data: {
-        userEmail: email,
-        passwordCodeContent: code,
-      },
-    })
-      .then((res) => {
-        if (res.data.message === "success") {
-          setCheck(true);
-        } else {
-          alert("만료된 링크입니다.");
-        }
-      })
-      .catch((err) => {
-        console.log(err, "check 에러");
-        alert("만료된 링크입니다.");
-      });
-  }
-
-  useEffect(() => {
-    goCheck();
-  }, []);
-
   const useInput = (initial, validate) => {
     const [value, setValue] = useState(initial);
     const inputChange = (event) => {
@@ -111,77 +75,79 @@ const PwChange = () => {
   const navigate = useNavigate();
 
   function goPw() {
+    // state에 userId가 있다는 가정하에
+    const userId = this.state.userId;
+
     if (pwError === "" && matchError === "") {
       axios({
-        url: `https://i8a804.p.ssafy.io/api/user/password`,
-        method: "PATCH",
-        data: {
-          userEmail: email,
-          passwordCodeContent: code,
-          userPassword: pw,
-          userPasswordCheck: pw2,
-        },
+        url: `http://localhost3000/${userId}/password`,
+        method: "POST",
+        data: pw,
       })
         .then((res) => {
           alert("비밀번호 변경에 성공하였습니다.");
-          navigate("/user/login");
+          navigate("/login");
         })
         .catch((err) => {
           console.log(err, "goPw 에러");
         });
     } else {
-      console.log("pwchange error");
+      console.log("뭔가 에러가 있음");
       console.log(errorMessage);
     }
   }
 
   return (
     <div>
-      {check && (
-        <div>
-          {/* <img className="logo" src="logo.png" alt="이미지없음" /> */}
-          <p className={styles.logo}>
-            우리
+      {/* <img className="logo" src="logo.png" alt="이미지없음" /> */}
+      <p className="logo">
+        우리
+        <br />
+        끼니
+      </p>
+      <div className="all">
+        <form
+          action="/123"
+          method="post"
+          // onSubmit={function (e) {
+          //   console.log(e.target);
+          //   alert("비밀번호 변경이 완료되었습니다.");
+          //   this.props.onSubmit(e.target);
+          // }.bind(this)}
+        >
+          <p className="pwChange">비밀번호 변경</p>
+          <br />
+          <div style={{ height: "60px" }}>
+            <input
+              className="userInfo"
+              type="password"
+              placeholder="비밀번호"
+              value={pw}
+              onChange={pwInput}
+            />
             <br />
-            끼니
-          </p>
-          <div className={styles.all}>
-            <form className={styles.pwForm}>
-              <p className={styles.pwChange}>비밀번호 변경</p>
-              <br />
-              <div style={{ height: "60px" }}>
-                <input
-                  className={styles.userInfo}
-                  type="password"
-                  placeholder="비밀번호"
-                  value={pw}
-                  onChange={pwInput}
-                />
-                <br />
-                {pwError ? <span>{pwError}</span> : ""}
-              </div>
-              <input
-                className={styles.userInfo}
-                type="password"
-                placeholder="비밀번호확인"
-                value={pw2}
-                onChange={pwInput2}
-                style={{ marginTop: "10%" }}
-              />
-              <br />
-              {matchError ? <span>{matchError}</span> : ""}
-              <br />
-              <input
-                type="button"
-                value="확인"
-                className={styles.check}
-                style={{ cursor: "pointer" }}
-                onClick={goPw}
-              />
-            </form>
+            {pwError ? <span>{pwError}</span> : ""}
           </div>
-        </div>
-      )}
+          <input
+            className="userInfo"
+            type="password"
+            placeholder="비밀번호확인"
+            value={pw2}
+            onChange={pwInput2}
+            style={{ marginTop: "10%" }}
+          />
+          <br />
+          {matchError ? <span>{matchError}</span> : ""}
+          <br />
+          <input
+            type="button"
+            value="확인"
+            className="check"
+            style={{ cursor: "pointer" }}
+            onClick={goPw}
+          />
+        </form>
+      </div>
     </div>
   );
 };
