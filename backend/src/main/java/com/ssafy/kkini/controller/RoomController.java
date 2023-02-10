@@ -174,6 +174,23 @@ public class RoomController {
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
     }
 
+    @ApiOperation(value = "방 나가기 조치", notes = "방 인원수를 1감소 시킨다.", response = Map.class)
+    @DeleteMapping("/exit/{roomId}")
+    public ResponseEntity<?> exitRoom(@ApiParam(value = "사용자 아이디", required = true)
+                                         @PathVariable String roomId) {
+        HttpStatus status = null;
+        Map<String, Object> resultMap = new HashMap<>();
+        int result = roomService.exitRoom(Integer.parseInt(roomId));
+        if (result == 0){
+            status = HttpStatus.NOT_FOUND;
+            resultMap.put("message", FAIL);
+        } else {
+            status = HttpStatus.OK;
+            resultMap.put("message", SUCCESS);
+        }
+        return new ResponseEntity<Map<String, Object>>(resultMap, status);
+    }
+
     @ApiOperation(value = "방 삭제", notes = "방을 삭제 시킨다", response = Map.class)
     @DeleteMapping("/{roomId}")
     public ResponseEntity<?> removeRoom(@ApiParam(value = "방 아이디", required = true)
