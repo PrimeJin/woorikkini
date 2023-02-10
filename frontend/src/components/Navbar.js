@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import './Navbar.css';
+import styles from './Navbar.module.css';
 
 // import { LogoutPage } from '../pages/LogoutPage';
 
 function Nav() {
-  // store에서 현재 로그인한 사용자의 userId 가져오기
+  // store에서 현재 로그인한 사용자의 nickname 가져오기
   const nickname = useSelector((state) => state.user.nickname);
 
   // useState를 사용하여 open상태를 변경한다. (open일때 true로 만들어 열리는 방식)
@@ -41,12 +41,12 @@ function Nav() {
 
   return (
     <nav>
-      <div className="navbar" onClick={toggleChange}>
+      <div className={styles.navbar} onClick={toggleChange}>
         <div style={{ width: 100 }}>
           <text style={{ fontSize: 17 }}>{nickname}</text>
         </div>
         {toggleMenu && (
-          <div mode="horizontal" onClick={onMenuClick} className="toggle-menu">
+          <div mode="horizontal" onClick={onMenuClick} className={styles.toggle_menu}>
             <div onClick={MypageGo} style={{ textAlign: 'center', height: 25, lineHeight: 2 }}>
               마이페이지
             </div>
@@ -56,7 +56,7 @@ function Nav() {
           </div>
         )}
       </div>
-      <button className="logout-btn" onClick={logOut}>
+      <button className={styles.logout_btn} onClick={logOut}>
         LOGOUT
       </button>
     </nav>

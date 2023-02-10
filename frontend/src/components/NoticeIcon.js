@@ -7,7 +7,7 @@ function NoticeIcon() {
     navigate(`/notice/`);
   };
   return (
-    <div className="notice" style={{ margin: '2rem', display: 'inline', position: 'sticky' }}>
+    <div style={{ margin: '2rem', display: 'inline', position: 'fixed', bottom: 0 }}>
       <img
         onClick={NoticeGo}
         className="notice-icon"
@@ -23,7 +23,6 @@ function NoticeIcon() {
           textAlign: 'center',
           width: 80,
           color: '#endregion',
-          paddingLeft: '1.5rem',
         }}
       >
         공지사항

@@ -56,8 +56,7 @@ const LoginPage = () => {
       .then((response) => {
         //요청 응답이 오면 응답상태를 체크
         //response.status가 true면 응답이 200번대(성공)
-        if (response.status === 202) {
-          console.log(response);
+        if (response.status === 200 || 202) {
           //Cookie에 Refresh Token 저장
           setRefreshToken(response.data.refreshToken);
           //store에 Access Token 저장하도록 Action Dispatch
@@ -73,7 +72,7 @@ const LoginPage = () => {
         }
       })
       .catch((err) => {
-        console.log(err);
+        console.log('???', err);
       });
 
     //input폼 비워주는 코드

@@ -1,11 +1,12 @@
-.logo-top {
+.logo_top {
   text-align: center;
   font-family: 'NanumSquareRound';
   justify-content: center;
   display: flex;
   flex-flow: row nowrap;
+  background-color: #fffdfa;
 }
-.woori-logo {
+.woori_logo {
   margin-top: 2%;
   margin-bottom: 2px;
   width: 100px;
