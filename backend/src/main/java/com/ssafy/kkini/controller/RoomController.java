@@ -176,7 +176,7 @@ public class RoomController {
 
     @ApiOperation(value = "방 나가기 조치", notes = "방 인원수를 1감소 시킨다.", response = Map.class)
     @DeleteMapping("/exit/{roomId}")
-    public ResponseEntity<?> exitRoom(@ApiParam(value = "사용자 아이디", required = true)
+    public ResponseEntity<?> exitRoom(@ApiParam(value = " 방 아이디", required = true)
                                          @PathVariable String roomId) {
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
