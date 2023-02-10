@@ -12,6 +12,10 @@
 
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { setRefreshToken } from '../storage/Cookies';
+
+import { SET_TOKEN } from '../store/Auth';
+import axios from 'axios';
 
 const BASE_URL = 'http://i8a804.p.ssafy.io:8040';
 
@@ -110,33 +114,6 @@ export const logoutUser = async (credentials, accessToken) => {
   } else {
     return statusError;
   }
-};
-
-//Refresh Token 재요청
-export const requestToken = async (refreshToken) => {
-  const option = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: JSON.stringify({ refresh_token: refreshToken }),
-  };
-  const data = await getPromise(`${BASE_URL}/user/login`, option).catch(() => {
-    return statusError;
-  });
-
-  if (parseInt(Number(data.status) / 100) === 2) {
-    const status = data.ok;
-    const code = data.status;
-    const text = await data.text();
-    const json = text.length ? JSON.parse(text) : '';
-
-    return {
-      status,
-      code,
-      json,
-    };
-  } else return statusError;
 };
 
 //회원탈퇴

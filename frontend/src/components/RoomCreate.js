@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styles from './Room.module.css';
 import LockIcon from '@mui/icons-material/Lock';
-
+import { useSelector } from 'react-redux';
 const RoomCreate = (props) => {
   const cancel = props.cancel;
   const navigate = useNavigate();
@@ -16,6 +16,7 @@ const RoomCreate = (props) => {
   const [content, setContent] = useState('');
   const [limit, setLimit] = useState(2);
   const [preset, setPreset] = useState('preset1');
+  const { accessToken } = useSelector((state) => state.token);
 
   const limitArr = [...new Array(9)].map((_, i) => i + 2);
 
@@ -51,6 +52,10 @@ const RoomCreate = (props) => {
       : axios({
           url: 'https://i8a804.p.ssafy.io/api/room',
           method: 'POST',
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+            authorization: `Bearer ${accessToken}`,
+          },
           data: {
             roomTitle: title,
             roomContent: content,

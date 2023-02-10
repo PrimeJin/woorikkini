@@ -7,12 +7,11 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { setRefreshToken } from '../storage/Cookies';
 import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setRefreshToken } from '../storage/Cookies';
 
-import { loginUser } from '../api/Users';
 import { SET_USER } from '../store/User';
 import { SET_TOKEN } from '../store/Auth';
 
@@ -28,6 +27,7 @@ const LoginPage = () => {
   //React Hooks
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const {
     register,
     setValue,
@@ -54,6 +54,8 @@ const LoginPage = () => {
       data,
     })
       .then((response) => {
+        // console.log('로그인 응답');
+        // console.log(response);
         //요청 응답이 오면 응답상태를 체크
         //response.status가 true면 응답이 200번대(성공)
         if (response.status === 200 || 202) {
@@ -62,7 +64,14 @@ const LoginPage = () => {
           //store에 Access Token 저장하도록 Action Dispatch
           //참고: /store/Auth.js
           dispatch(SET_TOKEN(response.data.accessToken));
-          dispatch(SET_USER({ id: response.data.userId, nickname: response.data.userNickname }));
+          dispatch(
+            SET_USER({
+              id: response.data.userId,
+              // name: response.data.userName, 로그인할땐 안들어옴
+              nickname: response.data.userNickname,
+              role: response.data.userRole,
+            }),
+          );
           //화면 이동(메인)
           navigate('/');
         } else {
@@ -72,7 +81,7 @@ const LoginPage = () => {
         }
       })
       .catch((err) => {
-        console.log('???', err);
+        console.log(err);
       });
 
     //input폼 비워주는 코드
@@ -82,10 +91,6 @@ const LoginPage = () => {
 
   const onSignUp = () => {
     navigate('/user/signup');
-  };
-
-  const goHome = () => {
-    navigate('/');
   };
 
   return (
@@ -116,8 +121,8 @@ const LoginPage = () => {
               placeholder="비밀번호를 입력하세요"
               {...register('userPassword', {
                 minLength: {
-                  value: 4,
-                  message: '4자리 이상 비밀번호를 사용해주세요.',
+                  value: 8,
+                  message: '8자리 이상 비밀번호를 사용해주세요.',
                 },
               })}
             />

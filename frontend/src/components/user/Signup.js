@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Logo from './UserPagesLogo';
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
 
 // 회원가입 폼
 function Form() {
@@ -21,6 +22,7 @@ function Form() {
   const [Date, setDate] = useState('');
   const [Gender, setGender] = useState('');
 
+  const dispatch = useDispatch();
   // 이메일 입력
   const onEmail = (event) => {
     setEmail(event.currentTarget.value);
@@ -41,7 +43,6 @@ function Form() {
         method: 'GET',
       })
         .then((res) => {
-          console.log(res.data.message);
           if (res.data.message === 'success') {
             setEmailCheck(true);
             alert('인증코드가 전송되었습니다.');
@@ -73,7 +74,6 @@ function Form() {
         method: 'POST',
       })
         .then((res) => {
-          console.log(res.data.message);
           setCodeCheck(true);
           alert('인증되었습니다.');
         })
@@ -129,11 +129,9 @@ function Form() {
         method: 'GET',
       })
         .then((res) => {
-          console.log('??', res.data.message);
           if (res.data.message === 'success') {
             setPossible(true);
             setImpossible(false);
-            console.log('!!!', possible);
           } else {
             setImpossible(true);
             setPossible(false);
@@ -163,7 +161,6 @@ function Form() {
   // 가입하기
   const navigate = useNavigate();
   const onSubmit = (event) => {
-    console.log('닉네임 중복 확인 ->', possible);
     if (Email == '' || Password == '' || Name == '' || Nickname == '' || Date == '' || Gender == '') {
       alert('빈 칸을 입력해주세요.');
     } else if (emailCheck == false || codeCheck == false || possible == false) {
@@ -171,7 +168,6 @@ function Form() {
     } else {
       event.preventDefault();
       const Year = Date.slice(0, 4);
-      console.log(Year);
       const userData = {
         userEmail: Email,
         userPassword: Password,
@@ -180,14 +176,13 @@ function Form() {
         userBirth: Year,
         userGender: Gender,
       };
-      console.log(userData);
       axios({
         url: 'https://i8a804.p.ssafy.io/api/user',
         method: 'POST',
         data: userData,
       })
-        .then((res) => {
-          console.log(res);
+        .then((response) => {
+          // console.log(response);
           alert('가입되었습니다.');
           navigate('/');
         })

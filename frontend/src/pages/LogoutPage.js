@@ -33,7 +33,8 @@ const LogoutPage = () => {
       },
       id,
     }).then((response) => {
-      if (response.status === 202) {
+      console.log(response);
+      if (response.status === 200 || 202) {
         console.log('로그아웃 성공');
         //store에 저장된 Access Token 삭제
         dispatch(DELETE_TOKEN());

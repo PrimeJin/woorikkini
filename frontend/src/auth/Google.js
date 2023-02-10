@@ -20,24 +20,15 @@ const Google = () => {
   //url에 있는 accessToken refreshToken 따오기
   const id = new URL(window.location.href).searchParams.get('userId');
   const nickname = new URL(window.location.href).searchParams.get('nickName');
-
   const accessToken = new URL(window.location.href).searchParams.get('accessToken');
   const refreshToken = new URL(window.location.href).searchParams.get('refreshToken');
 
-  console.log('userId: ' + id);
-  console.log('nickname: ' + nickname);
-  console.log('access_Token: ' + accessToken);
-  console.log('refresh_Token: ' + refreshToken);
-
   dispatch(SET_USER({ id: id, nickname: nickname }));
-
   setRefreshToken(refreshToken);
-  //store에 Access Token 저장하도록 Action Dispatch
-  //참고: /store/Auth.js
   dispatch(SET_TOKEN(accessToken));
 
   useEffect(() => {
-    navigate('/');
+    navigate('/room');
   });
   //인가코드를 받아오면 백엔드로 넘기기
   // React.useEffect(() => {

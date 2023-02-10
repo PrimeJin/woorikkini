@@ -7,6 +7,7 @@ export const userSlice = createSlice({
     id: '',
     name: '',
     nickname: '',
+    role: '',
   },
 
   reducers: {
@@ -16,11 +17,13 @@ export const userSlice = createSlice({
       state.id = parseInt(action.payload.id);
       state.name = action.payload.name;
       state.nickname = action.payload.nickname;
+      state.role = action.payload.role;
     },
     DELETE_USER: (state) => {
       state.id = '';
       state.name = '';
       state.nickname = '';
+      state.role = '';
     },
   },
 });

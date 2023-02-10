@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 
 import axios from 'axios';
 import UserVideoComponent from './UserVideoComponent';
@@ -54,7 +53,6 @@ const mapDispatchToProps = (dispatch) => {
     },
   };
 };
-
 
 class VideoRoom extends Component {
   //초기설정 생성자
@@ -341,7 +339,6 @@ class VideoRoom extends Component {
               variant="contained"
               color="error"
               size="small"
-              onClick={this.openModal}
             >
               강퇴
             </Button>
@@ -718,39 +715,39 @@ class VideoRoom extends Component {
                   <div id="join-dialog" className="jumbotron vertical-center">
                     <form className={styles.form_group} onSubmit={this.joinSession}>
                       <p>
-                      <label>참가자명: </label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        id="userName"
-                        value={myUserName}
-                        onChange={this.handleChangeUserName}
-                        required
-                      />
-                    </p>
-                    <p>
-                      <label> 세션명: </label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        id="sessionId"
-                        value={mySessionId}
-                        onChange={this.handleChangeSessionId}
-                        required
-                      />
-                    </p>
-                    <p>
-                      <label>참가자Id: </label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        id="userId"
-                        value={myUserId}
-                        // onChange={this.handleChangeUserName}
-                        // required
-                        disabled
-                      />
-                    </p>
+                        <label>참가자명: </label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          id="userName"
+                          value={myUserName}
+                          onChange={this.handleChangeUserName}
+                          required
+                        />
+                      </p>
+                      <p>
+                        <label> 세션명: </label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          id="sessionId"
+                          value={mySessionId}
+                          onChange={this.handleChangeSessionId}
+                          required
+                        />
+                      </p>
+                      <p>
+                        <label>참가자Id: </label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          id="userId"
+                          value={myUserId}
+                          // onChange={this.handleChangeUserName}
+                          // required
+                          disabled
+                        />
+                      </p>
                       <p className="text-center">
                         <input className="btn btn-lg btn-success" name="commit" type="submit" value="JOIN" />
                       </p>
@@ -908,4 +905,3 @@ class VideoRoom extends Component {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(VideoRoom);
-

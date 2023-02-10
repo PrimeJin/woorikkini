@@ -5,9 +5,14 @@ import { useDispatch } from 'react-redux';
 import { DELETE_TOKEN } from '../store/Auth';
 import { removeCookieToken } from '../storage/Cookies';
 import { DELETE_USER } from '../store/User';
+import { getCookieToken } from '../storage/Cookies';
+import { setRefreshToken } from '../storage/Cookies';
+
+import { SET_TOKEN } from '../store/Auth';
+import axios from 'axios';
 
 //회원탈퇴 페이지
-function DeletePage() {
+const DeletePage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -52,6 +57,24 @@ function DeletePage() {
       });
   };
 
+  //리프레시 토큰 재발급요청
+  const requestToken = async () => {
+    const refreshToken = getCookieToken();
+    const data = {
+      refreshToken: refreshToken,
+    };
+
+    await axios
+      .post('https://i8a804.p.ssafy.io/api/auth/refresh', data)
+      .then((response) => {
+        if (response.status === 401) alert('유효하지 않은 토큰입니다');
+
+        if (response.data.refreshToken !== null) setRefreshToken(response.data.refreshToken);
+        dispatch(SET_TOKEN(response.data.accessToken));
+      })
+      .catch((error) => console.log(error));
+  };
+
   return (
     <>
       <h2>회원 탈퇴</h2>
@@ -59,8 +82,9 @@ function DeletePage() {
       <h3>정말 탈퇴하시겠습니까?</h3>
       <button onClick={onDelete}>탈퇴하기</button>
       <button onClick={() => navigate(-1)}>취소하기</button>
+      <button onClick={requestToken}>재발급</button>
     </>
   );
-}
+};
 
 export default DeletePage;

@@ -5,8 +5,8 @@
  */
 import { createSlice } from '@reduxjs/toolkit';
 
-//토큰 만료 시간
-export const TOKEN_TIME_OUT = 600 * 1000 * 1000;
+//accessToken 만료시간(15분)
+export const TOKEN_TIME_OUT = 60 * 15 * 1000;
 
 export const tokenSlice = createSlice({
   name: 'token', //접근할때 state.token으로 접근하면 되는것
@@ -24,7 +24,7 @@ export const tokenSlice = createSlice({
     SET_TOKEN: (state, action) => {
       state.authenticated = true;
       state.accessToken = action.payload;
-      state.expireTime = new Date(new Date().getTime() + TOKEN_TIME_OUT);
+      state.expireTime = new Date().getTime() + TOKEN_TIME_OUT;
     },
     //토큰 삭제 액션
     DELETE_TOKEN: (state) => {
