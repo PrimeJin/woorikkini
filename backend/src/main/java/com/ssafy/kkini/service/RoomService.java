@@ -6,14 +6,10 @@ import com.ssafy.kkini.entity.RoomKeyword;
 import com.ssafy.kkini.repository.KeywordRepository;
 import com.ssafy.kkini.repository.RoomKeywordRepository;
 import com.ssafy.kkini.repository.RoomRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,7 +24,7 @@ public class RoomService {
         this.keywordRepository = keywordRepository;
     }
 
-    public RoomPasswordXDto createRoom(RoomCreateFormDto roomCreateFormDto){
+    public RoomDto createRoom(RoomCreateFormDto roomCreateFormDto){
         Room room = roomCreateFormDto.toEntity();
         roomRepository.save(room);
 
@@ -39,7 +35,7 @@ public class RoomService {
                 room.getRoomKeywords().add(roomKeyword);
             }
         }
-        return new RoomPasswordXDto(room);
+        return new RoomDto(room);
     }
 
     public RoomDetailDto detailRoom(int roomId){
@@ -51,25 +47,29 @@ public class RoomService {
         return roomDetailDto;
     }
 
-    public List<RoomPasswordXDto> getAllRoom(){
+    public List<RoomDto> getAllRoom(){
         List<Room> roomList = roomRepository.findAll();
-        List<RoomPasswordXDto> roomListDto = roomList.stream()
-                .map(room -> new RoomPasswordXDto(room))
+        List<RoomDto> roomListDto = roomList.stream()
+                .map(room -> new RoomDto(room))
                 .collect(Collectors.toList());
         return roomListDto;
     }
 
-    public List<RoomPasswordXDto> searchRoom(String subject, String content) {
+    public List<RoomDto> searchRoom(String subject, String content) {
         return roomRepository.searchRoom(subject, content);
     }
 
-    public int enterRoom(int roomId, RoomEnterFormDto roomEnterFormDto) {
+    public Room enterRoom(int roomId, RoomEnterFormDto roomEnterFormDto) {
+        Room room = roomRepository.findByRoomId(roomId);
+        if(room == null) return null;
         if(roomEnterFormDto.getRoomPrivate().equals("true")){
-                if(!roomRepository.findByRoomId(roomId).getRoomPassword().equals(roomEnterFormDto.getRoomPassword())){
-                    return 0;
+                if(!room.getRoomPassword().equals(roomEnterFormDto.getRoomPassword())){
+                    return null;
                 }
         }
-        return roomRepository.increaseRecentUserInRoom(roomId);
+        int cnt = roomRepository.increaseRecentUserInRoom(roomId);
+        if(cnt == 0) return null;
+        return room;
     }
     public int exitRoom(int roomId) {
         return roomRepository.decreaseRecentUserInRoom(roomId);
@@ -80,16 +80,4 @@ public class RoomService {
         return roomRepository.deleteByRoomId(roomId);
     }
 
-//    public List<RoomPasswordXDto> getFilteredRoom(RoomFilterFormDto roomFilterFormDto){
-//        String openPrivate = roomFilterFormDto.getOpenPrivate();
-//        String openFullRoom = roomFilterFormDto.getOpenFullRoom();
-//
-//        select * from room where private = "N" and
-//        if(openPrivate.equals("Y")){
-//
-//        } else {
-//            // where private = "N"
-//        }
-//        List<Room>
-//    }
 }

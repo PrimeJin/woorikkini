@@ -1,11 +1,7 @@
 package com.ssafy.kkini.service;
 
 import com.ssafy.kkini.dto.*;
-import com.ssafy.kkini.entity.Notice;
-import com.ssafy.kkini.entity.RefreshToken;
 import com.ssafy.kkini.entity.Room;
-import com.ssafy.kkini.entity.User;
-import com.ssafy.kkini.repository.RefreshTokenRepository;
 import com.ssafy.kkini.repository.RoomRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -16,11 +12,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.TestPropertySource;
 
-import java.sql.Array;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -41,11 +34,11 @@ public class RoomServiceTest {
     public void createRoom() throws Exception {
         //given
         RoomCreateFormDto createFormDto = new RoomCreateFormDto("roomtitle4", "roomContent4", "true"
-                , "password", "preset1", new ArrayList<>(), 6);
+                , "password", "preset1", new ArrayList<>(), 6, "asdf");
         Room givenRoom = createFormDto.toEntity();
         when(roomRepository.save(any())).thenReturn(createFormDto.toEntity());
         //when
-        RoomPasswordXDto compareRoom = roomService.createRoom(createFormDto);
+        RoomDto compareRoom = roomService.createRoom(createFormDto);
         //then
         Assertions.assertThat(givenRoom.getRoomContent()).isEqualTo(compareRoom.getRoomContent());
     }
@@ -78,11 +71,11 @@ public class RoomServiceTest {
         when(roomRepository.findAll()).thenReturn(roomList);
         //when
 
-        List<RoomPasswordXDto> roomListDto = roomList.stream()
-                .map(room -> new RoomPasswordXDto(room))
+        List<RoomDto> roomListDto = roomList.stream()
+                .map(room -> new RoomDto(room))
                 .collect(Collectors.toList());
 
-        List<RoomPasswordXDto> compareRoomList = roomService.getAllRoom();
+        List<RoomDto> compareRoomList = roomService.getAllRoom();
         //then
         Assertions.assertThat(roomListDto.size()).isEqualTo(compareRoomList.size());
     }
@@ -101,15 +94,15 @@ public class RoomServiceTest {
         Room room = Room.builder().roomId(1).roomTitle("roomtitle").roomContent("roomContent").roomKeywords(new ArrayList<>())
                 .roomRecentUser(1).roomLimitUser(6).roomPassword("password").roomPreset("preset1").roomPrivate("true").build();
 
-        RoomPasswordXDto room1 = new RoomPasswordXDto(room);
-        RoomPasswordXDto room2 = new RoomPasswordXDto(room);
+        RoomDto room1 = new RoomDto(room);
+        RoomDto room2 = new RoomDto(room);
         //given
-        List<RoomPasswordXDto> roomList = new ArrayList<>();
+        List<RoomDto> roomList = new ArrayList<>();
         roomList.add(room1);
         roomList.add(room2);
 
         when(roomRepository.searchRoom("title", "title")).thenReturn(roomList);
-        List<RoomPasswordXDto> compareRoomList = roomService.searchRoom("title", "title");
+        List<RoomDto> compareRoomList = roomService.searchRoom("title", "title");
 
         roomService.deleteRoom(1);
         Assertions.assertThat(roomList.size()).isEqualTo(compareRoomList.size());
@@ -124,11 +117,11 @@ public class RoomServiceTest {
         RoomEnterFormDto roomEnterFormDto = new RoomEnterFormDto("true", "password");
 
         when(roomRepository.findByRoomId(1)).thenReturn(room);
-        when(roomRepository.increaseRecentUserInRoom(1)).thenReturn(1);
+        when(roomRepository.increaseRecentUserInRoom(1)).thenReturn(room.getRoomRecentUser() + 1);
 
-        int result = roomService.enterRoom(1, roomEnterFormDto);
+        Room result = roomService.enterRoom(1, roomEnterFormDto);
 
-        Assertions.assertThat(1).isEqualTo(result);
+        Assertions.assertThat(room.getRoomRecentUser()).isEqualTo(result.getRoomRecentUser());
     }
 
     @Test

@@ -5,8 +5,7 @@ package com.ssafy.kkini.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.ssafy.kkini.dto.RoomPasswordXDto;
-import com.ssafy.kkini.dto.RoomSearchDto;
+import com.ssafy.kkini.dto.RoomDto;
 import com.ssafy.kkini.entity.QKeyword;
 import com.ssafy.kkini.entity.QRoom;
 import com.ssafy.kkini.entity.QRoomKeyword;
@@ -24,10 +23,10 @@ public class RoomCustomRepositoryImpl implements RoomCustomRepository{
     }
 
     @Override
-    public List<RoomPasswordXDto> searchRoom(String subject, String content) {
+    public List<RoomDto> searchRoom(String subject, String content) {
         if(subject.equals("title")){
             return queryFactory
-                    .select(Projections.constructor(RoomPasswordXDto.class,
+                    .select(Projections.constructor(RoomDto.class,
                             room))
                     .from(room)
                     .where(roomTitleContains(content))
@@ -36,7 +35,7 @@ public class RoomCustomRepositoryImpl implements RoomCustomRepository{
             QKeyword k = new QKeyword("k");
             QRoomKeyword rk = new QRoomKeyword("rk");
             QRoom r= new QRoom("r");
-            return queryFactory.select(Projections.constructor(RoomPasswordXDto.class,
+            return queryFactory.select(Projections.constructor(RoomDto.class,
                             r)).distinct()
                     .from(rk)
                     .innerJoin(rk.roomId, r)

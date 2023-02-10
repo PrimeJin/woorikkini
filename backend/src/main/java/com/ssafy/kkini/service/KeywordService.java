@@ -1,5 +1,6 @@
 package com.ssafy.kkini.service;
 
+import com.ssafy.kkini.dto.KeywordDto;
 import com.ssafy.kkini.entity.Keyword;
 import com.ssafy.kkini.repository.KeywordRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,15 +19,13 @@ public class KeywordService {
         this.keywordRepository = keywordRepository;
     }
 
-    public List<Map<String, Object>> getKeyword() {
+    public List<KeywordDto> getKeyword() {
         List<Keyword> keywordList = keywordRepository.findAll();
-        List<Map<String, Object>> keywordResult = new ArrayList<>();
+        List<KeywordDto> keywordResult = new ArrayList<>();
 
         keywordList.stream().forEach(keyword ->{
             Map<String, Object> map = new HashMap<>();
-            map.put( "id", keyword.getKeywordId());
-            map.put("keyword", keyword.getKeyword());
-            keywordResult.add(map);
+            keywordResult.add(new KeywordDto(keyword.getKeywordId(), keyword.getKeyword()));
         });
 
         return keywordResult;
