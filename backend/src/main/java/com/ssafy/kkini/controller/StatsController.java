@@ -36,7 +36,6 @@ public class StatsController {
         List<StatsGetDto> ageStatsList = statsService.getAgeStats();
         List<StatsGetDto> keywordStatsList = statsService.getKeywordStats();
 
-
         if(!genderStatsList.isEmpty() && !ageStatsList.isEmpty() && !keywordStatsList.isEmpty()){
             resultMap.put("genderStatsList",genderStatsList);
             resultMap.put("ageStatsList",ageStatsList);
