@@ -117,7 +117,7 @@ public class RoomServiceTest {
         RoomEnterFormDto roomEnterFormDto = new RoomEnterFormDto("true", "password");
 
         when(roomRepository.findByRoomId(1)).thenReturn(room);
-        when(roomRepository.increaseRecentUserInRoom(1)).thenReturn(room);
+        when(roomRepository.increaseRecentUserInRoom(1)).thenReturn(room.getRoomRecentUser() + 1);
 
         Room result = roomService.enterRoom(1, roomEnterFormDto);
 
