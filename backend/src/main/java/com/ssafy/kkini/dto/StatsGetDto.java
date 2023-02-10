@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class StatsGetDto {
     private String data;
     private int stats;
+
 }

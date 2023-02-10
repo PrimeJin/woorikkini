@@ -31,9 +31,22 @@ public class StatsController {
         Map<String, Object> resultMap = new HashMap<>();
         HttpStatus status = null;
 
-        List<StatsGetDto> genderList = statsService.getGenderStats();
-        List<StatsGetDto> ageList = statsService.getAgeStats();
-        List<StatsGetDto> keywordList = statsService.getKeywordList();
+
+        List<StatsGetDto> genderStatsList = statsService.getGenderStats();
+        List<StatsGetDto> ageStatsList = statsService.getAgeStats();
+        List<StatsGetDto> keywordStatsList = statsService.getKeywordStats();
+
+
+        if(!genderStatsList.isEmpty() && !ageStatsList.isEmpty() && !keywordStatsList.isEmpty()){
+            resultMap.put("genderStatsList",genderStatsList);
+            resultMap.put("ageStatsList",ageStatsList);
+            resultMap.put("keywordStatsList",keywordStatsList);
+            resultMap.put("message", SUCCESS);
+            status = HttpStatus.ACCEPTED;
+        }else{
+            resultMap.put("message", FAIL);
+            status = HttpStatus.BAD_REQUEST;
+        }
 
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
     }
