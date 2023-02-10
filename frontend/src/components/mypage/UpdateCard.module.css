@@ -26,8 +26,26 @@
   padding: 20px;
 }
 
+input[type='file'] {
+  appearance: none;
+  /* background-color: initial; */
+  cursor: default;
+  align-items: center;
+  color: inherit;
+  text-overflow: ellipsis;
+  white-space: pre;
+  border: none;
+  font-family: 'NanumSquareRound';
+  color: #090936;
+
+  /* text-align: start !important; */
+  /* padding: initial; */
+  /* border: initial; */
+  /* overflow: hidden !important; */
+}
+
 .photo {
-  border: 1px;
+  /* border: 1px; */
   height: 300px;
   width: 300px;
 
@@ -36,6 +54,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  /* border: none; */
+  /* height: 250; */
+  /* margin-bottom: 3%;
+  border-radius: 10px; */
 }
 
 .memory {

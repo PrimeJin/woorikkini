@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
@@ -26,6 +26,8 @@ function MainPage() {
       <Link to="/test">Openvidu 테스트</Link>
       <br />
       <Link to="/admin/notice">관리자 공지사항 테스트</Link>
+      <br />
+      <Link to="/room">방 테스트</Link>
     </div>
   );
 }

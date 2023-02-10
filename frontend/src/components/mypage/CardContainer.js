@@ -1,7 +1,8 @@
-import './CardContainer.css';
+import styles from './CardContainer.module.css';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwipeCore, { Navigation, Pagination, Autoplay } from 'swiper';
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import axios from 'axios';
 import CreateCard from './CreateCard';
 import UpdateCard from './UpdateCard';
@@ -14,57 +15,53 @@ import 'swiper/components/pagination/pagination.min.css';
 // 카드
 const SwiperContainer = () => {
   SwipeCore.use([Navigation, Pagination, Autoplay]);
-  const [cardList, setCardList] = useState([{}]);
+  const [cardList, setCardList] = useState([]);
+
+  const userId = useSelector((state) => state.user.id);
 
   // 전체 카드 목록 보여주기
-  const getCardList = async () => {
+  function getCardList() {
     try {
-      const res = await axios.get('https://.../memory/');
-      const inputData = res.data.map((rowData) => ({
-        id: rowData.memory_id,
-        img: rowData.save_filename,
-        date: rowData.memory_reg_date,
-        title: rowData.memory_title,
-        content: rowData.memory_content,
-      }));
-      setCardList(cardList.concat(inputData));
+      axios({
+        url: `https://i8a804.p.ssafy.io/api/memory?userId=${userId}`,
+        method: 'GET',
+      })
+        .then((res) => {
+          console.log(res);
+          const response = res;
+          const inputData = response.data.memoryList.map((rowData) => ({
+            id: rowData.memory.memoryId,
+            img: rowData.photoList,
+            date: rowData.memory.createdTime.slice(0, 10),
+            title: rowData.memory.memoryTitle,
+            content: rowData.memory.memoryContent,
+          }));
+          setCardList(inputData);
+        })
+        .then((res) => {
+          console.log('!!!', cardList);
+        });
     } catch (e) {
-      console.error(e);
+      console.error('*', e);
     }
-  };
+  }
 
   // 페이지 들어가면 바로 실행
   useEffect(() => {
     getCardList();
   }, []);
 
-  // // 카드 추가하기
-  // const addCard = (event) => {
-  //   console.log('$', event);
-
-  //   // 새롭게 배열 데이터를 추가하는 함수
-  //   const newCard = {
-  //     id: cardList.length + 1,
-  //     img: event.img,
-  //     title: event.title,
-  //     content: event.content,
-  //   };
-  //   setCardList([...cardList, newCard]);
-  // };
-
   // 카드 삭제하기
   const cardDelete = (id) => {
-    // card.id 가 매개변수로 작성하지 않는 데이터들만 추출해서 새로운 배열을 만듬
-    // = card.id 가 id 인 것을 제거함
-    // setCardList(cardList.filter((card) => card.id !== id));
     axios
-      .delete(`http://.../memory/${id}`, {
+      .delete(`https://i8a804.p.ssafy.io/api/memory/${id}`, {
         data: {
           memoryId: id,
         },
       })
       .then(() => {
         alert('추억이 삭제되었습니다.');
+        getCardList();
       })
       .catch((err) => {
         console.log(err);
@@ -75,20 +72,26 @@ const SwiperContainer = () => {
   // 카드 수정하기
   const [update, setUpdate] = useState(false);
   const [currentCard, setCurrentCard] = useState({});
+  const [modalOpen, setModalOpen] = useState(false);
   const cardUpdate = (data) => {
-    setUpdate(!update);
+    const updateModal = true;
+    setUpdate(updateModal);
     const card = data;
     setCurrentCard(card);
   };
-
-  console.log('카드 리스트 ->', cardList);
+  const openModal = () => {
+    setModalOpen(true);
+  };
+  const closeModal = () => {
+    setModalOpen(false);
+  };
 
   return (
     <>
-      <div className="cardlist-top">
+      <div className={styles.cardlist_top}>
         {cardList.map((data, idx) => {
           return (
-            <div key={idx} className="card-whole">
+            <div key={idx} className={styles.card_whole}>
               <Swiper
                 pagination={{
                   clickable: true,
@@ -100,51 +103,76 @@ const SwiperContainer = () => {
                 effect={'fade'}
                 loop={true}
                 speed={300}
-                className="swiper-container"
+                className={styles.swiper_container}
               >
-                <div className="swiper-wrapper">
-                  <div className="card swiper-slide">
-                    <SwiperSlide>
-                      {/* 이미지 들어갈 자리 */}
-                      <img src={data.img} className="slider-image-wrapper" alt="SliderImg" />
-                    </SwiperSlide>
-                    {/* 
+                <div className={styles.swiper_wrapper}>
+                  <div className={`${styles.card} ${styles.swiper_slide}`}>
+                    {/* <SwiperSlide> */}
+                    {/* 이미지 들어갈 자리 */}
+                    {/* <img src={data.img} className={styles.slider_image_wrapper} alt="SliderImg" />
+                    </SwiperSlide> */}
+
                     {data.img.map((item, id) => {
                       return (
-                        <SwiperSlide key={id}> */}
-                    {/* 이미지 들어갈 자리 */}
-                    {/* <img src={item} className="slider-image-wrapper" alt="SliderImg" />
+                        <SwiperSlide key={id}>
+                          {/* 이미지 들어갈 자리 */}
+                          <img src={item.filePath} className="slider-image-wrapper" alt="SliderImg" />
                         </SwiperSlide>
                       );
-                    })} */}
+                    })}
                   </div>
 
-                  <div className="slider-buttons">
-                    <button className="swiper-button-prev">Prev</button>
-                    <button className="swiper-button-next">Next</button>
+                  <div className={styles.slider_buttons}>
+                    <button className={styles.swiper_button_prev}>Prev</button>
+                    <button className={styles.swiper_button_next}>Next</button>
                   </div>
                 </div>
               </Swiper>
-              <div>
-                <button onClick={() => cardUpdate(data)}>수정</button>
-                {update ? (
-                  <UpdateCard
-                    currentCard={currentCard}
-                    cardUpdate={cardUpdate}
-                    // cardListUpdate={cardListUpdate}
-                  ></UpdateCard>
-                ) : (
-                  <div></div>
-                )}
-                <button onClick={() => cardDelete(data.id)}>삭제</button>
-                <div>{data.date}</div>
-                <div>{data.title}</div>
-                <div>{data.content}</div>
+              <div
+                style={{
+                  position: 'relative',
+                  textAlign: 'center',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  width: '300px',
+                }}
+              >
+                <div>
+                  <div style={{ justifyContent: 'space-between', width: '300px', display: 'flex' }}>
+                    <img
+                      src={'img/수정 아이콘.png'}
+                      onClick={() => {
+                        cardUpdate(data);
+                        openModal();
+                      }}
+                      style={{ width: 25, height: 25, marginLeft: '5%' }}
+                    ></img>
+                    <div>{data.date}</div>
+                    <img
+                      src={'img/삭제 아이콘.png'}
+                      onClick={() => cardDelete(data.id)}
+                      style={{ width: 25, height: 25, marginRight: '5%' }}
+                    ></img>
+                  </div>
+                  <div>{data.title}</div>
+                  <div>{data.content}</div>
+                </div>
               </div>
             </div>
           );
         })}
-        <CreateCard></CreateCard>
+        {update ? (
+          <UpdateCard
+            style={{ display: 'none' }}
+            currentCard={currentCard}
+            getCardList={getCardList}
+            closeModal={closeModal}
+            modalOpen={modalOpen}
+          ></UpdateCard>
+        ) : (
+          <div style={{ display: 'none' }}></div>
+        )}
+        <CreateCard getCardList={getCardList}></CreateCard>
       </div>
     </>
   );
