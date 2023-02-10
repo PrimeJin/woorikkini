@@ -5,19 +5,17 @@ const Username = styled.p`
   color: #42387a;
   font-size: 0.8rem;
   font-weight: 600;
+  padding: 5px 0 10px 0;
 `;
 
 const MessageContainer = styled.div`
-  width: 200px;
-  height: 50px;
+  width: 100px;
 
   background: #d6ebfc;
-  border-radius: 100px;
 `;
 
 const ChatText = styled.p`
   font-size: 1rem;
-  font-style: normal;
 `;
 
 class Message extends Component {

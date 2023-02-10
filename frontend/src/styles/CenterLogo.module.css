@@ -3,10 +3,10 @@
   display: flex;
   flex-flow: row nowrap;
   margin: 2%;
-  width: 130px;
+  width: 15vw;
 }
 
 .mypage_logo {
-  width: 120px;
-  height: 136px;
+  width: 9vw;
+  height: 16vh;
 }

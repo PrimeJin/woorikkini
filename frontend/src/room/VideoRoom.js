@@ -21,6 +21,7 @@ import Box from '@mui/material/Box';
 
 import { SET_VOTE, RESET_VOTE } from '../store/Vote';
 import { connect } from 'react-redux';
+import Timer from './components/Timer';
 
 const OPENVIDU_SERVER_URL = 'https://i8a804.p.ssafy.io:8443'; //도커에 올린 openvidu server
 const OPENVIDU_SERVER_SECRET = 'kkini'; //시크릿키값, 바꿔주면 좋음
@@ -36,8 +37,8 @@ const EncodeBase64 = (data) => {
 //this.props.authData 같은 식으로 사용 가능
 const mapStateToProps = (state) => ({
   voteTotal: state.vote.total,
-  voteAgree: state.vote.yes,
-  voteDisagree: state.vote.no,
+  voteAgree: state.vote.agree,
+  voteDisagree: state.vote.disagree,
 });
 
 const mapDispatchToProps = (dispatch) => {
@@ -118,14 +119,13 @@ class VideoRoom extends Component {
   componentDidMount() {
     window.addEventListener('beforeunload', this.onbeforeunload);
     this.scrollToBottom();
-    this.getUserList();
+    // this.getUserList();
     //방 리스트를 띄워야 합니다
   }
 
   //컴포넌트가 업데이트 될 때마다 실행
   //디버깅용
   componentDidUpdate() {
-    // this.scrollToBottom();
     // this.getUserList();
     // console.log('createSession');
     // console.log(this.state.session.sessionId); //현재 세션값
@@ -194,7 +194,7 @@ class VideoRoom extends Component {
       .catch((error) => {
         console.error(error);
       });
-
+    this.scrollToBottom();
     //message창 초기화
     this.setState({
       message: '',
@@ -227,7 +227,7 @@ class VideoRoom extends Component {
         .catch((error) => {
           console.error(error);
         });
-
+      this.scrollToBottom();
       //message창 초기화
       this.setState({
         message: '',
@@ -282,13 +282,19 @@ class VideoRoom extends Component {
   userList(users) {
     const list = users.map((user, index) => (
       <li>
-        <Box sx={{ '& Button': { m: 0.5 } }}>
+        <Box>
           <Stack direction="row" spacing={3}>
             <div>{user.clientData.split('"')[3]}</div>
             <Button value={index} variant="contained" color="error" size="small">
               신고
             </Button>
-            <Button value={index} variant="contained" color="error" size="small" disabled>
+            <Button
+              onClick={() => this.startVote(user.clientData)}
+              value={index}
+              variant="contained"
+              color="error"
+              size="small"
+            >
               강퇴
             </Button>
           </Stack>
@@ -319,7 +325,7 @@ class VideoRoom extends Component {
   joinSession() {
     // --- 1) OpenVidu 객체 호출 ---
     this.OV = new OpenVidu();
-
+    this.getUserList();
     this.setState({ session: this.OV.initSession() }, () => {
       //관심있는 세션 이벤트 구독(subscribe)
       this.state.session.on('streamCreated', (event) => {
@@ -334,7 +340,7 @@ class VideoRoom extends Component {
           subscribers: [...newSubscribers],
         });
 
-        console.log('subscribers ' + this.subscribers); //등록 확인용
+        // console.log('subscribers ' + this.subscribers); //등록 확인용
       });
 
       this.state.session.on('signal:chat', (event) => {
@@ -364,38 +370,38 @@ class VideoRoom extends Component {
       //투표 시작 signal 받기
       this.state.session.on('signal:voteStart', (event) => {
         //투표창 모달 띄우기
-        console.log('투표 시작모달 띄우기');
+        // console.log('투표 시작모달 띄우기');
         //event.data에 누구를 추방할지에 대한 정보
         //각 사용자에게 투표 모달창을 띄움
-        console.log(event.data);
+        // console.log(event.data);
         this.setState({
           isVoteOn: true,
           eventData: event.data,
         });
-        console.log(this.state.eventData);
+        // console.log(this.state.eventData);
       });
 
       //누군가가 투표버튼을 누르면 모든 사용자에게 event 송신
       this.state.session.on('signal:sendVote', (event) => {
-        console.log('누군가 투표함');
-        console.log(JSON.parse(event.data));
+        // console.log('누군가 투표함');
+        // console.log(JSON.parse(event.data));
         this.setVoteUser(JSON.parse(event.data)); //store의 voteresult값을 1 늘려줌(store/vote.js 참고)
 
         //투표후 결과값을 받아와보자
-        // console.log('투표 수: ', total, yes, no); //확인용
+        //변경된 state값을 바로 받아오지 못하므로 setTimeout
         setTimeout(() => {
           const total = this.props.voteTotal;
-          const yes = this.props.voteAgree;
-          const no = this.props.voteDisagree;
+          const agree = this.props.voteAgree;
+          const disagree = this.props.voteDisagree;
           const result = {
             who: '', //누굴 추방할지
             total: total, //전체 투표수
-            yes: yes, //찬성 수
-            no: no, //반대 수
+            agree: agree, //찬성 수
+            disagree: disagree, //반대 수
           };
-          console.log(this.props.voteTotal);
-          console.log(this.props.voteAgree);
-          console.log(this.props.voteDisagree);
+          // console.log(this.props.voteTotal);
+          // console.log(this.props.voteAgree);
+          // console.log(this.props.voteDisagree);
           //모두 투표했을 경우 투표 종료
           if (total == this.state.subscribers.length + 1) {
             this.voteComplete(result);
@@ -430,9 +436,9 @@ class VideoRoom extends Component {
               });
 
               this.state.session.publish(newPublisher);
-              // this.getUserList();
+              this.getUserList();
               this.setState({
-                // mainStreamManager: newPublisher,
+                mainStreamManager: newPublisher,
                 publisher: newPublisher,
               });
             });
@@ -451,12 +457,12 @@ class VideoRoom extends Component {
     const voteResult = {
       who: voteWho,
       total: this.props.voteTotal,
-      yes: this.props.voteAgree,
-      no: this.props.voteDisagree,
+      agree: this.props.voteAgree,
+      disagree: this.props.voteDisagree,
     };
 
-    console.log('투표 시작: ');
-    console.log(voteResult);
+    // console.log('투표 시작: ');
+    // console.log(voteResult);
     this.state.session.signal({
       data: JSON.stringify(voteResult),
       to: [], //투표 당사자 제외해야하는거 아닌가?
@@ -464,10 +470,12 @@ class VideoRoom extends Component {
     });
   }
 
+  //vote state값 변경
   setVoteUser = (data) => {
     this.props.setVote(data);
   };
 
+  //vote state값 초기화
   resetVoteUser = () => {
     this.props.resetVote();
   };
@@ -475,7 +483,7 @@ class VideoRoom extends Component {
   //찬성표(유저 전체에게 신호가 감)
   agree(voteInfo) {
     voteInfo.total += 1;
-    voteInfo.yes += 1;
+    voteInfo.agree += 1;
     this.state.session.signal({
       data: JSON.stringify(voteInfo),
       to: [],
@@ -489,7 +497,7 @@ class VideoRoom extends Component {
   //반대표(유저 전체에게 신호가 감)
   disagree(voteInfo) {
     voteInfo.total += 1;
-    voteInfo.no += 1;
+    voteInfo.disagree += 1;
     this.state.session.signal({
       data: JSON.stringify(voteInfo),
       to: [],
@@ -503,49 +511,55 @@ class VideoRoom extends Component {
   showVoteModal(data) {
     //voteInfo(누굴 추방할지)에 대한 투표모달창을 띄움
     const voteInfo = JSON.parse(data);
-    console.log('모달 띄움');
-    console.log(voteInfo);
+    // console.log('모달 띄움');
+    // console.log(voteInfo);
 
     return (
-      <div>
-        <header>투표하기</header>
-        <main>
-          <div>{voteInfo.voteWho}님의 강제 퇴장을 찬성하시나요?</div>
+      <div className={this.state.isVoteOn ? `${styles.modal} ${styles.openModal}` : styles.modal}>
+        <section>
+          <header>투표하기</header>
+          <main>{voteInfo.who}님의 강제 퇴장을 찬성하시나요?</main>
           <p>이 창은 30초 후 자동으로 닫힙니다.</p>
-        </main>
-        <footer>
-          <button value="Yes" className={styles.ok_btn} onClick={() => this.agree(voteInfo)}>
-            찬성
-          </button>
-          <div style={{ width: 30 }}></div>
-          <button value="No" className={styles.close_bottom} onClick={() => this.disagree(voteInfo)}>
-            반대
-          </button>
-        </footer>
+          <Timer onComplete={() => this.disagree(voteInfo)} />
+          <footer>
+            <Button
+              value="agree"
+              className={styles.ok_btn}
+              onClick={() => this.agree(voteInfo)}
+              variant="contained"
+              color="primary"
+              size="large"
+            >
+              찬성
+            </Button>
+            <div style={{ width: 30 }}></div>
+            <Button
+              value="disagree"
+              className={styles.close_bottom}
+              onClick={() => this.disagree(voteInfo)}
+              variant="contained"
+              color="error"
+              size="large"
+            >
+              반대
+            </Button>
+          </footer>
+        </section>
       </div>
     );
-
-    // this.state.session
-    //   .signal({
-    //     data: voteInfo,
-    //     to: [],
-    //     type: 'sendVote',
-    //   })
-    //   .then(() => {
-    //     console.log('투표 완료!');
-    //   })
-    //   .catch((error) => console.log('투표 결과 전송오류'));
   }
 
   //투표 결과 집계
   voteComplete(result) {
     //과반수 이상이 찬성
-    if (result.yes / result.total >= 0.5) {
+    if (result.agree / result.total >= 0.5) {
       //백엔드 및 openvidu 서버에 추방 요청을 보냄
       alert(`${result.who}님이 추방되었습니다`);
     } else {
       alert(`추방 투표가 부결되었습니다`);
     }
+
+    //백엔드에 결과 전송 후 퇴장처리
   }
 
   //방 퇴장(혼자만, 세션은 그대로 있어야함)
@@ -562,7 +576,7 @@ class VideoRoom extends Component {
       mainStreamManager: undefined,
       publisher: undefined,
     });
-    window.location.reload();
+    // window.location.reload();
   }
 
   //세션 닫기(세션의 모든 참가자 퇴장)
@@ -586,7 +600,7 @@ class VideoRoom extends Component {
           mainStreamManager: undefined,
           publisher: undefined,
         });
-        window.location.reload();
+        // window.location.reload();
       });
   }
 
@@ -640,59 +654,60 @@ class VideoRoom extends Component {
 
     return (
       <div className={styles.container}>
-        <div className={styles.header}>
-          <CenterLogo />
-          <h2 id="session-title">{mySessionId}</h2>
-        </div>
         {/** 세션이 없을 경우 띄우는 화면
          * RoomList.js가 여기를 대체할 수 있도록 하기
          */}
 
         {this.state.session === undefined ? (
-          <div className={styles.omain}>
-            <div className={styles.obody}>
-              <div id="join">
-                <div id="join-dialog" className="jumbotron vertical-center">
-                  <form className={styles.form_group} onSubmit={this.joinSession}>
-                    <p>
-                      <label>참가자명: </label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        id="userName"
-                        value={myUserName}
-                        onChange={this.handleChangeUserName}
-                        required
-                      />
-                    </p>
-                    <p>
-                      <label> 세션명: </label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        id="sessionId"
-                        value={mySessionId}
-                        onChange={this.handleChangeSessionId}
-                        required
-                      />
-                    </p>
-                    <p className="text-center">
-                      <input className="btn btn-lg btn-success" name="commit" type="submit" value="JOIN" />
-                    </p>
-                  </form>
+          <div>
+            <div className={styles.header}>
+              <CenterLogo />
+              <h2 id="session-title">{mySessionId}</h2>
+            </div>
+            <div className={styles.main}>
+              <div className={styles.body}>
+                <div id="join">
+                  <div id="join-dialog" className="jumbotron vertical-center">
+                    <form className={styles.form_group} onSubmit={this.joinSession}>
+                      <p>
+                        <label>참가자명: </label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          id="userName"
+                          value={myUserName}
+                          onChange={this.handleChangeUserName}
+                          required
+                        />
+                      </p>
+                      <p>
+                        <label> 세션명: </label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          id="sessionId"
+                          value={mySessionId}
+                          onChange={this.handleChangeSessionId}
+                          required
+                        />
+                      </p>
+                      <p className="text-center">
+                        <input className="btn btn-lg btn-success" name="commit" type="submit" value="JOIN" />
+                      </p>
+                    </form>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         ) : (
-          <div className={styles.main}>
-            <div className={styles.body}>
+          <div className={styles.inmain}>
+            <div className={styles.inbody}>
               <div id="video-container" className={`${styles.videobox} ${'col-md-9'}`}>
-                <button onClick={() => this.startVote('추방할 사람')}>투표 시작</button>
                 {this.state.isVoteOn ? this.showVoteModal(this.state.eventData) : null}
                 {this.state.publisher !== undefined ? (
                   <div
-                    className="stream-container col-md-6 col-xs-6"
+                    className="stream-container col-md-4 col-xs-4"
                     onClick={() => this.handleMainVideoStream(this.state.publisher)}
                   >
                     <UserVideoComponent streamManager={this.state.publisher} />
@@ -701,7 +716,7 @@ class VideoRoom extends Component {
                 {this.state.subscribers.map((sub, i) => (
                   <div
                     key={i}
-                    className="stream-container col-md-6 col-xs-6"
+                    className="stream-container col-md-4 col-xs-4"
                     onClick={() => this.handleMainVideoStream(sub)}
                   >
                     <UserVideoComponent streamManager={sub} />
@@ -742,10 +757,7 @@ class VideoRoom extends Component {
                       <h2>참여자 목록</h2>
                     </div>
 
-                    <div className={styles.userListBox}>
-                      {this.userList(this.state.users)}
-                      {/* <div ref={this.messagesEndRef} /> */}
-                    </div>
+                    <div className={styles.userListBox}>{this.userList(this.state.users)}</div>
                   </div>
                 </TabPanel>
                 <TabList

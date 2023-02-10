@@ -4,19 +4,19 @@ export const voteSlice = createSlice({
   name: 'vote',
   initialState: {
     total: 0, //전체 투표수
-    yes: 0, //찬성 수
-    no: 0, //반대 수
+    agree: 0, //찬성 수
+    disagree: 0, //반대 수
   },
   reducers: {
     SET_VOTE: (state, { payload }) => {
       state.total = payload.total;
-      state.yes = payload.yes;
-      state.no = payload.no;
+      state.agree = payload.agree;
+      state.disagree = payload.disagree;
     },
     RESET_VOTE: (state) => {
       state.total = 0;
-      state.yes = 0;
-      state.no = 0;
+      state.agree = 0;
+      state.disagree = 0;
     },
   },
 });
