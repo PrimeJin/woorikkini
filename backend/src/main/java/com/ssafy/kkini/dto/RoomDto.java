@@ -11,22 +11,23 @@ import java.util.stream.Collectors;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RoomPasswordXDto {
+public class RoomDto {
     private int roomId;
     private String roomTitle;
     private String roomContent;
     private String roomPrivate;
     private int roomLimitUser;
 
+    private String roomPassword;
     private String roomPreset;
     private int roomRecentUser;
     private List<Integer> roomKeywordList;
 
-    public RoomPasswordXDto(Room room){
-        System.out.println(room.getRoomKeywords());
+    public RoomDto(Room room){
         this.roomId = room.getRoomId();
         this.roomTitle = room.getRoomTitle();
         this.roomContent = room.getRoomContent();
+        this.roomPassword = room.getRoomPassword();
         this.roomKeywordList = room.getRoomKeywords().stream().map(keyword -> keyword.getKeywordId().getKeywordId()).collect(Collectors.toList());
         this.roomPrivate = room.getRoomPrivate();
         this.roomLimitUser = room.getRoomLimitUser();

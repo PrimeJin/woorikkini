@@ -2,13 +2,13 @@ package com.ssafy.kkini.controller;
 
 
 import com.ssafy.kkini.dto.*;
+import com.ssafy.kkini.entity.Room;
 import com.ssafy.kkini.service.ExitService;
 import com.ssafy.kkini.service.KeywordService;
 import com.ssafy.kkini.service.RoomService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,7 +42,7 @@ public class RoomController {
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
 
-        RoomPasswordXDto room = roomService.createRoom(roomCreateFormDto);
+        RoomDto room = roomService.createRoom(roomCreateFormDto);
         if (room == null){
             status = HttpStatus.NO_CONTENT;
             resultMap.put("message", FAIL);
@@ -77,7 +77,7 @@ public class RoomController {
     public ResponseEntity<?> getRoom() {
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
-        List<RoomPasswordXDto> roomList = roomService.getAllRoom();
+        List<RoomDto> roomList = roomService.getAllRoom();
         if (roomList == null){
             status = HttpStatus.NOT_FOUND;
             resultMap.put("message", FAIL);
@@ -95,7 +95,7 @@ public class RoomController {
                                              @RequestParam String subject, @RequestParam String content) {
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
-        List<RoomPasswordXDto> roomList = roomService.searchRoom(subject, content);
+        List<RoomDto> roomList = roomService.searchRoom(subject, content);
         if (roomList == null){
             status = HttpStatus.NOT_FOUND;
             resultMap.put("message", FAIL);
@@ -135,13 +135,14 @@ public class RoomController {
         //해당 유저가 강제퇴장 당한 유저인지 확인
         int cnt = exitService.findExitUser(roomId, userId);
         if(cnt == 0){
-            int result = roomService.enterRoom(Integer.valueOf(roomId), roomEnterFormDto);
+            Room result = roomService.enterRoom(Integer.valueOf(roomId), roomEnterFormDto);
 
-            if (result == 0){
+            if (result == null){
                 status = HttpStatus.NOT_FOUND;
                 resultMap.put("message", FAIL);
             } else {
                 status = HttpStatus.OK;
+                resultMap.put("sessionId", result.getSessionId());
                 resultMap.put("message", SUCCESS);
             }
         } else{

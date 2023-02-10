@@ -31,6 +31,8 @@ public class RoomCreateFormDto {
     @NotNull(message = "방 인원수를 입력해주세요")
     private Integer roomLimitUser;
 
+    private String sessionId;
+
     // entity 반환
     public Room toEntity() {
         return Room.builder()
@@ -40,6 +42,7 @@ public class RoomCreateFormDto {
                 .roomPassword(roomPassword)
                 .roomKeywords(new ArrayList<>())
                 .roomPreset(roomPreset)
+                .sessionId(sessionId)
                 .roomLimitUser(roomLimitUser)
                 .build();
     }

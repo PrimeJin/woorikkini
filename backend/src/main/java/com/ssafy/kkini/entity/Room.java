@@ -47,6 +47,8 @@ public class Room {
     @Builder.Default
     private int roomRecentUser = 1;
 
+    private String sessionId;
+
     @OneToMany(mappedBy = "roomId")
     private List<RoomKeyword> roomKeywords =  new ArrayList<RoomKeyword>();
 
