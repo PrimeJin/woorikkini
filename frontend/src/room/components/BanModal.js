@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 // import Modal from '../../components/Modal';
 import styles from './BanModal.module.css';
 

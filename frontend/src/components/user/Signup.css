@@ -96,7 +96,7 @@ form span {
   width: 30%;
 }
 
-fieldset {
+/* fieldset {
   border: none;
   display: flex;
   align-items: center;
@@ -115,7 +115,7 @@ label {
 }
 label input {
   margin: 5%;
-}
+} */
 
 .accept {
   border: none;
