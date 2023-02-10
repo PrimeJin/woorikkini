@@ -60,8 +60,8 @@ public class RoomController {
                                             String roomId) {
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
-        Map<String, String> roomDetail = roomService.detailRoom(Integer.valueOf(roomId));
-        if (roomDetail == null || roomDetail.isEmpty()){
+        RoomDetailDto roomDetail = roomService.detailRoom(Integer.valueOf(roomId));
+        if (roomDetail == null){
             status = HttpStatus.NOT_FOUND;
             resultMap.put("message", FAIL);
         } else {
@@ -170,6 +170,23 @@ public class RoomController {
                 status = HttpStatus.OK;
                 resultMap.put("message", SUCCESS);
             }
+        }
+        return new ResponseEntity<Map<String, Object>>(resultMap, status);
+    }
+
+    @ApiOperation(value = "방 삭제", notes = "방을 삭제 시킨다", response = Map.class)
+    @DeleteMapping("/{roomId}")
+    public ResponseEntity<?> removeRoom(@ApiParam(value = "방 아이디", required = true)
+                                         @PathVariable String roomId) {
+        HttpStatus status = null;
+        Map<String, Object> resultMap = new HashMap<>();
+        int result = roomService.deleteRoom(Integer.valueOf(roomId));
+        if (result == 0){
+            status = HttpStatus.NOT_FOUND;
+            resultMap.put("message", FAIL);
+        } else {
+            status = HttpStatus.OK;
+            resultMap.put("message", SUCCESS);
         }
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
     }
