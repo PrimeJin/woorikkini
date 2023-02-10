@@ -4,6 +4,7 @@ import com.ssafy.kkini.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -18,4 +19,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findAllByUserId(int userId);
 
     User findByUserNickname(String userNickname);
+
+    int countAllByUserGender(String gender);
+
+    int countByUserBirthYearBetween(int greater, int less);
 }
