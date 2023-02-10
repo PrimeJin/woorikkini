@@ -3,75 +3,64 @@
 .login {
   text-align: center;
   font-family: 'NanumSquareRound';
-  /* 가로로 가운데 정렬 */
-  display: flex;
-  align-items: center;
-  flex-flow: column nowrap;
+  justify-content: center;
 
+  display: flex;
+  flex-flow: row nowrap;
   background: #fffdfa;
 }
 
 /* Rectangle 19 */
 .loginform {
-  width: 450px;
-  height: 480px;
-  display: flex;
-  flex-flow: column nowrap;
+  width: 480px;
+  height: 500px;
+  justify-content: center;
+
   background: #fefaef;
   mix-blend-mode: normal;
   box-shadow: 0px 100px 80px rgba(0, 0, 0, 0.07), 0px 41.7776px 33.4221px rgba(0, 0, 0, 0.0503198),
     0px 22.3363px 17.869px rgba(0, 0, 0, 0.0417275), 0px 12.5216px 10.0172px rgba(0, 0, 0, 0.035),
     0px 6.6501px 5.32008px rgba(0, 0, 0, 0.0282725), 0px 2.76726px 2.21381px rgba(0, 0, 0, 0.0196802);
   border-radius: 50px;
-  margin-bottom: 2%;
+  margin-bottom: 3%;
+  margin-top: 10%;
 }
 
 /* Group 5 */
 .signUpButton {
   margin-left: 50px;
-  width: 350px;
+  width: 375px;
   height: 56px;
   background: #d6ebfc;
-  border-radius: 15px;
-  border: none;
+  border-radius: 17px;
 
   font-family: 'NanumSquare';
   font-style: normal;
   font-weight: 700;
   font-size: 24px;
   line-height: 27px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: #090936;
 }
 .inputform {
   display: flex;
-  flex-flow: row nowrap;
-  margin-right: 10%;
-  margin-left: 5%;
-  background: #fefaef;
-}
-
-.socialLogin {
-  display: flex;
-  flex-flow: column nowrap;
-  background: #fefaef;
-}
-
-.inputs {
-  background: #fefaef;
+  justify-content: center;
 }
 
 /* Rectangle 22 */
 #userEmail {
-  width: 250px;
+  width: 300px;
   height: 53px;
 
   background: #ffffff;
-  border-radius: 15px;
+  border-radius: 10px;
   border: none;
   font-family: 'NanumSquareRound';
   font-style: normal;
   font-weight: 300;
-  font-size: 20px;
+  font-size: 24px;
   line-height: 27px;
   margin-top: 1rem;
   margin-bottom: 0.5rem;
@@ -79,17 +68,16 @@
 
 /* Rectangle 20 */
 #userPassword {
-  width: 250px;
+  width: 300px;
   height: 53px;
-  margin-bottom: 2rem;
 
   background: #ffffff;
-  border-radius: 15px;
+  border-radius: 10px;
   border: none;
   font-family: 'NanumSquareRound';
   font-style: normal;
   font-weight: 300;
-  font-size: 20px;
+  font-size: 24px;
   line-height: 27px;
 }
 
@@ -97,13 +85,12 @@
 .loginButton {
   width: 120px;
   height: 120px;
-  margin-top: 15px;
+  margin-right: 20px;
 
   mix-blend-mode: normal;
 
   background: #d6ebfc;
-  border-radius: 15px;
-  border: none;
+  border-radius: 25px;
 
   font-family: 'NanumSquare';
   font-style: normal;
@@ -112,9 +99,13 @@
   line-height: 23px;
   display: flex;
   align-items: center;
-  justify-content: center;
 }
 
-.logo_box {
-  margin: 2%;
+.logo {
+  margin-top: 5%;
+  width: 100px;
+  height: 110px;
+  justify-content: center;
+  display: flex;
+  box-sizing: border-box;
 }

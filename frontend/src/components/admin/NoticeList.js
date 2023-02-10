@@ -1,5 +1,5 @@
-import React from 'react';
 import './Notice.css';
+import React from 'react';
 
 function NoticeList(props) {
   const noticeDetail = `notice/${props.notice.noticeId}`;
