@@ -112,7 +112,7 @@ public class RoomController {
     public ResponseEntity<?> getKeyword() {
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
-        List<Map<String, Object>> keywordList = keywordService.getKeyword();
+        List<KeywordDto> keywordList = keywordService.getKeyword();
         if (keywordList == null){
             status = HttpStatus.NOT_FOUND;
             resultMap.put("message", FAIL);
@@ -207,21 +207,4 @@ public class RoomController {
         }
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
     }
-
-    //    @ApiOperation(value = "필터링된 방 제공", notes = "필터링(private 여/부, 입장가능 여/부)된 방의 정보를 반환한다.", response = Map.class)
-//    @PostMapping("/filter")
-//    public ResponseEntity<?> getFilteredRoom(@RequestBody RoomFilterFormDto roomFilterFormDto) {
-//        HttpStatus status = null;
-//        Map<String, Object> resultMap = new HashMap<>();
-//        List<RoomPasswordXDto> roomList = roomService.getFilteredRoom(roomFilterFormDto);
-//        if (roomList == null){
-//            status = HttpStatus.NOT_FOUND;
-//            resultMap.put("message", FAIL);
-//        } else {
-//            status = HttpStatus.OK;
-//            resultMap.put("message", SUCCESS);
-//            resultMap.put("result", roomList);
-//        }
-//        return new ResponseEntity<Map<String, Object>>(resultMap, status);
-//    }
 }

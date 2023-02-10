@@ -80,16 +80,4 @@ public class RoomService {
         return roomRepository.deleteByRoomId(roomId);
     }
 
-//    public List<RoomPasswordXDto> getFilteredRoom(RoomFilterFormDto roomFilterFormDto){
-//        String openPrivate = roomFilterFormDto.getOpenPrivate();
-//        String openFullRoom = roomFilterFormDto.getOpenFullRoom();
-//
-//        select * from room where private = "N" and
-//        if(openPrivate.equals("Y")){
-//
-//        } else {
-//            // where private = "N"
-//        }
-//        List<Room>
-//    }
 }
