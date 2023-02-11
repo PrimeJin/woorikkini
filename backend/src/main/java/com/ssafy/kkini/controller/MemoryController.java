@@ -7,8 +7,9 @@ import com.ssafy.kkini.entity.Memory;
 import com.ssafy.kkini.service.MemoryService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,9 +31,13 @@ public class MemoryController {
     private static final String SUCCESS = "success";
     private static final String FAIL = "fail";
     private final MemoryService memoryService;
+
+    @Value("${upload.path}")
+    private String fileDir;
     public MemoryController(MemoryService memoryService){
         this.memoryService = memoryService;
     }
+
 
     @ApiOperation(value = "추억카드 등록", notes = "추억카드 등록")
     @PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
@@ -71,7 +77,7 @@ public class MemoryController {
             Memory updateMemory = memoryService.updateMemory(memoryUpdateFormDto ,memoryImgFiles);
             if(updateMemory != null){
                 resultMap.put("message", SUCCESS);
-                status = HttpStatus.ACCEPTED;
+                status = HttpStatus.OK;
             }
             else {
                 resultMap.put("message", FAIL);
@@ -95,7 +101,7 @@ public class MemoryController {
 
         if(memoryService.deleteMemory(memoryId) > 0){
             resultMap.put("message", SUCCESS);
-            status = HttpStatus.ACCEPTED;
+            status = HttpStatus.OK;
         }
         else {
             resultMap.put("message", FAIL);
@@ -105,6 +111,7 @@ public class MemoryController {
         return new ResponseEntity<Map<String,Object>>(resultMap,status);
     }
 
+//    @ResponseBody
     @ApiOperation(value = "추억카드 조회", notes = "추억카드 조회")
     @GetMapping()
     public ResponseEntity<Map<String,Object>> getMemory(@Valid @RequestParam @ApiParam(value = "회원 아이디", required = true, example = "0")
@@ -112,17 +119,29 @@ public class MemoryController {
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
 
-        List<MemoryGetFormDto> memoryGetFormDtoList = memoryService.getMemory(userId);
+        try {
+            List<MemoryGetFormDto> memoryGetFormDtoList = memoryService.getMemory(userId);
 
-        if(memoryGetFormDtoList != null && memoryGetFormDtoList.size() != 0){
-            resultMap.put("message", SUCCESS);
-            resultMap.put("memoryList", memoryGetFormDtoList);
-            status = HttpStatus.ACCEPTED;
-        }else{
-            resultMap.put("message", FAIL);
-            status = HttpStatus.ACCEPTED;
+            if(!memoryGetFormDtoList.isEmpty()){
+                resultMap.put("message", SUCCESS);
+                resultMap.put("memoryList", memoryGetFormDtoList);
+                status = HttpStatus.OK;
+            }else{
+                resultMap.put("message", FAIL);
+                status = HttpStatus.BAD_REQUEST;
+            }
+        }catch (MalformedURLException e){
+            resultMap.put("message", e.getMessage());
+            status = HttpStatus.BAD_REQUEST;
         }
         return new ResponseEntity<Map<String,Object>>(resultMap,status);
     }
+    @ResponseBody
+    @GetMapping("/images/{pathYear}/{pathMonth}/{pathDay}/{filename}")
+    public Resource downloadImage(@PathVariable String filename, @PathVariable String pathYear, @PathVariable String pathMonth, @PathVariable String pathDay) throws MalformedURLException {
+        UrlResource urlResource =  new UrlResource("file:" +  "./images/" + pathYear + "/" + pathMonth + "/" + pathDay + "/" + filename);
+        return urlResource;
+    }
+
 
 }
