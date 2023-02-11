@@ -1,8 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './PageLogo.module.css';
+import styles from './CenterLogo.module.css';
 
-function Logo() {
+function CenterLogo() {
   const navigate = useNavigate();
   const MainGo = () => {
     navigate(`/`);
@@ -13,4 +13,4 @@ function Logo() {
     </div>
   );
 }
-export default Logo;
+export default CenterLogo;

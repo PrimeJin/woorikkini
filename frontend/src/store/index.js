@@ -5,12 +5,14 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { tokenSlice } from './Auth';
 import { userSlice } from './User';
+import { voteSlice } from './Vote';
 
 export default configureStore(
   {
     reducer: {
       token: tokenSlice.reducer,
       user: userSlice.reducer,
+      vote: voteSlice.reducer,
     },
 
     devTools: process.env.NODE_ENV !== 'production',
