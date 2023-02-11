@@ -116,8 +116,8 @@ public class TokenProviderService {
             oldRefreshToken.setRefreshToken(refreshToken);
         }else{
             oldRefreshToken = new RefreshToken(user,refreshToken);
-            refreshTokenRepository.saveAndFlush(oldRefreshToken);
         }
+        refreshTokenRepository.saveAndFlush(oldRefreshToken);
     }
 
     public void deleteRefreshToken(int userId){
