@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./Pw.css";
+import styles from "./Pw.module.css";
 import axios from "axios";
 
 const PwFind = () => {
@@ -28,49 +28,53 @@ const PwFind = () => {
 
   const getInfo = () => {
     axios({
-      // url: `http://localhost3000/${email}/password`,
-      url: `https://jsonplaceholder.typicode.com/users`,
+      url: `https://i8a804.p.ssafy.io/api/user/${email}/password?userName=${name}`,
       method: "GET",
     })
       .then((res) => {
-        if (res.data[0].name === name) {
-          // 이메일 보내는 거 -> 이메일 확인하라는 알람창
-          alert("해당 이메일로 비밀번호 변경 페이지의 링크를 보냈습니다.");
-        } else {
-          alert("해당 하는 회원이 없습니다. 확인 후 다시 입력해주세요");
-          console.log(res.data);
-        }
+        console.log(res);
+        alert("해당 이메일로 비밀번호 변경 페이지의 링크를 보냈습니다.");
       })
       .catch((err) => {
-        console.log(err, "getInfo에러");
+        alert("해당 하는 회원이 없습니다. 확인 후 다시 입력해주세요");
+        if (err.response.data.message !== "fail") {
+          // message가 fail로 온 게 아니라 다른 문제가 있을 때
+          console.log(err, "getInfo에러");
+        }
       });
   };
 
   return (
     <div>
       {/* <img className="logo" src="logo.png" alt="이미지없음" /> */}
-      <p className="logo">
+      <p className={styles.logo}>
         우리
         <br />
         끼니
       </p>
-      <div className="all">
-        <form>
-          <p className="pwChange">비밀번호 찾기</p>
+      <div className={styles.all}>
+        <form className={styles.pwForm}>
+          <p className={styles.pwChange}>비밀번호 찾기</p>
           <br />
           <div style={{ height: "60px" }}>
             <input
-              className="userInfo"
+              className={styles.userInfo}
               type="email"
               placeholder="이메일"
               value={email}
               onChange={inputEmail}
             />
             <br />
-            {errMsg ? <span>{errMsg}</span> : ""}
+            {errMsg ? (
+              <h5 style={{ color: "red", textAlign: "left", margin: 0 }}>
+                {errMsg}
+              </h5>
+            ) : (
+              ""
+            )}
           </div>
           <input
-            className="userInfo"
+            className={styles.userInfo}
             type="text"
             placeholder="이름"
             value={name}
@@ -81,7 +85,7 @@ const PwFind = () => {
           <input
             type="button"
             value="확인"
-            className="check"
+            className={styles.check}
             onClick={getInfo}
             style={{ cursor: "pointer" }}
           />

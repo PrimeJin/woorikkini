@@ -23,7 +23,7 @@ import java.util.Map;
 // -> 반환 받은 사용자 정보를 이용하여 신규회원인지 확인 -> 신규회원이면 DB에 회원 등록 -> JWT 반환,
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
     private final static long THREE_DAYS_MSEC = 1000 * 60 * 60 * 24 * 3;
     private static final String SUCCESS = "success";
@@ -38,11 +38,14 @@ public class AuthController {
 
         // 사용자에게 받은 refresh token 유효성 검증
         String userRefreshToken = requestBody.get("refreshToken");
-        if (!tokenProvider.validateToken(userRefreshToken)) {
+        try{
+            tokenProvider.validateToken(userRefreshToken);
+        } catch (Exception ex){
+            resultMap.put("message", "accessToken " + ex.getMessage());
             status = HttpStatus.UNAUTHORIZED;
-            resultMap.put("message", FAIL);
             return new ResponseEntity<Map<String, Object>>(resultMap, status);
         }
+
 
         // 사용자에게 받은 refresh token 존재 여부 검증
         RefreshToken refreshToken = refreshTokenRepository.findByRefreshToken(userRefreshToken);
@@ -53,7 +56,7 @@ public class AuthController {
             return new ResponseEntity<Map<String, Object>>(resultMap, status);
         }
         // 새로운 access token 생성
-        String newAccessToken = tokenProvider.createAccessToken(refreshToken.getUserId(), "ROLE_USER");
+        String newAccessToken = tokenProvider.createAccessToken(refreshToken.getUser().getUserId(), "ROLE_USER");
         resultMap.put("accessToken", newAccessToken);
         long validTime = tokenProvider.getTokenClaims(userRefreshToken).getExpiration().getTime() - new Date().getTime();
         // refresh 토큰 기간이 3일 이하로 남은 경우, refresh 토큰 갱신
@@ -62,7 +65,7 @@ public class AuthController {
             String newRefreshToken = tokenProvider.createRefreshToken();
 
             // DB에 refresh 토큰 업데이트
-            refreshTokenRepository.save(new RefreshToken(refreshToken.getUserId(), newRefreshToken));
+            refreshTokenRepository.save(new RefreshToken(refreshToken.getUser(), newRefreshToken));
 
             status = HttpStatus.ACCEPTED;
             resultMap.put("refreshToken", newRefreshToken);

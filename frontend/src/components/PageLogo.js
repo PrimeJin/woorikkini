@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import './PageLogo.css';
+import styles from './PageLogo.module.css';
 
 function Logo() {
   const navigate = useNavigate();
@@ -8,8 +8,8 @@ function Logo() {
     navigate(`/`);
   };
   return (
-    <div className="mypage-logo-top">
-      <img className="mypage-logo" src={'img/우리끼니로고.png'} onClick={MainGo} />
+    <div className={styles.mypage_logo_top}>
+      <img className={styles.mypage_logo} src={'img/우리끼니로고.png'} onClick={MainGo} />
     </div>
   );
 }

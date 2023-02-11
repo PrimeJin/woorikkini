@@ -1,0 +1,67 @@
+.create-card {
+  /* Rectangle 233 */
+
+  box-sizing: border-box;
+
+  position: relative;
+  width: 291px;
+  height: 433px;
+
+  background: #fffdfa;
+  opacity: 0.5;
+  border: 5px dashed rgba(0, 0, 0, 0.36);
+  border-radius: 20px;
+  margin-left: 5%;
+  margin-right: 5%;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: large;
+}
+
+.modal {
+  margin-top: 20px;
+  padding: 20px;
+}
+
+input[type='file'] {
+  appearance: none;
+  /* background-color: initial; */
+  cursor: default;
+  align-items: center;
+  color: inherit;
+  text-overflow: ellipsis;
+  white-space: pre;
+  border: none;
+  font-family: 'NanumSquareRound';
+  color: #090936;
+
+  /* text-align: start !important; */
+  /* padding: initial; */
+  /* border: initial; */
+  /* overflow: hidden !important; */
+}
+
+.photo {
+  /* border: 1px; */
+  height: 300px;
+  width: 300px;
+
+  background: #ffffff;
+  border: 0.3px solid #000000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* border: none; */
+  /* height: 250; */
+  /* margin-bottom: 3%;
+  border-radius: 10px; */
+}
+
+.memory {
+  height: 450px;
+  /* text-align: center; */
+  display: inline-block;
+}

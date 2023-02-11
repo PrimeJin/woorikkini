@@ -10,6 +10,7 @@ import com.ssafy.kkini.repository.RefreshTokenRepository;
 import com.ssafy.kkini.service.TokenProviderService;
 import com.ssafy.kkini.util.CookieUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -20,7 +21,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.util.Optional;
 
 import static com.ssafy.kkini.repository.HttpCookieOAuth2AuthorizationRequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME;
@@ -66,20 +69,26 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String newRefreshToken = tokenProvider.createRefreshToken();
 
         // DB 저장
-        RefreshToken oldRefreshToken = refreshTokenRepository.findByUserId(userPrincipalDto.getUser().getUserId());
+        RefreshToken oldRefreshToken = refreshTokenRepository.findByUser_UserId(userPrincipalDto.getUser().getUserId());
         if (oldRefreshToken != null) {
             oldRefreshToken.setRefreshToken(newRefreshToken);
         } else {
-            oldRefreshToken = new RefreshToken(userPrincipalDto.getUser().getUserId(), newRefreshToken);
+            oldRefreshToken = new RefreshToken(userPrincipalDto.getUser(), newRefreshToken);
         }
         refreshTokenRepository.saveAndFlush(oldRefreshToken);
 
-        return UriComponentsBuilder.fromUriString(targetUrl)
-                .queryParam("userId", userPrincipalDto.getUser().getUserId())
-                .queryParam("nickName", userPrincipalDto.getUser().getUserNickname())
-                .queryParam("accessToken", token)
-                .queryParam("refreshToken", oldRefreshToken.getRefreshToken())
-                .build().toUriString();
+
+        CookieUtils.addCookie(response, "refreshToken", oldRefreshToken.getRefreshToken(),180);
+        try {
+            String nickName = URLEncoder.encode(userPrincipalDto.getUser().getUserNickname(), "UTF-8");
+            return UriComponentsBuilder.fromUriString(targetUrl)
+                    .queryParam("userId", userPrincipalDto.getUser().getUserId())
+                    .queryParam("nickName", nickName)
+                    .queryParam("accessToken", token)
+                    .build().toUriString();
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected void clearAuthenticationAttributes(HttpServletRequest request, HttpServletResponse response) {

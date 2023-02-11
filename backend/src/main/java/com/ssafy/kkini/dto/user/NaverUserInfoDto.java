@@ -4,8 +4,8 @@ import com.ssafy.kkini.dto.AuthProvider;
 import com.ssafy.kkini.entity.User;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 
+import java.util.Date;
 import java.util.Map;
-
 public class NaverUserInfoDto implements OAuth2UserInfoDto {
     private Map<String, Object> attributes;
 
@@ -20,7 +20,12 @@ public class NaverUserInfoDto implements OAuth2UserInfoDto {
 
     @Override
     public String getNickName() {
-        return (String) attributes.get("nickname");
+        StringBuilder sb = new StringBuilder();
+        String nickname = (String) attributes.get("nickname");
+        if(nickname == null){
+            nickname = sb.append(getProvider()).append("_").append(new Date().getTime()).toString();
+        }
+        return nickname;
     }
 
     @Override
@@ -35,7 +40,14 @@ public class NaverUserInfoDto implements OAuth2UserInfoDto {
 
     @Override
     public String getGender() {
-        return (String) attributes.get("gender");
+        String gender = (String) attributes.get("gender");
+        if(gender.equals("F")){
+            return "female";
+        }
+        else if(gender.equals("M")){
+            return "male";
+        }
+        return gender;
     }
 
     @Override

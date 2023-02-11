@@ -6,6 +6,7 @@ import com.ssafy.kkini.entity.AuthCode;
 import com.ssafy.kkini.repository.AuthCodeRepository;
 import com.ssafy.kkini.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -34,12 +35,9 @@ public class AuthCodeService {
         return authCodeRepository.findFirstByAuthCodeUserEmailOrderByCreatedTimeDesc(email);
     }
 
+    @Transactional
     //회원가입시 인증코드 발송할 때 인증코드 생성
     public AuthCode createAuthCode(String email) {
-        if(!userRepository.findByUserEmail(email).isPresent()) {
-            throw new IllegalStateException("이미 가입된 이메일입니다.");
-        }
-
         String authCodeContent = this.getAuthCodeContent(email);  //인증코드 내용 가져오기
         LocalDateTime authCodeExpireDate = LocalDateTime.now().plusHours(1);  //지금으로부터 1시간 뒤로 코드만료 시간설정
 
@@ -53,6 +51,7 @@ public class AuthCodeService {
         return authCodeRepository.save(authCode);
     }
 
+    @Transactional
     //인증코드 사용처리 (N->Y)
     public void useAuthCode(AuthCode authCode) {
         AuthCodeUpdateDto authCodeUpdateDto = new AuthCodeUpdateDto(authCode);

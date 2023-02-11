@@ -1,0 +1,176 @@
+.admin {
+  position: fixed;
+  background-color: white;
+  background-size: cover;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+
+.new {
+  width: 84px;
+  height: 39px;
+
+  background: #f2f0f0;
+  border-radius: 10px;
+  font-family: NanumSquareRound;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  margin-right: 5%;
+  cursor: pointer;
+}
+.noticeTable {
+  justify-content: center;
+  display: flex;
+  margin: 1%;
+  flex-flow: wrap;
+}
+
+.noticeTable table {
+  width: 100%;
+  border-collapse: collapse;
+  line-height: 24px;
+  margin-inline: 10%;
+  margin-bottom: 3%;
+}
+.noticeTable table th {
+  border-bottom: 3px solid black;
+  padding: 10px;
+}
+
+.noticeTable table td {
+  border-bottom: 1px solid black;
+  padding: 10px;
+}
+
+.detail {
+  box-sizing: border-box;
+  width: 60%;
+  height: auto;
+  margin: 1%;
+  border: 1px solid #000000;
+  border-radius: 20px;
+}
+
+.title {
+  font-size: 200%;
+  margin: 4%;
+  margin-bottom: 0%;
+}
+.content {
+  font-size: 150%;
+  text-align: left;
+  margin: 5%;
+  min-height: 300px;
+}
+
+.btn {
+  width: 64px;
+  height: 43px;
+  border: none;
+  background: #f2f0f0;
+  border-radius: 10px;
+  margin: 3%;
+  margin-inline: 6%;
+  cursor: pointer;
+}
+
+.toList {
+  width: 84px;
+  height: 39px;
+
+  background: #f2f0f0;
+  border-radius: 10px;
+  border: none;
+  margin-left: 20%;
+  cursor: pointer;
+}
+
+.update {
+  box-sizing: border-box;
+  width: 60%;
+  height: auto;
+  margin: 1%;
+  background: #f2f0f0;
+  border-radius: 20px;
+}
+
+.noticeLabel {
+  width: 117px;
+  height: 26px;
+
+  font-size: 20px;
+  display: flex;
+  text-align: left;
+  margin-left: 5%;
+  margin-top: 3%;
+}
+
+.inputTitle {
+  box-sizing: border-box;
+  width: 90%;
+  height: auto;
+  min-height: 50px;
+
+  background: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 10px;
+  padding: 3%;
+  font-size: 25px;
+}
+
+.inputContent {
+  box-sizing: border-box;
+  width: 90%;
+  height: auto;
+  min-height: 300px;
+
+  background: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 10px;
+  padding: 3%;
+  font-size: 20px;
+}
+
+.upBtn {
+  box-sizing: border-box;
+  width: 80px;
+  height: 45px;
+  margin: 2%;
+  margin-inline: 6%;
+
+  background: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 10px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.delete {
+  height: 150px;
+  width: 300px;
+  background-color: #f2f0f0;
+  border: 1px solid;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-flow: wrap row;
+}
+
+.modalBtn {
+  margin: 6%;
+  background-color: #ffffff;
+  border: 1px solid;
+  border-radius: 10px;
+  padding: 3%;
+  padding-inline: 5%;
+  cursor: pointer;
+}

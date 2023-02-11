@@ -29,6 +29,7 @@ public class RoomKeyword {
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "keyword_id")
     private Keyword keywordId;
 

@@ -1,20 +1,15 @@
 package com.ssafy.kkini.service;
 
-import com.ssafy.kkini.dto.RoomCreateFormDto;
-import com.ssafy.kkini.dto.RoomEnterFormDto;
-import com.ssafy.kkini.dto.RoomPasswordXDto;
-import com.ssafy.kkini.dto.RoomSearchDto;
+import com.ssafy.kkini.dto.*;
 import com.ssafy.kkini.entity.Room;
 import com.ssafy.kkini.entity.RoomKeyword;
 import com.ssafy.kkini.repository.KeywordRepository;
 import com.ssafy.kkini.repository.RoomKeywordRepository;
 import com.ssafy.kkini.repository.RoomRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,63 +24,60 @@ public class RoomService {
         this.keywordRepository = keywordRepository;
     }
 
-    public RoomPasswordXDto createRoom(RoomCreateFormDto roomCreateFormDto){
+    public RoomDto createRoom(RoomCreateFormDto roomCreateFormDto){
         Room room = roomCreateFormDto.toEntity();
-        List<Integer> keywordIdxList = roomCreateFormDto.getRoomKeywordList();
         roomRepository.save(room);
+
+        List<Integer> keywordIdxList = roomCreateFormDto.getRoomKeywordList();
         if(keywordIdxList != null && !keywordIdxList.isEmpty()){
             for (int keywordIdx: keywordIdxList) {
-                roomKeywordRepository.save(new RoomKeyword(room, keywordRepository.findByKeywordId(keywordIdx)));
+                RoomKeyword roomKeyword = roomKeywordRepository.save(new RoomKeyword(room, keywordRepository.findByKeywordId(keywordIdx)));
+                room.getRoomKeywords().add(roomKeyword);
             }
         }
-        return new RoomPasswordXDto(room);
+        return new RoomDto(room);
     }
 
-    public Map<String, String> detailRoom(int roomId){
+    public RoomDetailDto detailRoom(int roomId){
         Room room = roomRepository.findByRoomId(roomId);
         if(room == null){
             return null;
         }
-        Map<String, String> roomDetail = new HashMap<>();
-        roomDetail.put("roomTitle", room.getRoomTitle());
-        roomDetail.put("roomContent", room.getRoomContent());
-        return roomDetail;
+        RoomDetailDto roomDetailDto = new RoomDetailDto(room);
+        return roomDetailDto;
     }
 
-    public List<RoomPasswordXDto> getAllRoom(){
+    public List<RoomDto> getAllRoom(){
         List<Room> roomList = roomRepository.findAll();
-        List<RoomPasswordXDto> roomListDto = roomList.stream()
-                .map(room -> new RoomPasswordXDto(room))
+        List<RoomDto> roomListDto = roomList.stream()
+                .map(room -> new RoomDto(room))
                 .collect(Collectors.toList());
         return roomListDto;
     }
 
-    public List<RoomPasswordXDto> searchRoom(RoomSearchDto roomSearchDto) {
-        return roomRepository.searchRoom(roomSearchDto);
+    public List<RoomDto> searchRoom(String subject, String content) {
+        return roomRepository.searchRoom(subject, content);
     }
 
-    public int enterRoom(int roomId, RoomEnterFormDto roomEnterFormDto) {
-        if(roomEnterFormDto.getRoomPrivate().equals("Y")){
-                if(!roomRepository.findByRoomId(roomId).getRoomPassword().equals(roomEnterFormDto.getRoomPassword())){
-                    return 0;
+    public Room enterRoom(int roomId, RoomEnterFormDto roomEnterFormDto) {
+        Room room = roomRepository.findByRoomId(roomId);
+        if(room == null) return null;
+        if(roomEnterFormDto.getRoomPrivate().equals("true")){
+                if(!room.getRoomPassword().equals(roomEnterFormDto.getRoomPassword())){
+                    return null;
                 }
         }
-        return roomRepository.increaseRecentUserInRoom(roomId);
+        int cnt = roomRepository.increaseRecentUserInRoom(roomId);
+        if(cnt == 0) return null;
+        return room;
     }
     public int exitRoom(int roomId) {
         return roomRepository.decreaseRecentUserInRoom(roomId);
     }
 
-//    public List<RoomPasswordXDto> getFilteredRoom(RoomFilterFormDto roomFilterFormDto){
-//        String openPrivate = roomFilterFormDto.getOpenPrivate();
-//        String openFullRoom = roomFilterFormDto.getOpenFullRoom();
-//
-//        select * from room where private = "N" and
-//        if(openPrivate.equals("Y")){
-//
-//        } else {
-//            // where private = "N"
-//        }
-//        List<Room>
-//    }
+    @Transactional
+    public int deleteRoom(int roomId) {
+        return roomRepository.deleteByRoomId(roomId);
+    }
+
 }

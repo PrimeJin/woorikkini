@@ -40,7 +40,7 @@ public class KakaoUserInfoDto implements OAuth2UserInfoDto {
 
     @Override
     public String getGender() {
-        return (String) kakaoAccount.get("gender").toString().toUpperCase().substring(0,1);
+        return (String) kakaoAccount.get("gender").toString().toLowerCase();
     }
 
     @Override

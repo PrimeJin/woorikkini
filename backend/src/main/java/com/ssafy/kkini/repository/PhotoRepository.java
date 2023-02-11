@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface PhotoRepository extends JpaRepository<Photo,Long> {
+public interface PhotoRepository extends JpaRepository<Photo,Integer> {
 
     List<Photo> findAllByMemory_MemoryId(int memoryId);
 

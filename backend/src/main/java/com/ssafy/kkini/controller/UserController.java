@@ -1,28 +1,26 @@
 package com.ssafy.kkini.controller;
 
-import com.ssafy.kkini.dto.UserCreateFormDto;
-import com.ssafy.kkini.dto.UserLoginFormDto;
-import com.ssafy.kkini.dto.UserNicknameModifyFormDto;
-import com.ssafy.kkini.dto.UserPasswordModifyFormDto;
+import com.ssafy.kkini.dto.*;
 import com.ssafy.kkini.entity.AuthCode;
+import com.ssafy.kkini.entity.PasswordCode;
 import com.ssafy.kkini.entity.User;
-import com.ssafy.kkini.service.AuthCodeService;
-import com.ssafy.kkini.service.EmailService;
-import com.ssafy.kkini.service.TokenProviderService;
-import com.ssafy.kkini.service.UserService;
+import com.ssafy.kkini.service.*;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.models.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/user")
-@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE})
+@RequestMapping("/api/user")
+@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS})
 public class UserController {
     private UserService userService;
     private AuthCodeService authCodeService;
@@ -30,14 +28,17 @@ public class UserController {
 
     private TokenProviderService tokenProviderService;
 
+    private PasswordCodeService passwordCodeService;
+
     private static final String SUCCESS = "success";
     private static final String FAIL = "fail";
 
-    public UserController(UserService userService, AuthCodeService authCodeService, EmailService emailService, TokenProviderService tokenProviderService) {
+    public UserController(UserService userService, AuthCodeService authCodeService, EmailService emailService, TokenProviderService tokenProviderService, PasswordCodeService passwordCodeService) {
         this.userService = userService;
         this.authCodeService = authCodeService;
         this.emailService = emailService;
         this.tokenProviderService = tokenProviderService;
+        this.passwordCodeService = passwordCodeService;
     }
 
 
@@ -47,22 +48,18 @@ public class UserController {
                                                     UserCreateFormDto userCreateFormDto) {
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
-        User joinUser = null;
 
-        try {
-            joinUser = userService.join(userCreateFormDto);
+        User joinUser = userService.join(userCreateFormDto);
 
-            if(joinUser!=null){
-                resultMap.put("message", SUCCESS);
-                status = HttpStatus.ACCEPTED;
-            }
-            else {
-                resultMap.put("message", FAIL);
-                status = HttpStatus.BAD_REQUEST;
-            }
-        } catch (Exception e) {
-            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        if(joinUser!=null){
+            resultMap.put("message", SUCCESS);
+            status = HttpStatus.OK;
         }
+        else {
+            resultMap.put("message", FAIL);
+            status = HttpStatus.BAD_REQUEST;
+        }
+
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
     }
 
@@ -75,6 +72,7 @@ public class UserController {
 
         try {
             User loginUser= userService.login(userLoginFormDto);
+
             if (loginUser != null) {
                 String accessToken = tokenProviderService.createAccessToken(loginUser.getUserId(), loginUser.getUserRole());// key, data
                 String refreshToken = tokenProviderService.createRefreshToken();
@@ -83,16 +81,18 @@ public class UserController {
                 resultMap.put("refreshToken", refreshToken);
                 resultMap.put("userNickname",loginUser.getUserNickname());
                 resultMap.put("userId", loginUser.getUserId());
+                resultMap.put("userRole", loginUser.getUserRole());
                 resultMap.put("message", SUCCESS);
-                status = HttpStatus.ACCEPTED;
+                status = HttpStatus.OK;
             } else {
                 resultMap.put("message", FAIL);
-                status = HttpStatus.ACCEPTED;
+                status = HttpStatus.BAD_REQUEST;
             }
-        } catch (Exception e) {
+        } catch (LockedException e) {
             resultMap.put("message", e.getMessage());
-            status = HttpStatus.INTERNAL_SERVER_ERROR;
+            status = HttpStatus.NO_CONTENT;
         }
+
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
     }
 
@@ -101,16 +101,17 @@ public class UserController {
     public ResponseEntity<Map<String, Object>> logout(@PathVariable("userid") int userid) {
         Map<String, Object> resultMap = new HashMap<>();
         HttpStatus status = null;
+
         try {
             tokenProviderService.deleteRefreshToken(userid);
             resultMap.put("message", SUCCESS);
-            status = HttpStatus.ACCEPTED;
+            status = HttpStatus.OK;
         } catch (Exception e) {
             resultMap.put("message", FAIL);
-            status = HttpStatus.INTERNAL_SERVER_ERROR;
+            status = HttpStatus.BAD_REQUEST;
         }
-        return new ResponseEntity<Map<String, Object>>(resultMap, status);
 
+        return new ResponseEntity<Map<String, Object>>(resultMap, status);
     }
 
     @ApiOperation(value = "회원탈퇴", notes = "Access-token해제와 회원탈퇴 결과 메세지를 반환한다.", response = Map.class)
@@ -120,67 +121,54 @@ public class UserController {
         Map<String, Object> resultMap = new HashMap<>();
         HttpStatus status = null;
 
-        try {
-            if (userService.delete(userid) > 0) {
-                tokenProviderService.deleteRefreshToken(userid);
-                resultMap.put("message", SUCCESS);
-                status = HttpStatus.ACCEPTED;
-            } else {
-                resultMap.put("message", FAIL);
-                status = HttpStatus.ACCEPTED;
-            }
-        } catch (Exception e) {
+        if (userService.delete(userid) > 0) {
+            resultMap.put("message", SUCCESS);
+            status = HttpStatus.OK;
+        } else {
             resultMap.put("message", FAIL);
-            status = HttpStatus.INTERNAL_SERVER_ERROR;
+            status = HttpStatus.BAD_REQUEST;
         }
+
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
     }
 
     @ApiOperation(value = "닉네임 수정", notes = "회원의 닉네임을 수정한다.", response = Map.class)
     @PatchMapping("/{userid}/nickname")
-    public ResponseEntity<Map<String,Object>> nicknameModify(@PathVariable("userid") @ApiParam(value = "수정할 회원정보(아이디)", required = true, example = "0") Long userid,
-                                                             @RequestBody @ApiParam(value = "수정할 회원정보(변경할 닉네임, 아이디)", required = true, example  = "0") UserNicknameModifyFormDto userNicknameModifyFormDto){
+    public ResponseEntity<Map<String,Object>> nicknameModify(@PathVariable("userid") @ApiParam(value = "수정할 회원정보(아이디)", required = true, example = "0") int userid,
+                                                             @Valid @RequestBody @ApiParam(value = "수정할 회원정보(변경할 닉네임, 아이디)", required = true, example  = "0") UserNicknameModifyFormDto userNicknameModifyFormDto){
         Map<String, Object> resultMap = new HashMap<>();
         HttpStatus status = null;
 
-        try {
-            User user = userService.nicknameModify(userNicknameModifyFormDto);
-            if(user != null){
-                resultMap.put("messsage" , SUCCESS);
-                resultMap.put("userNickname", user.getUserNickname());
-                status = HttpStatus.ACCEPTED;
-            } else {
-                resultMap.put("message", FAIL);
-                status = HttpStatus.ACCEPTED;
-            }
-        }catch (Exception e){
-            resultMap.put("message",FAIL);
-            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        User user = userService.nicknameModify(userNicknameModifyFormDto);
+
+        if(user != null){
+            resultMap.put("message" , SUCCESS);
+            resultMap.put("userNickname", user.getUserNickname());
+            status = HttpStatus.OK;
+        } else {
+            resultMap.put("message", FAIL);
+            status = HttpStatus.BAD_REQUEST;
         }
+
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
     }
 
     @ApiOperation(value = "비밀번호 수정", notes = "회원의 닉네임을 수정한다.", response = Map.class)
     @PatchMapping("/{userid}/password")
-    public ResponseEntity<Map<String, Object>> passwordModify(@PathVariable("userid") @ApiParam(value = "수정할 회원정보(아이디)",required = true, example = "0") Long userid,
-                                                              @RequestBody @ApiParam(value = "수정할 회원정보(변겨할 패스원드, 아이디", required = true, example = "0") UserPasswordModifyFormDto userPasswordModifyFormDto){
+    public ResponseEntity<Map<String, Object>> passwordModify(@PathVariable("userid") @ApiParam(value = "수정할 회원정보(아이디)",required = true, example = "0") int userid,
+                                                              @Valid @RequestBody @ApiParam(value = "수정할 회원정보(변겨할 패스원드, 아이디", required = true, example = "0") UserPasswordModifyFormDto userPasswordModifyFormDto){
         Map<String,Object> resultMap = new HashMap<>();
         HttpStatus status = null;
-        try{
-            User user = userService.passwordModify(userPasswordModifyFormDto);
-            if(user != null){
-                resultMap.put("messsage" , SUCCESS);
-                status = HttpStatus.ACCEPTED;
-            } else {
-                resultMap.put("message", FAIL);
-                status = HttpStatus.ACCEPTED;
-            }
 
-        }catch (Exception e){
-            resultMap.put("message",FAIL);
-            status = HttpStatus.INTERNAL_SERVER_ERROR;
-
+        User user = userService.passwordModify(userPasswordModifyFormDto);
+        if(user != null){
+            resultMap.put("message" , SUCCESS);
+            status = HttpStatus.OK;
+        } else {
+            resultMap.put("message", FAIL);
+            status = HttpStatus.BAD_REQUEST;
         }
+
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
     }
 
@@ -188,11 +176,15 @@ public class UserController {
     @ApiOperation(value = "이메일 인증코드 발송", notes = "입력한 이메일이 기존회원이 아니라면 이메일 인증코드 발송" )
     @GetMapping("/email/check")
     public ResponseEntity<Map<String, Object>> sendEmailCheck(@ApiParam(value = "회원가입에서 입력한 이메일" )@RequestParam String authCodeUserEmail) {
-        emailService.sendEmailAuthCode(authCodeUserEmail);
         Map<String, Object> map = new HashMap<>();
-
-        map.put("message", "success");
-        return new ResponseEntity<Map<String, Object>>(map, HttpStatus.ACCEPTED);
+        if(userService.getUserByUserEmail(authCodeUserEmail).isPresent()) {  //기존 회원이면 중복이므로 실패처리
+            map.put("message", "fail");
+            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
+        } else {
+            emailService.sendEmailAuthCode(authCodeUserEmail);
+            map.put("message", "success");
+            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.ACCEPTED);
+        }
     }
 
     @ApiOperation(value = "입력한 이메일 인증코드 일치확인", notes = "발급된 이메일 인증코드와 입력한 이메일 인증코드 일치 여부와 인증코드 만료여부 확인")
@@ -213,6 +205,113 @@ public class UserController {
             return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
         }
 
+    }
+
+    @ApiOperation(value = "닉네임 중복체크", notes = "회원의 닉네임을 중복을 체크한다.", response = Map.class)
+    @GetMapping("/{userNickname}")
+    public ResponseEntity<Map<String,Object>> nicknameModify(@PathVariable("userNickname") @ApiParam(value = "닉네임", required = true, example = "0") String userNickname){
+        Map<String, Object> resultMap = new HashMap<>();
+        HttpStatus status = null;
+
+        User user = userService.nicknameCheck(userNickname);
+        if(user == null){
+            resultMap.put("message" , SUCCESS);
+            status = HttpStatus.OK;
+        } else {
+            resultMap.put("message", FAIL);
+            status = HttpStatus.BAD_REQUEST;
+        }
+
+        return new ResponseEntity<Map<String, Object>>(resultMap, status);
+    }
+
+    @ApiOperation(value = "비밀번호 찾기(변경 URL 이메일로 전송)", notes = "입력한 이메일, 이름과 일치하는 유저확인 -> 있으면 비밀번호 변경 URL 이메일로 전송")
+    @GetMapping ("/{userEmail}/password")
+    public ResponseEntity<Map<String, Object>> findPassword(@ApiParam(value = "입력한 이메일") @PathVariable String userEmail,
+                                                            @ApiParam(value = "입력한 이름") @RequestParam String userName) {
+        Map<String, Object> map = new HashMap<>();
+        //이메일과 이름 일치확인
+        boolean flag = passwordCodeService.checkEmailAndName(userEmail, userName);
+        //비밀번호코드 발급
+        if(flag) {
+            PasswordCode passwordCode = passwordCodeService.createPasswordCode(userEmail);  //비밀번호 코드 생성
+            if(passwordCode != null) {
+                emailService.sendEmailPasswordCode(userEmail, passwordCode.getPasswordCodeContent());  //이메일로 전송
+                map.put("message", "success");
+                return new ResponseEntity<Map<String, Object>>(map, HttpStatus.ACCEPTED);
+            }
+        }
+        map.put("message", "fail");
+        return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
+    }
+
+    @ApiOperation(value = "비밀번호 변경 URL 유효검사", notes = "비밀번호 변경 URL 유효한지 검사")
+    @GetMapping("/password")
+    public ResponseEntity<Map<String, Object>> updatePassword(@ApiParam(value = "유저 이메일")@RequestParam String userEmail,
+                                                              @ApiParam(value = "비밀번호 코드값")@RequestParam String passwordCodeContent) {
+        Map<String, Object> map = new HashMap<>();
+
+        //비밀번호 코드 가져오기
+        PasswordCode originalPasswordCode = passwordCodeService.getCodeByUserEmail(userEmail);
+        if(passwordCodeContent.equals(originalPasswordCode.getPasswordCodeContent())) {  //입력된 코드가 가장최근 코드와 같지 않으면 검사 필요없이 실패
+            boolean expireYn = passwordCodeService.checkExpirePasswordCode(originalPasswordCode);
+            if(!expireYn) {  //비밀번호 코드 유효 검사
+                map.put("message", "success");
+                return new ResponseEntity<Map<String, Object>>(map, HttpStatus.ACCEPTED);
+            }
+        }
+        map.put("message", "fail");
+        return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
+    }
+
+    @ApiOperation(value = "비밀번호 변경 URL에서 비밀번호 변경", notes = "비밀번호 변경 URL에서 비밀번호 변경 처리, 비밀번호 코드 사용처리")
+    @PatchMapping("/password")
+    public ResponseEntity<Map<String, Object>> updatePassword(@ApiParam(value = "유저 이메일, 비밀번호 코드값, 입력한 새 비밀번호, 비밀번호 확인")
+                                                              @Valid @RequestBody UserPasswordUpdateDto userPasswordUpdateDto) {
+        Map<String, Object> map = new HashMap<>();
+
+        String userEmail = userPasswordUpdateDto.getUserEmail();
+        String passwordCodeContent = userPasswordUpdateDto.getPasswordCodeContent();
+        String newPassword = userPasswordUpdateDto.getUserPassword();
+        String newPasswordCheck = userPasswordUpdateDto.getUserPasswordCheck();
+
+        //비밀번호 코드 가져오기
+        PasswordCode originalPasswordCode = passwordCodeService.getCodeByUserEmail(userEmail);
+        if(!passwordCodeContent.equals(originalPasswordCode.getPasswordCodeContent())) {  //입력된 코드가 가장최근 코드와 같지 않으면 검사 필요없이 실패
+            map.put("message", "fail");
+            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
+        }
+        //마지막으로 비밀번호 코드 유효한지 검사, 유효 -> 입력한 새 비멀번호와 비밀번화 확인에 입력한 값 일치 확인
+        boolean expireYn = passwordCodeService.checkExpirePasswordCode(originalPasswordCode);
+        if(!expireYn && newPassword.equals(newPasswordCheck)) {
+            //비밀번호 변경처리
+            User updatedUser = userService.updatePasswordByEmail(userEmail, newPassword);
+            if(updatedUser != null) {
+                //비밀번호 코드 사용처리
+                passwordCodeService.usePasswordCode(originalPasswordCode);
+                map.put("message", "success");
+                return new ResponseEntity<Map<String, Object>>(map, HttpStatus.ACCEPTED);
+            }
+        }
+
+        map.put("message", "fail");
+        return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
+    }
+
+    @ApiOperation(value = "관리자가 전체 회원 조회", notes = "관리자 페이지에서 전체 회원 조회 기능")
+    @GetMapping("/")
+    public ResponseEntity<Map<String, Object>> getUserList() {
+        Map<String, Object> map = new HashMap<>();
+        try {
+            List<UserListDto> userListDto = userService.getUserList();
+            map.put("message", "success");
+            map.put("userList", userListDto);
+            map.put("totalSize", userListDto.size());
+            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.ACCEPTED);
+        } catch (Exception e) {
+            map.put("message", "fail");
+            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
+        }
     }
 
 }

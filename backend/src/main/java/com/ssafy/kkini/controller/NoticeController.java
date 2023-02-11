@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/notice")
+@RequestMapping("/api/notice")
 @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE})
 public class NoticeController {
     private NoticeService noticeService;
@@ -27,7 +27,7 @@ public class NoticeController {
 
     //공지사항 목록
     @ApiOperation(value = "공지사항 목록", notes = "공지사항 목록 페이징", response = Page.class)
-    @GetMapping("/")
+    @GetMapping()
     public ResponseEntity<Map<String, Object>> getNoticeList(@RequestParam(value = "page", defaultValue = "0") int page,
                                                       @RequestParam(value = "limit", defaultValue = "10") int limit) {
         Map<String, Object> map = new HashMap<>();
@@ -45,7 +45,7 @@ public class NoticeController {
 
     //공지사항 등록
     @ApiOperation(value = "공지사항 등록", notes = "새로운 공지사항 등록, DB입력 성공여부에 따라 'success' 또는 'fail' 반환")
-    @PostMapping("/")
+    @PostMapping()
     public ResponseEntity<Map<String, Object>> writeNotice(@Valid @RequestBody @ApiParam (value = "새 공지사항 정보 담은 dto") NoticeCreateFormDto noticeCreateFormDto) {
         Map<String, Object> map = new HashMap<>();
 
