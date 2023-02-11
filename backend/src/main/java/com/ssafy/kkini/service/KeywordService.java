@@ -1,10 +1,12 @@
 package com.ssafy.kkini.service;
 
+import com.ssafy.kkini.dto.KeywordDto;
 import com.ssafy.kkini.entity.Keyword;
 import com.ssafy.kkini.repository.KeywordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,10 +19,14 @@ public class KeywordService {
         this.keywordRepository = keywordRepository;
     }
 
-    public Map<Integer,String> getKeyword() {
+    public List<KeywordDto> getKeyword() {
         List<Keyword> keywordList = keywordRepository.findAll();
-        Map<Integer, String> keywordResult = new HashMap<>();
-        keywordList.stream().forEach(keyword -> keywordResult.put(keyword.getKeywordId(), keyword.getKeyword()));
+        List<KeywordDto> keywordResult = new ArrayList<>();
+
+        keywordList.stream().forEach(keyword ->{
+            Map<String, Object> map = new HashMap<>();
+            keywordResult.add(new KeywordDto(keyword.getKeywordId(), keyword.getKeyword()));
+        });
 
         return keywordResult;
     }

@@ -1,18 +1,17 @@
 package com.ssafy.kkini.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 @DynamicInsert
 @Builder
+@Setter
 @Getter
 @Entity
 @NoArgsConstructor
@@ -31,8 +30,8 @@ public class Room {
     @Column(length = 50)
     private String roomContent;
 
-    @Column( length = 1)
-    @ColumnDefault("'N'")
+    @Column( length = 5)
+    @ColumnDefault("'false'")
     @NotNull
     private String roomPrivate;
 
@@ -42,15 +41,15 @@ public class Room {
     @NotNull
     private int roomLimitUser;
 
-    private int roomPreset;
+    private String roomPreset;
 
     @ColumnDefault("1")
     @Builder.Default
     private int roomRecentUser = 1;
 
+    private String sessionId;
+
     @OneToMany(mappedBy = "roomId")
-    private List<RoomKeyword> roomKeywords;
-
-
+    private List<RoomKeyword> roomKeywords =  new ArrayList<RoomKeyword>();
 
 }

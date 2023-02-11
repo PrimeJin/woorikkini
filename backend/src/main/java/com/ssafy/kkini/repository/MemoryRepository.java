@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface MemoryRepository extends JpaRepository<Memory, Long> {
+public interface MemoryRepository extends JpaRepository<Memory, Integer> {
     List<Memory> findByUser_UserId(int userId);
 
     Optional<Memory> findByMemoryId(int memoryId);

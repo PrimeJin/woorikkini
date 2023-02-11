@@ -1,5 +1,6 @@
 package com.ssafy.kkini.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ssafy.kkini.entity.Memory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,13 +19,13 @@ public class MemoryCreateFormDto {
     @NotNull(message = "제목은 필수 입력 값입니다.")
     private String memoryTitle;
     private String memoryContent;
-    private int userId;
-    private List<MultipartFile> memoryImgFiles;
-
+    private String userId;
 
     public Memory toEntity(){
         return Memory.builder().title(this.memoryTitle)
                 .content(this.memoryContent).build();
     }
+
+
 
 }

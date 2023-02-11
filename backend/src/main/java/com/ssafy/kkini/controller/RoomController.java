@@ -2,13 +2,13 @@ package com.ssafy.kkini.controller;
 
 
 import com.ssafy.kkini.dto.*;
+import com.ssafy.kkini.entity.Room;
 import com.ssafy.kkini.service.ExitService;
 import com.ssafy.kkini.service.KeywordService;
 import com.ssafy.kkini.service.RoomService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +20,8 @@ import java.util.Map;
 
 @RestController
 @Api("Room RestController V1")
-@RequestMapping("/room")
+@RequestMapping("/api/room")
+@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE})
 public class RoomController {
     private static final String SUCCESS = "success";
     private static final String FAIL = "fail";
@@ -41,7 +42,7 @@ public class RoomController {
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
 
-        RoomPasswordXDto room = roomService.createRoom(roomCreateFormDto);
+        RoomDto room = roomService.createRoom(roomCreateFormDto);
         if (room == null){
             status = HttpStatus.NO_CONTENT;
             resultMap.put("message", FAIL);
@@ -59,8 +60,8 @@ public class RoomController {
                                             String roomId) {
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
-        Map<String, String> roomDetail = roomService.detailRoom(Integer.valueOf(roomId));
-        if (roomDetail == null || roomDetail.isEmpty()){
+        RoomDetailDto roomDetail = roomService.detailRoom(Integer.valueOf(roomId));
+        if (roomDetail == null){
             status = HttpStatus.NOT_FOUND;
             resultMap.put("message", FAIL);
         } else {
@@ -76,7 +77,7 @@ public class RoomController {
     public ResponseEntity<?> getRoom() {
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
-        List<RoomPasswordXDto> roomList = roomService.getAllRoom();
+        List<RoomDto> roomList = roomService.getAllRoom();
         if (roomList == null){
             status = HttpStatus.NOT_FOUND;
             resultMap.put("message", FAIL);
@@ -89,12 +90,12 @@ public class RoomController {
     }
 
     @ApiOperation(value = "검색어에 해당되는 방 제공", notes = "입력된 검색어에 해당되는 방의 정보를 반환한다.", response = Map.class)
-    @PostMapping("/search")
-    public ResponseEntity<?> searchRoom(@RequestBody @ApiParam(value = "검색종류 subject = (title, keyword), 검색어(content) ", required = true)
-                                             @Valid RoomSearchDto roomSearchDto) {
+    @GetMapping("/search")
+    public ResponseEntity<?> searchRoom(@ApiParam(value = "검색종류 subject = (title, keyword), 검색어(content) ", required = true)
+                                             @RequestParam String subject, @RequestParam String content) {
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
-        List<RoomPasswordXDto> roomList = roomService.searchRoom(roomSearchDto);
+        List<RoomDto> roomList = roomService.searchRoom(subject, content);
         if (roomList == null){
             status = HttpStatus.NOT_FOUND;
             resultMap.put("message", FAIL);
@@ -111,7 +112,7 @@ public class RoomController {
     public ResponseEntity<?> getKeyword() {
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
-        Map<Integer, String> keywordList = keywordService.getKeyword();
+        List<KeywordDto> keywordList = keywordService.getKeyword();
         if (keywordList == null){
             status = HttpStatus.NOT_FOUND;
             resultMap.put("message", FAIL);
@@ -125,35 +126,36 @@ public class RoomController {
 
     @ApiOperation(value = "방 입장", notes = "사용자가 방 입장 시 사용자가 강제 퇴장 당한 유저라면 거절, " +
             "강퇴당한 유저가 아니라면 해당 방의 참여자 수를 1 증가시킨다.", response = Map.class)
-    @GetMapping("/enter/{roomId}/{userId}")
+    @PostMapping("/enter/{roomId}/{userId}")
     public ResponseEntity<?> enterRoom(@ApiParam(value = "입장할 방 번호", required = true)
-                                           @PathVariable String roomId, @PathVariable String userId, RoomEnterFormDto roomEnterFormDto) {
+                                           @PathVariable String roomId, @PathVariable String userId, @RequestBody RoomEnterFormDto roomEnterFormDto) {
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
 
         //해당 유저가 강제퇴장 당한 유저인지 확인
         int cnt = exitService.findExitUser(roomId, userId);
         if(cnt == 0){
-            int result = roomService.enterRoom(Integer.valueOf(roomId), roomEnterFormDto);
+            Room result = roomService.enterRoom(Integer.valueOf(roomId), roomEnterFormDto);
 
-            if (result == 0){
+            if (result == null){
                 status = HttpStatus.NOT_FOUND;
                 resultMap.put("message", FAIL);
             } else {
                 status = HttpStatus.OK;
+                resultMap.put("sessionId", result.getSessionId());
                 resultMap.put("message", SUCCESS);
             }
         } else{
-            status = HttpStatus.OK;
+            status = HttpStatus.UNAUTHORIZED;
             resultMap.put("message", "denied");
         }
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
     }
 
     @ApiOperation(value = "강제퇴장 조치", notes = "특정 사용자를 강제 퇴장 시킨다", response = Map.class)
-    @PostMapping("/exit/{roomId}")
+    @PostMapping("/exit/{roomId}/{userId}")
     public ResponseEntity<?> addExitUser(@ApiParam(value = "사용자 아이디", required = true)
-                                         @PathVariable String roomId, @RequestParam String userId) {
+                                         @PathVariable String roomId, @PathVariable String userId) {
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
         int result = exitService.addExitUser(roomId, userId);
@@ -161,7 +163,7 @@ public class RoomController {
             status = HttpStatus.NOT_FOUND;
             resultMap.put("message", FAIL);
         } else {
-            int cnt = roomService.exitRoom(Integer.parseInt(userId));
+            int cnt = roomService.exitRoom(Integer.parseInt(roomId));
             if(cnt == 0){
                 status = HttpStatus.NOT_FOUND;
                 resultMap.put("message", FAIL);
@@ -173,20 +175,37 @@ public class RoomController {
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
     }
 
-    //    @ApiOperation(value = "필터링된 방 제공", notes = "필터링(private 여/부, 입장가능 여/부)된 방의 정보를 반환한다.", response = Map.class)
-//    @PostMapping("/filter")
-//    public ResponseEntity<?> getFilteredRoom(@RequestBody RoomFilterFormDto roomFilterFormDto) {
-//        HttpStatus status = null;
-//        Map<String, Object> resultMap = new HashMap<>();
-//        List<RoomPasswordXDto> roomList = roomService.getFilteredRoom(roomFilterFormDto);
-//        if (roomList == null){
-//            status = HttpStatus.NOT_FOUND;
-//            resultMap.put("message", FAIL);
-//        } else {
-//            status = HttpStatus.OK;
-//            resultMap.put("message", SUCCESS);
-//            resultMap.put("result", roomList);
-//        }
-//        return new ResponseEntity<Map<String, Object>>(resultMap, status);
-//    }
+    @ApiOperation(value = "방 나가기 조치", notes = "방 인원수를 1감소 시킨다.", response = Map.class)
+    @DeleteMapping("/exit/{roomId}")
+    public ResponseEntity<?> exitRoom(@ApiParam(value = " 방 아이디", required = true)
+                                         @PathVariable String roomId) {
+        HttpStatus status = null;
+        Map<String, Object> resultMap = new HashMap<>();
+        int result = roomService.exitRoom(Integer.parseInt(roomId));
+        if (result == 0){
+            status = HttpStatus.NOT_FOUND;
+            resultMap.put("message", FAIL);
+        } else {
+            status = HttpStatus.OK;
+            resultMap.put("message", SUCCESS);
+        }
+        return new ResponseEntity<Map<String, Object>>(resultMap, status);
+    }
+
+    @ApiOperation(value = "방 삭제", notes = "방을 삭제 시킨다", response = Map.class)
+    @DeleteMapping("/{roomId}")
+    public ResponseEntity<?> removeRoom(@ApiParam(value = "방 아이디", required = true)
+                                         @PathVariable String roomId) {
+        HttpStatus status = null;
+        Map<String, Object> resultMap = new HashMap<>();
+        int result = roomService.deleteRoom(Integer.valueOf(roomId));
+        if (result == 0){
+            status = HttpStatus.NOT_FOUND;
+            resultMap.put("message", FAIL);
+        } else {
+            status = HttpStatus.OK;
+            resultMap.put("message", SUCCESS);
+        }
+        return new ResponseEntity<Map<String, Object>>(resultMap, status);
+    }
 }

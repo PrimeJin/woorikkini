@@ -1,6 +1,8 @@
 package com.ssafy.kkini.entity;
 
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -19,8 +21,10 @@ public class RefreshToken {
     @Column(columnDefinition = "INT UNSIGNED")
     private int refreshTokenId;
 
-    @NotNull
-    private int userId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(name = "refresh_token", length = 256)
     @Size(max = 256)
@@ -31,10 +35,10 @@ public class RefreshToken {
     }
 
     public RefreshToken(
-            @NotNull Integer userId,
+            User user,
             @Size(max = 256) String refreshToken
     ) {
-        this.userId = userId;
+        this.user = user;
         this.refreshToken = refreshToken;
     }
 }
