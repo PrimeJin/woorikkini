@@ -116,6 +116,24 @@ export const logoutUser = async (credentials, accessToken) => {
   }
 };
 
+//리프레시 토큰 재발급요청
+const requestToken = async () => {
+  const refreshToken = getCookieToken();
+  const data = {
+    refreshToken: refreshToken,
+  };
+
+  await axios
+    .post('https://i8a804.p.ssafy.io/api/auth/refresh', data)
+    .then((response) => {
+      if (response.status === 401) alert('유효하지 않은 토큰입니다');
+
+      if (response.data.refreshToken !== null) setRefreshToken(response.data.refreshToken);
+      dispatch(SET_TOKEN(response.data.accessToken));
+    })
+    .catch((error) => console.log(error));
+};
+
 //회원탈퇴
 export const DeleteUser = (userId) => {
   const url = `${BASE_URL}/user/${userId}`;
