@@ -85,7 +85,8 @@ class VideoRoom extends Component {
       reportModalOpen: false,
       voteModalOpen: false,
       banModalOpen: false,
-      reportedUser: '',
+
+      reportedUserId: '',
     };
 
     //method
@@ -163,7 +164,7 @@ class VideoRoom extends Component {
         reportModalOpen: true,
       });
       this.setState({
-        reportedUser: e.target.value,
+        reportedUserId: e.target.value,
       });
     } else if (e.target.name === 'vote') {
       this.setState({
@@ -855,7 +856,7 @@ class VideoRoom extends Component {
                   reportModalOpen={this.state.reportModalOpen}
                   closeModal={this.closeModal}
                   currentUserId={this.props.currentUserId}
-                  reportedUser={this.state.reportedUser}
+                  reportedUserId={this.state.reportedUserId}
                 ></ReportModal>
               ) : (
                 <div style={{ display: 'none' }}></div>

@@ -28,7 +28,6 @@ const AdminNoticeDetail = () => {
 
   useEffect(() => {
     getDetail();
-    console.log(content);
   }, [update]);
 
   const [inputTitle, setInputTitle] = useState("");
@@ -106,6 +105,7 @@ const AdminNoticeDetail = () => {
 
   return (
     <div>
+      <div className={styles.admin}></div>
       <h1>공지사항</h1>
 
       {/* 모달 시작 */}

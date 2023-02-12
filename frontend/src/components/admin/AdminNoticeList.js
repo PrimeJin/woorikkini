@@ -1,7 +1,7 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 function AdminNoticeList(props) {
-  const noticeDetail = `notice/${props.notice.noticeId}`;
   const id = props.notice.noticeId;
   const title = props.notice.noticeTitle;
   const time = props.notice.createdTime.substr(0, 10);
@@ -10,12 +10,12 @@ function AdminNoticeList(props) {
     <tr>
       <td>{id}</td>
       <td>
-        <a
-          href={noticeDetail}
+        <Link
+          to={`${props.notice.noticeId}`}
           style={{ textDecoration: "none", color: "black" }}
         >
           {title}
-        </a>
+        </Link>
       </td>
       <td>{time}</td>
     </tr>

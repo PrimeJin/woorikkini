@@ -9,11 +9,10 @@ const RoomList = (props) => {
   const title = props.room.roomTitle;
   const content = props.room.roomContent;
   const keywords = props.room.roomKeywordList;
+  const recent = props.room.roomRecentUser;
   const limit = props.room.roomLimitUser;
-  // const password = props.room.roomPassword;
   const preset = props.room.roomPreset;
   const isPrivate = JSON.parse(props.room.roomPrivate);
-  const recent = props.room.roomRecentUser;
   const keywordList = props.keywordList;
   const navigate = useNavigate();
   const [modal, setModal] = useState(false);
@@ -23,7 +22,11 @@ const RoomList = (props) => {
   const userId = 1;
 
   function modalChange() {
-    modal ? setModal(false) : setModal(true);
+    recent === limit
+      ? alert("이미 가득찬 방입니다")
+      : modal
+      ? setModal(false)
+      : setModal(true);
   }
 
   function goDetail() {
@@ -65,8 +68,8 @@ const RoomList = (props) => {
         <div className={styles.roomEnter}>
           <div className={styles.enterModal}>
             <h2>{title}</h2>
-            <pre className={styles.enterContent}>{content}</pre>
-            {/* <span className={styles.enterContent}>{content}</span> */}
+            {content && <pre className={styles.enterContent}>{content}</pre>}
+
             {isPrivate && (
               <div
                 style={{

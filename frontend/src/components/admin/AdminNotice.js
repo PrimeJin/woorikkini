@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Pagination } from "@mui/material";
 
-function Notice() {
+function AdminNotice() {
   const [list, setList] = useState([]);
   const [page, setPage] = useState(1);
   const [count, setCount] = useState("");
@@ -20,7 +20,7 @@ function Notice() {
         setCount(res.data.noticeList.totalPages);
       })
       .catch((err) => {
-        console.log(err, "공지사항 에러");
+        console.log(err, "관리자 공지사항 에러");
       });
   }
 
@@ -38,8 +38,16 @@ function Notice() {
   }
 
   return (
-    <div>
-      <h1 style={{ margin: "1%", marginTop: "3%" }}>공지사항</h1>
+    <div
+      style={{
+        justifyContent: "center",
+        display: "flex",
+        flexFlow: "wrap column",
+      }}
+    >
+      {" "}
+      <div className={styles.admin}></div>
+      <h1 style={{ width: "100%" }}>공지사항</h1>
       <div
         style={{
           justifyContent: "right",
@@ -52,20 +60,12 @@ function Notice() {
           새 글 작성
         </button>
       </div>
-
-      <div
-        style={{
-          justifyContent: "center",
-          display: "flex",
-          margin: "1%",
-          flexFlow: "wrap",
-        }}
-      >
+      <div className={styles.noticeTable}>
         <table>
           <tr>
             <th style={{ width: "10%" }}>번호</th>
-            <th style={{ width: "70%" }}>제목</th>
-            <th style={{ width: "20%" }}>작성일자</th>
+            <th style={{ width: "80%" }}>제목</th>
+            <th style={{ width: "10%" }}>작성일자</th>
           </tr>
           {list.map((notice, index) => (
             <AdminNoticeList key={index} notice={notice} />
@@ -77,4 +77,4 @@ function Notice() {
   );
 }
 
-export default Notice;
+export default AdminNotice;
