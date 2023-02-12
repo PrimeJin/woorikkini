@@ -36,6 +36,7 @@ const ReportUser = (props) => {
         data: reportData,
       })
         .then((res) => {
+          console.log(res);
           if (res.data.message === 'success') {
             alert('신고가 접수되었습니다.');
           }

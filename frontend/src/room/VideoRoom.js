@@ -24,7 +24,6 @@ import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 
 import { SET_VOTE, RESET_VOTE } from '../store/Vote';
-import { connect } from 'react-redux';
 import Timer from './components/Timer';
 
 const OPENVIDU_SERVER_URL = 'https://i8a804.p.ssafy.io:8443'; //도커에 올린 openvidu server
@@ -42,6 +41,7 @@ const mapStateToProps = (state) => ({
   voteDisagree: state.vote.disagree,
   currentUserId: state.user.id,
   currentUserNickname: state.user.nickname,
+  accessToken: state.token.accessToken,
 });
 
 const mapDispatchToProps = (dispatch) => {
@@ -54,7 +54,6 @@ const mapDispatchToProps = (dispatch) => {
     },
   };
 };
-
 
 class VideoRoom extends Component {
   //초기설정 생성자
@@ -131,7 +130,7 @@ class VideoRoom extends Component {
   componentDidMount() {
     window.addEventListener('beforeunload', this.onbeforeunload);
     this.scrollToBottom();
-    // this.getUserList();
+    this.getUserList();
     //방 리스트를 띄워야 합니다
   }
 
@@ -335,13 +334,13 @@ class VideoRoom extends Component {
               신고
             </Button>
             <Button
+              // onClick={() => this.startVote(user.clientData.split(',')[1].split(':')[1].split('"')[1])}
               onClick={() => this.startVote(user.clientData)}
               name="vote"
               value={user.clientData.split(',')[0].split(':')[1]}
               variant="contained"
               color="error"
               size="small"
-              onClick={this.openModal}
             >
               강퇴
             </Button>
@@ -370,11 +369,52 @@ class VideoRoom extends Component {
   }
 
   //submit버튼을 클릭하면 방(세션)에 참여
+
+  //session에 자신의 stream을 publish(게시).
+  //session을 subscribe(구독)함으로써 session에 publish된 stream들을 불러오는 것이 가능함
+  //즉 session에 입장하면 우선 자신의 stream publish => session을 subscribe해서 타인의 stream 불러오기
   joinSession() {
-    // --- 1) OpenVidu 객체 호출 ---
+    // --- OpenVidu 객체 호출 및 세션 초기화---
     this.OV = new OpenVidu();
-    this.getUserList();
+
     this.setState({ session: this.OV.initSession() }, () => {
+      // OpenVidu 환경에서 토큰 발급받기
+      this.getToken().then((token) => {
+        //토큰을 받았으면 connect(token)으로 세션에 연결할 수 있게 된다
+        //2번째 파라미터로 세션에 있는 모든 사용자에게 넘길 데이터를 공유할 수 있다
+        this.state.session
+          .connect(token, { userId: this.state.myUserId, userNickname: this.state.myUserName })
+          .then(async () => {
+            this.OV.getUserMedia({
+              audioSource: false,
+              videoSource: undefined,
+              resolution: '640x480',
+              frameRate: 30,
+            }).then((mediaStream) => {
+              let videoTrack = mediaStream.getVideoTracks()[0];
+
+              //stream 게시(화면 출력)
+              let newPublisher = this.OV.initPublisher(this.state.myUserName, {
+                audioSource: undefined,
+                videoSource: videoTrack,
+                publishAudio: true,
+                publishVideo: true,
+                insertMode: 'APPEND',
+                mirror: true, //좌우반전 옵션
+              });
+              this.state.session.publish(newPublisher);
+              this.getUserList();
+              this.setState({
+                mainStreamManager: newPublisher,
+                publisher: newPublisher,
+              });
+            });
+          })
+          .catch((error) => {
+            console.log('세션연결 오류:', error.code, error.message);
+          });
+      });
+
       //관심있는 세션 이벤트 구독(subscribe)
       this.state.session.on('streamCreated', (event) => {
         let newSubscriber = this.state.session.subscribe(
@@ -387,7 +427,7 @@ class VideoRoom extends Component {
         this.setState({
           subscribers: [...newSubscribers],
         });
-
+        this.getUserList();
         // console.log('subscribers ' + this.subscribers); //등록 확인용
       });
 
@@ -434,22 +474,22 @@ class VideoRoom extends Component {
         // console.log('누군가 투표함');
         // console.log(JSON.parse(event.data));
         this.setVoteUser(JSON.parse(event.data)); //store의 voteresult값을 1 늘려줌(store/vote.js 참고)
-
+        console.log(event.data);
         //투표후 결과값을 받아와보자
         //변경된 state값을 바로 받아오지 못하므로 setTimeout
         setTimeout(() => {
+          const userId = JSON.parse(event.data).userId;
+          const userNickname = JSON.parse(event.data).userNickname;
           const total = this.props.voteTotal;
           const agree = this.props.voteAgree;
           const disagree = this.props.voteDisagree;
           const result = {
-            who: '', //누굴 추방할지
+            userId: userId,
+            userNickname: userNickname,
             total: total, //전체 투표수
             agree: agree, //찬성 수
             disagree: disagree, //반대 수
           };
-          // console.log(this.props.voteTotal);
-          // console.log(this.props.voteAgree);
-          // console.log(this.props.voteDisagree);
           //모두 투표했을 경우 투표 종료
           if (total == this.state.subscribers.length + 1) {
             this.voteComplete(result);
@@ -457,55 +497,21 @@ class VideoRoom extends Component {
           }
         }, 1000);
       });
-
-      // OpenVidu 환경에서 토큰 발급받기
-      this.getToken().then((token) => {
-        // First param is the token got from the OpenVidu deployment. Second param can be retrieved by every user on event
-        // 'streamCreated' (property Stream.connection.data), and will be appended to DOM as the user's nickname
-        this.state.session
-          .connect(token, { clientData: this.state.myUserName })
-          .then(async () => {
-            this.OV.getUserMedia({
-              audioSource: false,
-              videoSource: undefined,
-              resolution: '640x480',
-              frameRate: 30,
-            }).then((mediaStream) => {
-              let videoTrack = mediaStream.getVideoTracks()[0];
-
-              //stream 게시(화면 출력)
-              let newPublisher = this.OV.initPublisher(this.state.myUserName, {
-                audioSource: undefined,
-                videoSource: videoTrack,
-                publishAudio: true,
-                publishVideo: true,
-                insertMode: 'APPEND',
-                mirror: true, //좌우반전 옵션
-              });
-              this.state.session.publish(newPublisher);
-              this.getUserList();
-              this.setState({
-                mainStreamManager: newPublisher,
-                publisher: newPublisher,
-              });
-            });
-          })
-          .catch((error) => {
-            console.log('세션연결 오류:', error.code, error.message);
-          });
-      });
     });
   }
 
   //투표시작 신호(강퇴버튼을 누르면 시작함)
   //추방할 사람
   startVote(voteWho) {
+    const userId = voteWho.split(',')[0].split(':')[1];
+    const userNickname = voteWho.split(',')[1].split(':')[1].split('"')[1];
     this.resetVoteUser();
     const voteResult = {
-      who: voteWho,
-      total: this.props.voteTotal,
-      agree: this.props.voteAgree,
-      disagree: this.props.voteDisagree,
+      userId: userId,
+      userNickname: userNickname,
+      total: 0,
+      agree: 0,
+      disagree: 0,
     };
 
     // console.log('투표 시작: ');
@@ -565,7 +571,7 @@ class VideoRoom extends Component {
       <div className={this.state.isVoteOn ? `${styles.modal} ${styles.openModal}` : styles.modal}>
         <section>
           <header>투표하기</header>
-          <main>{voteInfo.who}님의 강제 퇴장을 찬성하시나요?</main>
+          <main>{voteInfo.userNickname}님의 강제 퇴장을 찬성하시나요?</main>
           <p>이 창은 30초 후 자동으로 닫힙니다.</p>
           <Timer onComplete={() => this.disagree(voteInfo)} />
           <footer>
@@ -599,9 +605,24 @@ class VideoRoom extends Component {
   //투표 결과 집계
   voteComplete(result) {
     //과반수 이상이 찬성
+    console.log('찬성 : ' + result.agree);
+    console.log('전체 : ' + result.total);
+    console.log('누구 : ' + result.userNickname);
     if (result.agree / result.total >= 0.5) {
       //백엔드 및 openvidu 서버에 추방 요청을 보냄
-      alert(`${result.who}님이 추방되었습니다`);
+      // axios({
+      //   url: `https://i8a804.p.ssafy.io/api/room/exit/${this.state.sessionId}/${result.userId}`,
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json; charset=UTF-8',
+      //     authorization: `Bearer ${this.props.accessToken}`,
+      //   },ㅊ
+      // })
+      //   .then(() => {
+      //     alert(`${result.userNickname}님이 추방되었습니다`);
+      //   })
+      //   .catch((err) => console.log(err));
+      alert(`${result.userNickname}님이 추방되었습니다`);
     } else {
       alert(`추방 투표가 부결되었습니다`);
     }
@@ -718,39 +739,39 @@ class VideoRoom extends Component {
                   <div id="join-dialog" className="jumbotron vertical-center">
                     <form className={styles.form_group} onSubmit={this.joinSession}>
                       <p>
-                      <label>참가자명: </label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        id="userName"
-                        value={myUserName}
-                        onChange={this.handleChangeUserName}
-                        required
-                      />
-                    </p>
-                    <p>
-                      <label> 세션명: </label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        id="sessionId"
-                        value={mySessionId}
-                        onChange={this.handleChangeSessionId}
-                        required
-                      />
-                    </p>
-                    <p>
-                      <label>참가자Id: </label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        id="userId"
-                        value={myUserId}
-                        // onChange={this.handleChangeUserName}
-                        // required
-                        disabled
-                      />
-                    </p>
+                        <label>참가자명: </label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          id="userName"
+                          value={myUserName}
+                          onChange={this.handleChangeUserName}
+                          required
+                        />
+                      </p>
+                      <p>
+                        <label> 세션명: </label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          id="sessionId"
+                          value={mySessionId}
+                          onChange={this.handleChangeSessionId}
+                          required
+                        />
+                      </p>
+                      <p>
+                        <label>참가자Id: </label>
+                        <input
+                          className="form-control"
+                          type="text"
+                          id="userId"
+                          value={myUserId}
+                          // onChange={this.handleChangeUserName}
+                          // required
+                          disabled
+                        />
+                      </p>
                       <p className="text-center">
                         <input className="btn btn-lg btn-success" name="commit" type="submit" value="JOIN" />
                       </p>
@@ -763,7 +784,7 @@ class VideoRoom extends Component {
         ) : (
           <div className={styles.inmain}>
             <div className={styles.inbody}>
-              <div id="video-container" className={`${styles.videobox} ${'col-md-9'}`}>
+              <div id="video-container" className={`${styles.videobox} ${'col-md-12 col-xs-12'}`}>
                 {this.state.isVoteOn ? this.showVoteModal(this.state.eventData) : null}
                 {this.state.publisher !== undefined ? (
                   <div
@@ -865,17 +886,21 @@ class VideoRoom extends Component {
           },
         })
         .then((response) => {
+          console.log('세션을 만들었어요');
+          console.log(response);
           resolve(response.data.id);
         })
         .catch((response) => {
           let error = { ...response };
+          // console.log('세션을 못만듬');
+          // console.log(response);
           if (error.response) {
             if (error.response.status === 409) {
               resolve(sessionId);
               console.log('이미 있는 세션입니다');
             } else if (
               window.confirm(
-                `OpenVidu 서버와 연결되지 않았습니다. 인증서 오류 일 수도 있습니다. "${OPENVIDU_SERVER_URL}을"\n\n 확인해주세요.` +
+                `OpenVidu 서버와 연결되지 않았습니다. 인증서 오류 일 수도 있습니다. "${OPENVIDU_SERVER_URL}"\n\n 확인해주세요.` +
                   `만약 인증 문제를 찾을 수 없다면, OpenVidu 서버가 열려 있는지 확인해주세요`,
               )
             ) {
@@ -908,4 +933,3 @@ class VideoRoom extends Component {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(VideoRoom);
-

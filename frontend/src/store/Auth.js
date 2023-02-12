@@ -24,7 +24,7 @@ export const tokenSlice = createSlice({
     SET_TOKEN: (state, action) => {
       state.authenticated = true;
       state.accessToken = action.payload;
-      state.expireTime = new Date(new Date().getTime() + TOKEN_TIME_OUT);
+      state.expireTime = new Date().getTime() + TOKEN_TIME_OUT;
     },
     //토큰 삭제 액션
     DELETE_TOKEN: (state) => {
