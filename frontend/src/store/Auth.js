@@ -8,16 +8,17 @@ import { createSlice } from '@reduxjs/toolkit';
 //토큰 만료 시간
 export const TOKEN_TIME_OUT = 600 * 1000 * 1000;
 
+const initialState = {
+  authenticated: false,
+  accessToken: null,
+  expireTime: null,
+};
+
 export const tokenSlice = createSlice({
   name: 'token', //접근할때 state.token으로 접근하면 되는것
   //초기 상태(initial state)
   //Access Token을 여기에 저장
-  initialState: {
-    authenticated: false,
-    accessToken: null,
-    expireTime: null,
-  },
-
+  initialState,
   //reducers
   reducers: {
     //토큰 생성 액션

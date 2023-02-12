@@ -1,14 +1,15 @@
 //현재 로그인한 유저 정보를 state에 저장해두고 싶다
 import { createSlice } from '@reduxjs/toolkit';
 
+const initialState = {
+  id: '',
+  name: '',
+  nickname: '',
+};
+
 export const userSlice = createSlice({
   name: 'user',
-  initialState: {
-    id: '',
-    name: '',
-    nickname: '',
-  },
-
+  initialState,
   reducers: {
     //매개변수 state는 기존 state(initialState)
     //action은 state를 변화시키기 위한 action

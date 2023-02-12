@@ -4,6 +4,7 @@
  */
 import { configureStore } from '@reduxjs/toolkit';
 import { tokenSlice } from './Auth';
+import { openviduSlice } from './openvidu';
 import { userSlice } from './User';
 import { voteSlice } from './Vote';
 
@@ -13,6 +14,7 @@ export default configureStore(
       token: tokenSlice.reducer,
       user: userSlice.reducer,
       vote: voteSlice.reducer,
+      openvidu: openviduSlice.reducer,
     },
 
     devTools: process.env.NODE_ENV !== 'production',

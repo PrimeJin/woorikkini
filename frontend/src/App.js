@@ -20,8 +20,8 @@ import AdminNoticeDetail from './components/admin/AdminNoticeDetail';
 import AdminNoticeCreate from './components/admin/AdminNoticeCreate';
 import Room from './components/Room';
 import RoomDetail from './components/RoomDetail';
-import Notice from './components/Notice';
-import NoticeDetail from './components/NoticeDetail';
+import Notice from './components/admin/AdminNotice';
+import NoticeDetail from './components/admin/AdminNoticeDetail';
 
 function App() {
   return (

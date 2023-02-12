@@ -25,6 +25,7 @@ import Box from '@mui/material/Box';
 
 import { SET_VOTE, RESET_VOTE } from '../store/Vote';
 import Timer from './components/Timer';
+import Room from '../components/Room';
 
 const OPENVIDU_SERVER_URL = 'https://i8a804.p.ssafy.io:8443'; //도커에 올린 openvidu server
 const OPENVIDU_SERVER_SECRET = 'kkini'; //시크릿키값, 바꿔주면 좋음
@@ -723,65 +724,62 @@ class VideoRoom extends Component {
 
     return (
       <div className={styles.container}>
-        {/** 세션이 없을 경우 띄우는 화면
-         * RoomList.js가 여기를 대체할 수 있도록 하기
-         */}
-
         {this.state.session === undefined ? (
-          <div>
-            <div className={styles.header}>
-              <CenterLogo />
-              <h2 id="session-title">{mySessionId}</h2>
-            </div>
-            <div className={styles.main}>
-              <div className={styles.body}>
-                <div id="join">
-                  <div id="join-dialog" className="jumbotron vertical-center">
-                    <form className={styles.form_group} onSubmit={this.joinSession}>
-                      <p>
-                        <label>참가자명: </label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          id="userName"
-                          value={myUserName}
-                          onChange={this.handleChangeUserName}
-                          required
-                        />
-                      </p>
-                      <p>
-                        <label> 세션명: </label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          id="sessionId"
-                          value={mySessionId}
-                          onChange={this.handleChangeSessionId}
-                          required
-                        />
-                      </p>
-                      <p>
-                        <label>참가자Id: </label>
-                        <input
-                          className="form-control"
-                          type="text"
-                          id="userId"
-                          value={myUserId}
-                          // onChange={this.handleChangeUserName}
-                          // required
-                          disabled
-                        />
-                      </p>
-                      <p className="text-center">
-                        <input className="btn btn-lg btn-success" name="commit" type="submit" value="JOIN" />
-                      </p>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <Room />
         ) : (
+          // <div>
+          //   <div className={styles.header}>
+          //     <CenterLogo />
+          //     <h2 id="session-title">{mySessionId}</h2>
+          //   </div>
+          //   <div className={styles.main}>
+          //     <div className={styles.body}>
+          //       <div id="join">
+          //         <div id="join-dialog" className="jumbotron vertical-center">
+          //           <form className={styles.form_group} onSubmit={this.joinSession}>
+          //             <p>
+          //               <label>참가자명: </label>
+          //               <input
+          //                 className="form-control"
+          //                 type="text"
+          //                 id="userName"
+          //                 value={myUserName}
+          //                 onChange={this.handleChangeUserName}
+          //                 required
+          //               />
+          //             </p>
+          //             <p>
+          //               <label> 세션명: </label>
+          //               <input
+          //                 className="form-control"
+          //                 type="text"
+          //                 id="sessionId"
+          //                 value={mySessionId}
+          //                 onChange={this.handleChangeSessionId}
+          //                 required
+          //               />
+          //             </p>
+          //             <p>
+          //               <label>참가자Id: </label>
+          //               <input
+          //                 className="form-control"
+          //                 type="text"
+          //                 id="userId"
+          //                 value={myUserId}
+          //                 // onChange={this.handleChangeUserName}
+          //                 // required
+          //                 disabled
+          //               />
+          //             </p>
+          //             <p className="text-center">
+          //               <input className="btn btn-lg btn-success" name="commit" type="submit" value="JOIN" />
+          //             </p>
+          //           </form>
+          //         </div>
+          //       </div>
+          //     </div>
+          //   </div>
+          // </div>
           <div className={styles.inmain}>
             <div className={styles.inbody}>
               <div id="video-container" className={`${styles.videobox} ${'col-md-12 col-xs-12'}`}>
