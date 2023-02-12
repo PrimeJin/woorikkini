@@ -33,7 +33,7 @@ public class UserService {
     }
 
     public User login(UserLoginFormDto userLoginFormDto) {
-        Optional<User> user = userRepository.findByUserEmail(userLoginFormDto.getUserEmail());
+        Optional<User> user = userRepository.findByUserEmailAndUserProviderIsNull(userLoginFormDto.getUserEmail());
         if(user.isPresent()){
             if(user.get().getUserActivation().isAfter(LocalDateTime.now())){
                 throw new LockedException("Your Account is denied");
