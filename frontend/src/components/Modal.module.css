@@ -21,13 +21,12 @@
   outline: none;
   cursor: pointer;
   border: 0;
-  /* background-color: #ff8d89; */
   padding-top: 4.5%;
   margin-right: 4.5%;
 }
 .modal > section {
   width: 400px;
-  height: 650px;
+  height: auto;
   width: 90%;
   max-width: 400px;
   margin: 0 auto;
@@ -61,12 +60,11 @@
 .modal > section > main {
   padding: 5px;
   margin-top: 5%;
-  /* align-items: center; */
   display: flex;
   justify-content: center;
 }
 .modal > section > footer {
-  padding: 12px 16px;
+  padding: 20px 16px;
   text-align: center;
   justify-content: center;
   display: flex;
@@ -105,16 +103,6 @@
   /* 팝업이 열릴때 스르륵 열리는 효과 */
   animation: modal-bg-show 0.3s;
   margin-top: 0;
-  /* Rectangle 18 */
-
-  /* position: absolute; */
-  /* width: 428px;
-  height: 709px;
-  left: 156.5px;
-  top: -101px;
-
-  background: #fefaef;
-  border-radius: 50px; */
 }
 @keyframes modal-show {
   from {

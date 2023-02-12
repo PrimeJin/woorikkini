@@ -61,11 +61,21 @@ function CreateCard(props) {
 
   // 제목 입력
   const onTitle = (event) => {
-    setTitleData(event.currentTarget.value);
+    const inputTitle = event.currentTarget.value;
+    if (inputTitle.length > 20) {
+      alert('최대 20자까지 입력이 가능합니다.');
+    } else {
+      setTitleData(inputTitle);
+    }
   };
   // 내용 입력
   const onContent = (event) => {
-    setContentData(event.currentTarget.value);
+    const inputContent = event.currentTarget.value;
+    if (inputContent.length > 40) {
+      alert('최대 40자까지 입력이 가능합니다.');
+    } else {
+      setContentData(inputContent);
+    }
   };
 
   // 카드 내용 담을 변수
@@ -98,6 +108,11 @@ function CreateCard(props) {
         console.log('성공!');
         setModalOpen(false);
         alert('새로운 추억이 등록되었습니다.');
+        // formData 확인
+        for (let key of formData.keys()) {
+          console.log(key, ':', formData.get(key));
+        }
+
         getCardList();
         setFileData('');
         setTitleData('');
@@ -131,16 +146,22 @@ function CreateCard(props) {
             name="memoryImgFiles"
           />
 
-          <div
-            className={styles.photo}
-            style={{ border: 'none', width: 280, height: 250, marginBottom: '3%', borderRadius: '10px' }}
-          >
+          <div className={styles.photo}>
             {previewData.map((item, id) => {
               return (
-                <div key={id} style={{ width: 80, height: 60 }}>
-                  <img src={item} style={{ width: 50, height: 60 }} />
-                  <div onClick={() => deleteImg(id)}>X</div>
-                </div>
+                <img
+                  key={id}
+                  src={item}
+                  style={{
+                    width: '80px',
+                    height: '120px',
+                    position: 'relative',
+                    float: 'left',
+                    marginLeft: '10px',
+                    marginTop: '3px',
+                  }}
+                  onClick={() => deleteImg(id)}
+                />
               );
             })}
           </div>
@@ -154,7 +175,7 @@ function CreateCard(props) {
           <textarea
             value={contentData}
             onChange={onContent}
-            style={{ width: 250, height: 80, border: 'none', borderRadius: '10px', padding: '5%', resize: 'none' }}
+            style={{ width: 250, height: 50, border: 'none', borderRadius: '10px', padding: '5%', resize: 'none' }}
             placeholder="내용을 입력하세요."
           ></textarea>
         </form>
