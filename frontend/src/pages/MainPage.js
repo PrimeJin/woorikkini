@@ -25,7 +25,7 @@ function MainPage() {
       <br />
       <Link to="/test">Openvidu 테스트</Link>
       <br />
-      <Link to="/admin/notice">관리자 공지사항 테스트</Link>
+      <Link to="/admin">관리자 테스트</Link>
       <br />
       <Link to="/room">방 테스트</Link>
     </div>

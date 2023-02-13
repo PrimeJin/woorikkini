@@ -240,7 +240,7 @@ const RoomCreate = (props) => {
         <div className={styles.항목} style={{ marginTop: "1%" }}>
           <label className={styles.roomLabel}>방 설명</label>
           <textarea
-            className={styles.createInput}
+            className={`${styles.createInput} ${styles.scroll}`}
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="50자 이내로 입력하세요"

@@ -18,6 +18,10 @@ import VideoRoom from './room/VideoRoom';
 import AdminNotice from './components/admin/AdminNotice';
 import AdminNoticeDetail from './components/admin/AdminNoticeDetail';
 import AdminNoticeCreate from './components/admin/AdminNoticeCreate';
+import AdminAllUsers from './components/admin/AdminAllUsers';
+import AdminStats from './components/admin/AdminStats';
+import AdminReport from './components/admin/AdminReport';
+import Admin from './components/admin/Admin';
 import Room from './components/Room';
 import RoomDetail from './components/RoomDetail';
 import Notice from './components/Notice';
@@ -44,6 +48,10 @@ function App() {
           <Route path="/oauth/callback/naver" element={<Naver />} />
           <Route path="/oauth/callback/google" element={<Google />} />
           <Route path="/test" element={<VideoRoom />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/report" element={<AdminReport />} />
+          <Route path="/admin/stats" element={<AdminStats />} />
+          <Route path="/admin/allUsers" element={<AdminAllUsers />} />
           <Route path="/admin/notice" element={<AdminNotice />} />
           <Route path="/admin/notice/:noticeId" element={<AdminNoticeDetail />} />
           <Route path="/admin/notice/create" element={<AdminNoticeCreate />} />

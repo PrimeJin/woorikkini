@@ -24,7 +24,6 @@ const PwFind = () => {
       setErrMsg("");
     }
   };
-  // };
 
   const getInfo = () => {
     axios({
@@ -46,12 +45,11 @@ const PwFind = () => {
 
   return (
     <div>
-      {/* <img className="logo" src="logo.png" alt="이미지없음" /> */}
-      <p className={styles.logo}>
-        우리
-        <br />
-        끼니
-      </p>
+      <img
+        className={styles.logo}
+        src={`${process.env.PUBLIC_URL}/logo.png`}
+        alt="이미지없음"
+      />
       <div className={styles.all}>
         <form className={styles.pwForm}>
           <p className={styles.pwChange}>비밀번호 찾기</p>
@@ -66,7 +64,14 @@ const PwFind = () => {
             />
             <br />
             {errMsg ? (
-              <h5 style={{ color: "red", textAlign: "left", margin: 0 }}>
+              <h5
+                style={{
+                  color: "red",
+                  textAlign: "left",
+                  margin: 0,
+                  marginLeft: "10%",
+                }}
+              >
                 {errMsg}
               </h5>
             ) : (
