@@ -26,8 +26,8 @@ const ReportUser = (props) => {
       const reportData = {
         reportCategory: reason,
         reportContent: reasonDetail,
-        reportUser: currentUserId,
-        reportedUser: reportedUserId,
+        reportUserId: currentUserId,
+        reportedUserId: reportedUserId,
       };
       console.log(reportData);
       axios({
