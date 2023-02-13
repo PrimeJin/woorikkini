@@ -56,6 +56,9 @@ public class ReportService {
             User user = x.getReportedUser();
             reportDto.setReportedUser(user.getUserEmail());
             reportDto.setReportedCount(user.getUserReportedCount());
+            if(user.getUserActivation().isAfter(LocalDateTime.now())) {
+                reportDto.setUserActivation("활동정지");
+            }
 
             reportListDto.add(reportDto);
         }
