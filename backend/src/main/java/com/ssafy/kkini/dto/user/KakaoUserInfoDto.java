@@ -26,8 +26,7 @@ public class KakaoUserInfoDto implements OAuth2UserInfoDto {
 
     @Override
     public String getNickName() {
-        String nickname = new StringBuilder().append(getProvider()).append("_").append(getProviderId()).toString();
-        return nickname;
+        return new StringBuilder().append(getProvider()).append("_").append(getProviderId()).toString();
     }
 
     @Override
