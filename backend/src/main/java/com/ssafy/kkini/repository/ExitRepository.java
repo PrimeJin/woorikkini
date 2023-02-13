@@ -4,5 +4,5 @@ import com.ssafy.kkini.entity.Exit;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ExitRepository  extends JpaRepository<Exit, Long> {
-    Exit findByOutcaster(int userId);
+    Exit findByOutcasterAndRoomId_RoomId(int userId, int roomId);
 }
