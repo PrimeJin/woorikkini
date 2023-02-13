@@ -109,6 +109,7 @@ const LoginPage = () => {
                 },
               })}
             />
+            <p></p>
             {errors.email && <small role="alert">{errors.email.message}</small>}
             <input
               id={styles.userPassword}
@@ -134,13 +135,26 @@ const LoginPage = () => {
         </button>
         <Link
           to="/user/findpw"
-          style={{ color: 'blue', textDecoration: 'none', textAlign: 'right', marginRight: '50px', padding: '5px' }}
+          style={{ position: 'relative', color: 'blue', textDecoration: 'none', marginBottom: '10%' }}
         >
-          <small>비밀번호 찾기</small>
+          <div
+            style={{
+              padding: '2% 0% 5% 30%',
+              position: 'absolute',
+              width: '100px',
+              left: 50,
+              top: 10,
+              fontSize: 'small',
+            }}
+          >
+            비밀번호 찾기
+          </div>
         </Link>
         <div className={styles.socialLogin}>
           <NaverButton />
+          <p></p>
           <KakaoButton />
+          <p></p>
           <GoogleButton />
         </div>
       </form>
