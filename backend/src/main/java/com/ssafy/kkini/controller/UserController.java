@@ -199,7 +199,7 @@ public class UserController {
         && !(authCodeService.checkExpireAuthCode(authCode))) {
             map.put("message", SUCCESS);
             authCodeService.useAuthCode(authCode);  //인증코드 사용처리
-            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.ACCEPTED);
+            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
         } else {
             map.put("message", FAIL);
             return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
