@@ -69,7 +69,7 @@ public class MemoryService {
             Memory createMemory = memoryRepository.save(memory);
 
             if(createMemory != null){
-                if(!memoryImgFiles.isEmpty()){
+                if(memoryImgFiles != null && !memoryImgFiles.isEmpty()){
                     List<Photo> photoList =  uploadPhoto(memoryImgFiles,createMemory);
                     if(photoList.isEmpty()){
                         deleteMemory(createMemory.getMemoryId());
@@ -98,7 +98,7 @@ public class MemoryService {
                 reUploadPhoto(memoryUpdateFormDto.getPhotoPathList(),photoList);
 
                 //새로운 사진 저장이 있으면 저장
-                if (!memoryImgFiles.isEmpty()){
+                if (memoryImgFiles != null && !memoryImgFiles.isEmpty()){
                     List<Photo> potoList = uploadPhoto(memoryImgFiles,newUpdateMemory);
                     logger.debug(String.valueOf(memoryImgFiles.size()));
                     //실패 시 추억 수정 실패
