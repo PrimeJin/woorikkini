@@ -14,7 +14,6 @@ import DeletePage from './pages/DeletePage';
 import ErrorPage from './pages/ErrorPage';
 import PwFind from './components/PwFind';
 import PwChange from './components/PwChange';
-import VideoRoom from './room/VideoRoom';
 import AdminNotice from './components/admin/AdminNotice';
 import AdminNoticeDetail from './components/admin/AdminNoticeDetail';
 import AdminNoticeCreate from './components/admin/AdminNoticeCreate';
@@ -43,14 +42,11 @@ function App() {
           <Route path="/oauth/callback/kakao" element={<Kakao />} />
           <Route path="/oauth/callback/naver" element={<Naver />} />
           <Route path="/oauth/callback/google" element={<Google />} />
-          <Route path="/test" element={<VideoRoom />} />
           <Route path="/admin/notice" element={<AdminNotice />} />
           <Route path="/admin/notice/:noticeId" element={<AdminNoticeDetail />} />
           <Route path="/admin/notice/create" element={<AdminNoticeCreate />} />
           <Route path="/room" element={<Room />} />
           <Route path="/room/:roomId" element={<RoomDetail />} />
-          {/* <Route path="/notice" element={<Notice />} />
-          <Route path="/notice/:noticeId" element={<NoticeDetail />} /> */}
           <Route path="/*" element={<ErrorPage />} />
         </Routes>
       </BrowserRouter>

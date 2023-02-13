@@ -19,7 +19,7 @@ const RoomList = (props) => {
   const [inputPassword, setInputPassword] = useState('');
 
   // 임시 지정
-  const userId = 1;
+  const userId = localStorage.getItem('userId');
 
   function modalChange() {
     recent === limit ? alert('이미 가득찬 방입니다') : modal ? setModal(false) : setModal(true);

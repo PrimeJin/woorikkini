@@ -10,7 +10,7 @@ import ReportModal from '../room/components/ReportModal';
 
 //style
 import CenterLogo from '../styles/CenterLogo';
-import styles from '../room/VideoRoom.module.css';
+import styles from './RoomDetail.module.css';
 import Messages from '../room/components/Messages';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
@@ -629,18 +629,29 @@ class RoomDetail extends Component {
   //방 퇴장(혼자만, 세션은 그대로 있어야함)
   leaveSession() {
     const mySession = this.state.session;
+    const accessToken = this.props.accessToken;
+    const roomId = localStorage.getItem('roomId');
 
-    mySession.disconnect();
-    this.OV = null; //Openvidu 객체 삭제
-    this.setState({
-      session: undefined,
-      subscribers: [],
-      mySessionId: 'SessionA',
-      myUserName: 'Participant' + Math.floor(Math.random() * 100),
-      mainStreamManager: undefined,
-      publisher: undefined,
+    axios({
+      url: `https://i8a804.p.ssafy.io/api/room/exit/${roomId}`,
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        authorization: `Bearer ${accessToken}`,
+      },
+    }).then(() => {
+      mySession.disconnect();
+      this.OV = null; //Openvidu 객체 삭제
+      this.setState({
+        session: undefined,
+        subscribers: [],
+        mySessionId: 'SessionA',
+        myUserName: 'Participant' + Math.floor(Math.random() * 100),
+        mainStreamManager: undefined,
+        publisher: undefined,
+      });
+      window.location.replace('/');
     });
-    window.location.replace('/');
   }
 
   //세션 닫기(세션의 모든 참가자 퇴장)
