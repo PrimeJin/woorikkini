@@ -44,7 +44,7 @@ public class RoomController {
 
         RoomDto room = roomService.createRoom(roomCreateFormDto);
         if (room == null){
-            status = HttpStatus.NO_CONTENT;
+            status = HttpStatus.BAD_REQUEST;
             resultMap.put("message", FAIL);
         } else {
             status = HttpStatus.OK;
@@ -62,7 +62,7 @@ public class RoomController {
         Map<String, Object> resultMap = new HashMap<>();
         RoomDetailDto roomDetail = roomService.detailRoom(Integer.valueOf(roomId));
         if (roomDetail == null){
-            status = HttpStatus.NOT_FOUND;
+            status = HttpStatus.BAD_REQUEST;
             resultMap.put("message", FAIL);
         } else {
             status = HttpStatus.OK;
@@ -79,7 +79,7 @@ public class RoomController {
         Map<String, Object> resultMap = new HashMap<>();
         List<RoomDto> roomList = roomService.getAllRoom();
         if (roomList == null){
-            status = HttpStatus.NOT_FOUND;
+            status = HttpStatus.BAD_REQUEST;
             resultMap.put("message", FAIL);
         } else {
             status = HttpStatus.OK;
@@ -97,7 +97,7 @@ public class RoomController {
         Map<String, Object> resultMap = new HashMap<>();
         List<RoomDto> roomList = roomService.searchRoom(subject, content);
         if (roomList == null){
-            status = HttpStatus.NOT_FOUND;
+            status = HttpStatus.BAD_REQUEST;
             resultMap.put("message", FAIL);
         } else {
             status = HttpStatus.OK;
@@ -114,7 +114,7 @@ public class RoomController {
         Map<String, Object> resultMap = new HashMap<>();
         List<KeywordDto> keywordList = keywordService.getKeyword();
         if (keywordList == null){
-            status = HttpStatus.NOT_FOUND;
+            status = HttpStatus.BAD_REQUEST;
             resultMap.put("message", FAIL);
         } else {
             status = HttpStatus.OK;
@@ -138,7 +138,7 @@ public class RoomController {
             Room result = roomService.enterRoom(Integer.valueOf(roomId), roomEnterFormDto);
 
             if (result == null){
-                status = HttpStatus.NOT_FOUND;
+                status = HttpStatus.BAD_REQUEST;
                 resultMap.put("message", FAIL);
             } else {
                 status = HttpStatus.OK;
@@ -160,12 +160,12 @@ public class RoomController {
         Map<String, Object> resultMap = new HashMap<>();
         int result = exitService.addExitUser(roomId, userId);
         if (result == 0){
-            status = HttpStatus.NOT_FOUND;
+            status = HttpStatus.BAD_REQUEST;
             resultMap.put("message", FAIL);
         } else {
             int cnt = roomService.exitRoom(Integer.parseInt(roomId));
             if(cnt == 0){
-                status = HttpStatus.NOT_FOUND;
+                status = HttpStatus.BAD_REQUEST;
                 resultMap.put("message", FAIL);
             } else{
                 status = HttpStatus.OK;
@@ -183,7 +183,7 @@ public class RoomController {
         Map<String, Object> resultMap = new HashMap<>();
         int result = roomService.exitRoom(Integer.parseInt(roomId));
         if (result == 0){
-            status = HttpStatus.NOT_FOUND;
+            status = HttpStatus.BAD_REQUEST;
             resultMap.put("message", FAIL);
         } else {
             status = HttpStatus.OK;
@@ -200,7 +200,7 @@ public class RoomController {
         Map<String, Object> resultMap = new HashMap<>();
         int result = roomService.deleteRoom(Integer.valueOf(roomId));
         if (result == 0){
-            status = HttpStatus.NOT_FOUND;
+            status = HttpStatus.BAD_REQUEST;
             resultMap.put("message", FAIL);
         } else {
             status = HttpStatus.OK;

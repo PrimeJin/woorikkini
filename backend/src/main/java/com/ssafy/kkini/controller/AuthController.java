@@ -67,12 +67,12 @@ public class AuthController {
             // DB에 refresh 토큰 업데이트
             refreshTokenRepository.save(new RefreshToken(refreshToken.getUser(), newRefreshToken));
 
-            status = HttpStatus.ACCEPTED;
+            status = HttpStatus.OK;
             resultMap.put("refreshToken", newRefreshToken);
             resultMap.put("message", SUCCESS);
             return new ResponseEntity<Map<String, Object>>(resultMap, status);
         }
-        status = HttpStatus.ACCEPTED;
+        status = HttpStatus.OK;
         resultMap.put("message", SUCCESS);
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
     }
