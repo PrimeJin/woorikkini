@@ -11,6 +11,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
@@ -25,24 +26,31 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userId;
 
+    @Column(length = 30)
     private String userName;
 
+    @Column(length = 30)
+    @NotNull
     private String userEmail;
 
     private String userPassword;
 
+    @Column(length = 10)
     private String userRole;
 
+    @Column(length = 50)
     private String userNickname;
-
+    
     private int userBirthYear;
 
+    @Column(length = 6)
     private String userGender;
 
     @CreatedDate  //@CreationTimeStamp -> @CreatedDate로 변경
     private LocalDateTime userActivation;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 6)
     private AuthProvider userProvider;
 
     private String userProviderId;
