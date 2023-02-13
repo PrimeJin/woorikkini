@@ -9,8 +9,8 @@ import com.ssafy.kkini.entity.User;
 import com.ssafy.kkini.repository.MemoryRepository;
 import com.ssafy.kkini.repository.PhotoRepository;
 import com.ssafy.kkini.repository.UserRepository;
-import com.sun.org.slf4j.internal.Logger;
-import com.sun.org.slf4j.internal.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -98,7 +98,7 @@ public class MemoryService {
                 reUploadPhoto(memoryUpdateFormDto.getPhotoPathList(),photoList);
 
                 //새로운 사진 저장이 있으면 저장
-                if (!memoryImgFiles.isEmpty()){
+                if (memoryImgFiles != null && !memoryImgFiles.isEmpty()){
                     List<Photo> potoList = uploadPhoto(memoryImgFiles,newUpdateMemory);
                     logger.debug(String.valueOf(memoryImgFiles.size()));
                     //실패 시 추억 수정 실패
