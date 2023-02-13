@@ -9,6 +9,8 @@ import com.ssafy.kkini.entity.User;
 import com.ssafy.kkini.repository.MemoryRepository;
 import com.ssafy.kkini.repository.PhotoRepository;
 import com.ssafy.kkini.repository.UserRepository;
+import com.sun.org.slf4j.internal.Logger;
+import com.sun.org.slf4j.internal.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +35,7 @@ public class MemoryService {
     private String fileDir;
 
     private String parentDir;
+    private static final Logger logger = LoggerFactory.getLogger(MemoryService.class);
 
     public MemoryService(UserRepository userRepository,MemoryRepository memoryRepository,PhotoRepository photoRepository){
         this.userRepository = userRepository;
@@ -87,19 +90,28 @@ public class MemoryService {
         if(memory != null && user != null){
             Memory updateMemory = memoryUpdateFormDto.toEntity();
             updateMemory.setUser(user);
-            Memory newUpdateMemory = memoryRepository.save(updateMemory);
+            Memory newUpdateMemory =  memoryRepository.save(updateMemory);
             if(newUpdateMemory != null){
+                logger.debug(String.valueOf(memoryUpdateFormDto.getPhotoPathList().size()));
+                //기존 사진들에 대한 처리
+                List<Photo> photoList = photoRepository.findAllByMemory_MemoryId(newUpdateMemory.getMemoryId());
+                reUploadPhoto(memoryUpdateFormDto.getPhotoPathList(),photoList);
+
                 //새로운 사진 저장이 있으면 저장
                 if (!memoryImgFiles.isEmpty()){
                     List<Photo> potoList = uploadPhoto(memoryImgFiles,newUpdateMemory);
+                    logger.debug(String.valueOf(memoryImgFiles.size()));
                     //실패 시 추억 수정 실패
                     if (potoList.isEmpty()){
-                        memoryRepository.save(updateMemory);
+                        logger.debug("사진이 안들어와는데 왜 사이즈가 있냐고");
+                        memoryRepository.save(memory);
+                        for (Photo photo : photoList) {
+                            photoRepository.save(photo);
+                        }
                         return null;
                     }
                 }
-                //기존 사진들에 대한 처리
-                reUploadPhoto(newUpdateMemory,memoryUpdateFormDto.getPhotoPathList());
+
             }
             return newUpdateMemory;
         }else{
@@ -107,12 +119,21 @@ public class MemoryService {
         }
     }
 
-    private void reUploadPhoto(Memory newUpdateMemory, List<String> photoPathList) {
-        List<Photo> photoList = photoRepository.findAllByMemory_MemoryId(newUpdateMemory.getMemoryId());
+    private void reUploadPhoto(List<String> photoPathList,List<Photo> photoList) {
         for (Photo photo : photoList) {
+            if(photoPathList.isEmpty()){
+                File file = new File(photo.getFilePath());
+
+                if(file.exists()) { // 파일이 존재하면
+                    file.delete(); // 파일 삭제
+                }
+                photoRepository.delete(photo);
+            }
             for (int i = 0; i < photoPathList.size(); i++) {
                 //기존 사진 그대로 들어온 경우
-                if(photo.getFilePath() == photoPathList.get(i)) break;
+                if(photo.getFilePath().equals(photoPathList.get(i))){
+                    break;
+                }
                 //사진이 삭제되어 수정됐을 떄
                 if (i == photoPathList.size()-1) {
                     //현재 게시판에 존재하는 파일객체를 만듬
@@ -176,7 +197,7 @@ public class MemoryService {
 
             Photo photo = new Photo();
             photo.setMemory(memory);
-            photo.setFilePath("/api/memory/images/" + uploadFolderPath + new_file_name);
+            photo.setFilePath("api/memory/images/" + uploadFolderPath + new_file_name);
             photo.setOriginalFilename(originFileName);
 
             photoList.add(photoRepository.save(photo));

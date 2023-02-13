@@ -66,7 +66,7 @@ public class MemoryController {
         return new ResponseEntity<Map<String,Object>>(resultMap,status);
     }
     @ApiOperation(value = "추억카드 수정", notes = "추억카드 수정")
-    @PatchMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
+    @PostMapping(value = "/update", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<Map<String,Object>> updateMemory(@Valid @ApiParam(value = "추억 아이디, 제목, 내용 사진", required = true, example = "0")
                                                                @RequestPart(value = "memoryImgFiles", required = false) List<MultipartFile> memoryImgFiles,
                                                                @RequestPart(value = "newCardData", required = false) MemoryUpdateFormDto memoryUpdateFormDto){

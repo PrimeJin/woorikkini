@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.core.io.Resource;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -18,11 +19,15 @@ public class MemoryGetFormDto {
     private String memoryContent;
     private String memoryTitle;
     private List<String> photoPathList;
+    private LocalDateTime createdTime;
+    private LocalDateTime updatedTime;
     public MemoryGetFormDto(Memory entity){
         this.memoryId = entity.getMemoryId();
         this.memoryTitle = entity.getMemoryTitle();
         this.memoryContent = entity.getMemoryContent();
         this.userId = entity.getUser().getUserId();
+        this.createdTime = entity.getCreatedTime();
+        this.updatedTime = entity.getUpdatedTime();
     }
 
 
