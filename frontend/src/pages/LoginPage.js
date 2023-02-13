@@ -63,6 +63,8 @@ const LoginPage = () => {
           //참고: /store/Auth.js
           dispatch(SET_TOKEN(response.data.accessToken));
           dispatch(SET_USER({ id: response.data.userId, nickname: response.data.userNickname }));
+          localStorage.setItem('userId', response.data.userId);
+          localStorage.setItem('userNickname', response.data.userNickname);
           //화면 이동(메인)
           navigate('/');
         } else {

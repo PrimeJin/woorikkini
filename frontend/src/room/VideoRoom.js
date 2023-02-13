@@ -130,7 +130,8 @@ class VideoRoom extends Component {
   componentDidMount() {
     window.addEventListener('beforeunload', this.onbeforeunload);
     this.scrollToBottom();
-    this.getUserList();
+    // this.getUserList();
+    this.joinSession();
     //방 리스트를 띄워야 합니다
   }
 
@@ -378,8 +379,13 @@ class VideoRoom extends Component {
     this.OV = new OpenVidu();
 
     this.setState({ session: this.OV.initSession() }, () => {
+      const roomId = localStorage.getItem('roomId');
       // OpenVidu 환경에서 토큰 발급받기
-      this.getToken().then((token) => {
+      axios({
+        url: `https://i8a804.p.ssafy.io/api/room/${roomId}`,
+        methods: 'GET',
+      }).then(() => {
+        const token = localStorage.getItem('roomToken');
         //토큰을 받았으면 connect(token)으로 세션에 연결할 수 있게 된다
         //2번째 파라미터로 세션에 있는 모든 사용자에게 넘길 데이터를 공유할 수 있다
         this.state.session
