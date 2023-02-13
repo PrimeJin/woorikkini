@@ -238,7 +238,7 @@ public class UserController {
             if(passwordCode != null) {
                 emailService.sendEmailPasswordCode(userEmail, passwordCode.getPasswordCodeContent());  //이메일로 전송
                 map.put("message", "success");
-                return new ResponseEntity<Map<String, Object>>(map, HttpStatus.ACCEPTED);
+                return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
             }
         }
         map.put("message", "fail");
@@ -290,7 +290,7 @@ public class UserController {
                 //비밀번호 코드 사용처리
                 passwordCodeService.usePasswordCode(originalPasswordCode);
                 map.put("message", "success");
-                return new ResponseEntity<Map<String, Object>>(map, HttpStatus.ACCEPTED);
+                return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
             }
         }
 
@@ -307,7 +307,7 @@ public class UserController {
             map.put("message", "success");
             map.put("userList", userListDto);
             map.put("totalSize", userListDto.size());
-            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.ACCEPTED);
+            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
         } catch (Exception e) {
             map.put("message", "fail");
             return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
