@@ -7,14 +7,16 @@
   display: flex;
   align-items: center;
   flex-flow: column nowrap;
-
-  background: #fffdfa;
+}
+.login_logo {
+  margin: 3% 0;
+  top: auto;
 }
 
 /* Rectangle 19 */
 .loginform {
   width: 360px;
-  height: 480px;
+  height: auto;
   display: flex;
   flex-flow: column nowrap;
   background: #fefaef;
@@ -25,13 +27,13 @@
   border-radius: 30px;
   margin-bottom: 2%;
   align-items: center;
+  animation: login-form-ani 0.5s;
 }
 
 /* Group 5 */
 .signUpButton {
-  /* margin-left: 2.2rem; */
-  width: 295px;
-  height: 50px;
+  width: 260px;
+  height: 45px;
   background: #d6ebfc;
   border-radius: 10px;
   border: none;
@@ -39,7 +41,7 @@
   font-family: 'NanumSquareRound';
   /* font-style: normal; */
   font-weight: 700;
-  font-size: 20px;
+  font-size: 18px;
   line-height: 27px;
   color: #090936;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -47,6 +49,7 @@
   transition: 0.5s;
 }
 .inputform {
+  width: 265px;
   display: flex;
   flex-flow: row nowrap;
   margin-right: 10%;
@@ -69,8 +72,8 @@
 
 /* Rectangle 22 */
 #userEmail {
-  width: 200px;
-  height: 35px;
+  width: 188px;
+  height: 40px;
 
   background: #ffffff;
   border-radius: 10px;
@@ -78,17 +81,16 @@
   font-family: 'NanumSquareRound';
   font-style: normal;
   font-weight: 500;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 27px;
   margin-top: 1rem;
+  margin-bottom: 5%;
   padding-left: 4%;
 }
 
-/* Rectangle 20 */
 #userPassword {
-  width: 200px;
-  height: 35px;
-  margin-bottom: 1rem;
+  width: 188px;
+  height: 40px;
 
   background: #ffffff;
   border-radius: 10px;
@@ -96,17 +98,18 @@
   font-family: 'NanumSquareRound';
   font-style: normal;
   font-weight: 500;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 27px;
+  /* margin-top: 1rem; */
+  margin-bottom: 5%;
   padding-left: 4%;
 }
 
-/* Group 6 */
 .loginButton {
   width: 95px;
-  height: 90px;
+  height: 95px;
   margin-top: 15px;
-  margin-left: 5%;
+  /* margin-left: 5%; */
 
   mix-blend-mode: normal;
 
@@ -117,7 +120,7 @@
   font-family: 'NanumSquareRound';
   font-style: normal;
   font-weight: 700;
-  font-size: 18px;
+  font-size: 16px;
   line-height: 23px;
   display: flex;
   align-items: center;
@@ -125,8 +128,56 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   cursor: pointer;
   transition: 0.5s;
+  color: #090936;
+}
+@keyframes login-form-ani {
+  from {
+    opacity: 0;
+    margin-top: -50px;
+  }
+  to {
+    opacity: 1;
+    margin-top: 0;
+  }
 }
 
-.logo_box {
-  margin: 2%;
+@import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&display=swap');
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  /* background-color:  #151719; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+.sentence {
+  position: relative;
+  /* -webkit-box-reflect: below -20px linear-gradient(transparent, rgba(0, 0, 0, 0.2)); */
+  font-size: 60px;
+}
+.sentence span {
+  font-family: 'NanumSquareRound';
+  position: relative;
+  display: inline-block;
+  color: #090936;
+  font-size: large;
+  font-weight: 900;
+  text-transform: uppercase;
+  animation: waviy 1s infinite;
+  animation-delay: calc(0.1s * var(--i));
+}
+@keyframes waviy {
+  0%,
+  40%,
+  100% {
+    transform: translateY(0);
+  }
+  20% {
+    transform: translateY(-20px);
+  }
 }

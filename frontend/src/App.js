@@ -20,8 +20,6 @@ import AdminNoticeDetail from './components/admin/AdminNoticeDetail';
 import AdminNoticeCreate from './components/admin/AdminNoticeCreate';
 import Room from './components/Room';
 import RoomDetail from './components/RoomDetail';
-import Notice from './components/Notice';
-import NoticeDetail from './components/NoticeDetail';
 
 function App() {
   return (
@@ -49,8 +47,6 @@ function App() {
           <Route path="/admin/notice/create" element={<AdminNoticeCreate />} />
           <Route path="/room" element={<Room />} />
           <Route path="/room/:roomId" element={<RoomDetail />} />
-          <Route path="/notice" element={<Notice />} />
-          <Route path="/notice/:noticeId" element={<NoticeDetail />} />
           <Route path="/*" element={<ErrorPage />} />
         </Routes>
       </BrowserRouter>
