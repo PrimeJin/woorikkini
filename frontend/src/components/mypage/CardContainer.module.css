@@ -68,17 +68,14 @@
 
 .swiper_button_next,
 .swiper_button_prev {
-  background-color: transparent;
   border: none;
   cursor: pointer;
   outline: none;
   position: relative;
-  /* margin-left: 4px; */
-  color: #ffb200;
 }
+
 .cardlist_top {
   position: relative;
-  /* display: flex; */
   margin: 5%;
   justify-content: center;
   display: grid;
@@ -101,15 +98,13 @@
   line-height: 30px;
   font-size: 12px;
   opacity: 1;
-  background: rgba(255, 185, 0, 0.3);
+  background: #ffb200;
   display: inline-block;
-  /* margin-right: 8px; */
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .swiper_pagination_bullet_active {
-  background: #ffb200;
   width: 20px;
 }
 
@@ -120,9 +115,4 @@
     0px 22.3363px 17.869px rgba(0, 0, 0, 0.0417275), 0px 12.5216px 10.0172px rgba(0, 0, 0, 0.035),
     0px 6.6501px 5.32008px rgba(0, 0, 0, 0.0282725), 0px 2.76726px 2.21381px rgba(0, 0, 0, 0.0196802);
   border-radius: 20px;
-  /* margin-top: 2em; */
-  /* margin-left: 2%;
-  margin-right: 2%; */
-  /* flex-wrap: wrap;
-  justify-content: space-around; */
 }

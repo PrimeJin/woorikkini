@@ -2,11 +2,11 @@
   display: flex;
   justify-content: left;
   flex-flow: nowrap;
-  margin: 2%;
+  margin: 2% 0 0 2%;
   width: 130px;
 }
 
 .mypage_logo {
-  width: 75px;
-  height: 83px;
+  width: 90px;
+  height: 100px;
 }
