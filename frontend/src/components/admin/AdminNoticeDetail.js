@@ -1,7 +1,8 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import styles from "./AdminNotice.module.css";
+import styles from "./Admin.module.css";
+import AdminSidebar from "./AdminSidebar";
 
 const AdminNoticeDetail = () => {
   const [title, setTitle] = useState("");
@@ -22,7 +23,13 @@ const AdminNoticeDetail = () => {
         setTime(res.data.notice.createdTime.substr(0, 10));
       })
       .catch((err) => {
-        console.log(err, "공지사항 디테일 에러");
+        if (err.response.data.message === "fail") {
+          alert("로그인이 필요한 서비스입니다.");
+          navigate("/user/login");
+        } else {
+          alert("유효하지 않은 요청입니다.");
+          console.log(err, "공지사항 디테일 에러");
+        }
       });
   }
 
@@ -106,8 +113,8 @@ const AdminNoticeDetail = () => {
   return (
     <div>
       <div className={styles.admin}></div>
-      <h1>공지사항</h1>
-
+      <div className={styles.admin}></div>
+      <AdminSidebar />
       {/* 모달 시작 */}
       {modal ? (
         <div
@@ -136,11 +143,17 @@ const AdminNoticeDetail = () => {
         <div></div>
       )}
       {/* 모달 끝 */}
-
       <div
-        style={{ display: "flex", justifyContent: "center" }}
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          flexFlow: "wrap row",
+          marginBottom: "2%",
+          marginLeft: "10%",
+        }}
         onClick={modalClose}
       >
+        <h1 style={{ width: "100%" }}>공지사항</h1>
         {!update ? (
           //
           // 디테일
