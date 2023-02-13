@@ -34,7 +34,7 @@ public class ReportController {
         Map<String, Object> map = new HashMap<>();
         if(reportService.createReport(reportCreateFormDto) != null) {
             map.put("message", "success");
-            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.ACCEPTED);
+            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
         } else {
             map.put("message", "fail");
             return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
@@ -50,7 +50,7 @@ public class ReportController {
             map.put("message", "success");
             map.put("reportList", reportListDto);
             map.put("totalSize", reportListDto.size());
-            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.ACCEPTED);
+            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
         } catch(Exception e) {
             map.put("message", "fail");
             return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
@@ -61,14 +61,14 @@ public class ReportController {
     @GetMapping("/suspend")
     public ResponseEntity<Map<String, Object>> userSuspend(@ApiParam(value = "신고내역번호") @RequestParam int reportId) {
         Map<String, Object> map = new HashMap<>();
-        int userId = reportService.getReportByReportId(reportId).getReportedUser();
+        int userId = reportService.getReportByReportId(reportId).getReportedUser().getUserId();
         //활동정지
         User user = reportService.userSuspend(userId);
         if(user != null) {
             //로그아웃 처리
             tokenProviderService.deleteRefreshToken(userId);
             map.put("message", "success");
-            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.ACCEPTED);
+            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
         } else {
             map.put("message", "fail");
             return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);

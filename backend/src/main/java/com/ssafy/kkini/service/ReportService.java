@@ -36,7 +36,9 @@ public class ReportService {
     @Transactional
     //신고하기 (저장)
     public Report createReport(ReportCreateFormDto reportCreateFormDto) {
-        this.plusReportedCount(reportCreateFormDto.getReportedUser());
+        User reportedUser = userRepository.findByUserId(reportCreateFormDto.getReportedUserId());
+        reportCreateFormDto.setReportedUser(reportedUser);
+        this.plusReportedCount(reportCreateFormDto.getReportedUserId());
         return reportRepository.save(reportCreateFormDto.toEntity());
     }
 
@@ -51,7 +53,7 @@ public class ReportService {
             reportDto.setReportCategory(x.getReportCategory());
             reportDto.setReportContent(x.getReportContent());
 
-            User user = userRepository.findByUserId(x.getReportedUser());
+            User user = x.getReportedUser();
             reportDto.setReportedUser(user.getUserEmail());
             reportDto.setReportedCount(user.getUserReportedCount());
 
