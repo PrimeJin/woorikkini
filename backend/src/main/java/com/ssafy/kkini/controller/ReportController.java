@@ -28,15 +28,18 @@ public class ReportController {
         this.tokenProviderService = tokenProviderService;
     }
 
+    private static final String SUCCESS = "success";
+    private static final String FAIL = "fail";
+
     @ApiOperation(value = "신고 등록", notes = "신고 내역에 저장, 피신고자 신고당한횟수 +1 시키기")
     @PostMapping()
     public ResponseEntity<Map<String, Object>> report(@Valid @ApiParam(value = "신고 작성 정보") @RequestBody ReportCreateFormDto reportCreateFormDto) {
         Map<String, Object> map = new HashMap<>();
         if(reportService.createReport(reportCreateFormDto) != null) {
-            map.put("message", "success");
+            map.put("message", SUCCESS);
             return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
         } else {
-            map.put("message", "fail");
+            map.put("message", FAIL);
             return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
         }
     }
@@ -47,12 +50,12 @@ public class ReportController {
         Map<String, Object> map = new HashMap<>();
         try {
             List<ReportListDto> reportListDto = reportService.getReportList();
-            map.put("message", "success");
+            map.put("message", SUCCESS);
             map.put("reportList", reportListDto);
             map.put("totalSize", reportListDto.size());
             return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
         } catch(Exception e) {
-            map.put("message", "fail");
+            map.put("message", FAIL);
             return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
         }
     }
@@ -67,10 +70,10 @@ public class ReportController {
         if(user != null) {
             //로그아웃 처리
             tokenProviderService.deleteRefreshToken(userId);
-            map.put("message", "success");
+            map.put("message", SUCCESS);
             return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
         } else {
-            map.put("message", "fail");
+            map.put("message", FAIL);
             return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
         }
     }
