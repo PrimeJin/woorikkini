@@ -27,7 +27,7 @@ public class GoogleUserInfoDto implements OAuth2UserInfoDto {
 
     @Override
     public String getName() {
-        return new StringBuilder().append(attributes.get("name")).toString();
+        return (String) attributes.get("name");
     }
 
     @Override
