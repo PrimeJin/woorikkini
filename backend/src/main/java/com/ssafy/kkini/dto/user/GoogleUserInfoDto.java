@@ -39,7 +39,7 @@ public class GoogleUserInfoDto implements OAuth2UserInfoDto {
 
     @Override
     public String getGender() {
-        return null;
+        return "";
     }
 
     @Override

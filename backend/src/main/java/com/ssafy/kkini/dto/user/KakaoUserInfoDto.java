@@ -4,6 +4,7 @@ import com.ssafy.kkini.dto.AuthProvider;
 import com.ssafy.kkini.entity.User;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 
+import java.util.Date;
 import java.util.Map;
 
 public class KakaoUserInfoDto implements OAuth2UserInfoDto {
@@ -25,12 +26,13 @@ public class KakaoUserInfoDto implements OAuth2UserInfoDto {
 
     @Override
     public String getNickName() {
-        return (String) kakaoProfile.get("nickname");
+        String nickname = new StringBuilder().append(getProvider()).append("_").append(getProviderId()).toString();
+        return nickname;
     }
 
     @Override
     public String getName() {
-        return null;
+        return (String) kakaoProfile.get("nickname");
     }
 
     @Override

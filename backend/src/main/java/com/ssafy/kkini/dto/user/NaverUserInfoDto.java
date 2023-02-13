@@ -20,11 +20,7 @@ public class NaverUserInfoDto implements OAuth2UserInfoDto {
 
     @Override
     public String getNickName() {
-        StringBuilder sb = new StringBuilder();
-        String nickname = (String) attributes.get("nickname");
-        if(nickname == null){
-            nickname = sb.append(getProvider()).append("_").append(new Date().getTime()).toString();
-        }
+        String nickname = new StringBuilder().append(getProvider()).append("_").append(new Date().getTime()).toString();
         return nickname;
     }
 
@@ -35,7 +31,7 @@ public class NaverUserInfoDto implements OAuth2UserInfoDto {
 
     @Override
     public int getBirthYear() {
-        return Integer.valueOf((String) attributes.get("birthyear"));
+        return Integer.valueOf((String) attributes.get("birthyear") + ((String) attributes.get("birthday")).replace("-", ""));
     }
 
     @Override
