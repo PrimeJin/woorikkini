@@ -43,25 +43,24 @@ public class StatsService {
         int nowYear = 0;
         LocalDate now = LocalDate.now();
         // 포맷 정의
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         // 포맷 적용
         nowYear = Integer.parseInt(now.format(formatter));
-        System.out.println(nowYear);
 
         //20대
-        int twenityesStats = userRepository.countByUserBirthYearBetween(nowYear-30 ,nowYear-20);
+        int twenityesStats = userRepository.countByUserBirthYearBetween(nowYear-300000 ,nowYear-200000);
         StatsGetDto twenityes = new StatsGetDto("twenty",twenityesStats);
         list.add(twenityes);
         //30대
-        int thirtiesStats = userRepository.countByUserBirthYearBetween(nowYear-40,nowYear-30);
+        int thirtiesStats = userRepository.countByUserBirthYearBetween(nowYear-400000,nowYear-300000);
         StatsGetDto thirties = new StatsGetDto("thirties",thirtiesStats);
         list.add(thirties);
         //40대
-        int fortiesStats = userRepository.countByUserBirthYearBetween(nowYear-50, nowYear-40);
+        int fortiesStats = userRepository.countByUserBirthYearBetween(nowYear-500000, nowYear-400000);
         StatsGetDto forties = new StatsGetDto("forties",fortiesStats);
         list.add(forties);
         //50대
-        int fiftiesStats = userRepository.countByUserBirthYearBetween(nowYear-60, nowYear-50);
+        int fiftiesStats = userRepository.countByUserBirthYearBetween(nowYear-600000, nowYear-500000);
         StatsGetDto fifties = new StatsGetDto("fifties",fiftiesStats);
         list.add(fifties);
 
