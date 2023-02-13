@@ -31,7 +31,9 @@ public class KakaoUserInfoDto implements OAuth2UserInfoDto {
 
     @Override
     public String getName() {
-        return (String) kakaoProfile.get("nickname");
+        String name = (String) kakaoProfile.get("nickname");
+        if(name == null) return "";
+        else return name;
     }
 
     @Override
@@ -41,7 +43,9 @@ public class KakaoUserInfoDto implements OAuth2UserInfoDto {
 
     @Override
     public String getGender() {
-        return (String) kakaoAccount.get("gender").toString().toLowerCase();
+        String gender = (String) kakaoAccount.get("gender");
+        if(gender == null) return "";
+        else return gender.toLowerCase();
     }
 
     @Override
