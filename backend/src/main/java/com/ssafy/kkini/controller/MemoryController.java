@@ -25,7 +25,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/memory")
-@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE,RequestMethod.OPTIONS})
 public class MemoryController {
 
     private static final String SUCCESS = "success";
