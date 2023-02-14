@@ -2,13 +2,12 @@ import styles from "./Admin.module.css";
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import AdminSidebar from "./AdminSidebar";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function AdminReport() {
   const [list, setList] = useState([]);
   const navigate = useNavigate();
   const [refresh, setRefresh] = useState(false);
-  const location = useLocation();
 
   function getList() {
     axios({
@@ -40,7 +39,7 @@ function AdminReport() {
   return (
     <div>
       <div className={styles.admin}></div>
-      {location.pathname != "/admin" && <AdminSidebar />}
+      <AdminSidebar />
       <div
         style={{
           marginLeft: "10%",
@@ -53,14 +52,16 @@ function AdminReport() {
         <h1 style={{ width: "100%" }}>신고 내역</h1>
         <div className={styles.noticeTable}>
           <table>
-            <tr>
-              <th style={{ width: "10%" }}>신고일</th>
-              <th style={{ width: "10%" }}>카테고리</th>
-              <th style={{ width: "20%" }}>내용</th>
-              <th style={{ width: "10%" }}>피신고인</th>
-              <th style={{ width: "10%" }}>신고당한 횟수</th>
-              <th style={{ width: "10%" }}></th>
-            </tr>
+            <thead>
+              <tr>
+                <th style={{ width: "10%" }}>신고일</th>
+                <th style={{ width: "10%" }}>카테고리</th>
+                <th style={{ width: "20%" }}>내용</th>
+                <th style={{ width: "10%" }}>피신고인</th>
+                <th style={{ width: "10%" }}>신고당한 횟수</th>
+                <th style={{ width: "10%" }}></th>
+              </tr>
+            </thead>
             {list.map((report, index) => (
               <AdminReportList
                 key={index}
@@ -121,35 +122,37 @@ function AdminReportList(props) {
   }
 
   return (
-    <tr>
-      <td>{reportDate}</td>
-      <td>{category}</td>
-      <td>
-        {more ? (
-          <p className={styles.hide} onClick={whole}>
-            {content}
-          </p>
-        ) : (
-          <p>{content}</p>
-        )}
-      </td>
-      <td>{reportedUser}</td>
-      <td>{count}</td>
-      <td>
-        {activation ? (
-          <button
-            className={styles.reportBtn}
-            style={{ backgroundColor: "gray", cursor: "not-allowed" }}
-            disabled
-          >
-            활동정지
-          </button>
-        ) : (
-          <button className={styles.reportBtn} onClick={suspend}>
-            활동정지
-          </button>
-        )}
-      </td>
-    </tr>
+    <tbody>
+      <tr>
+        <td>{reportDate}</td>
+        <td>{category}</td>
+        <td>
+          {more ? (
+            <p className={styles.hide} onClick={whole}>
+              {content}
+            </p>
+          ) : (
+            <p>{content}</p>
+          )}
+        </td>
+        <td>{reportedUser}</td>
+        <td>{count}</td>
+        <td>
+          {activation ? (
+            <button
+              className={styles.reportBtn}
+              style={{ backgroundColor: "gray", cursor: "not-allowed" }}
+              disabled
+            >
+              활동정지
+            </button>
+          ) : (
+            <button className={styles.reportBtn} onClick={suspend}>
+              활동정지
+            </button>
+          )}
+        </td>
+      </tr>
+    </tbody>
   );
 }
