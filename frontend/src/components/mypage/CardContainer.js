@@ -103,11 +103,6 @@ const SwiperContainer = () => {
               >
                 <div className={styles.swiper_wrapper}>
                   <div className={`${styles.card} ${styles.swiper_slide}`}>
-                    {/* <SwiperSlide> */}
-                    {/* 이미지 들어갈 자리 */}
-                    {/* <img src={data.img} className={styles.slider_image_wrapper} alt="SliderImg" />
-                    </SwiperSlide> */}
-
                     {data.img.map((filePath, id) => {
                       return (
                         <SwiperSlide key={id}>

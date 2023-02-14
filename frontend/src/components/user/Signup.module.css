@@ -6,7 +6,6 @@
   justify-content: center;
   display: flex;
   flex-flow: row nowrap;
-  background-color: #fffdfa;
 }
 
 .woori_logo {
@@ -38,6 +37,7 @@
   border-radius: 30px;
   margin-bottom: 1%;
   margin-top: 2%;
+  animation: signup-form-ani 0.5s;
 }
 
 .impossible {
@@ -70,6 +70,7 @@
   padding-right: 4%;
   font-weight: 500;
   font-size: 13px;
+  margin-bottom: ;
 }
 .input_form {
   border: none;
@@ -131,7 +132,7 @@ input[type='date']:valid::before {
   width: 30%;
 }
 
-/* fieldset {
+.gender_check {
   border: none;
   display: flex;
   align-items: center;
@@ -139,7 +140,7 @@ input[type='date']:valid::before {
   width: 100%;
 }
 
-label {
+.gender_label {
   font-weight: 500;
   font-size: 13px;
   color: #090936;
@@ -148,9 +149,9 @@ label {
   align-items: center;
   width: 100%;
 }
-label input {
+.gender_label input {
   margin: 5%;
-} */
+}
 
 .accept {
   border: none;
@@ -191,4 +192,15 @@ label input {
   color: #090936;
   top: 0;
   right: 50px;
+}
+
+@keyframes signup-form-ani {
+  from {
+    opacity: 0;
+    margin-top: -50px;
+  }
+  to {
+    opacity: 1;
+    margin-top: 0;
+  }
 }

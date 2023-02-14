@@ -41,19 +41,20 @@ function Form() {
         method: 'GET',
       })
         .then((res) => {
-          console.log(res.data.message);
           if (res.data.message === 'success') {
             setEmailCheck(true);
             alert('인증코드가 전송되었습니다.');
-          } else if (res.data.message === 'fail') {
-            alert('이미 가입된 이메일 입니다.');
           } else {
             alert('다시 시도해주시기 바랍니다.');
           }
         })
         .catch((err) => {
-          alert('다시 시도해주시기 바랍니다.');
-          console.log(err);
+          if (err.response.data.message === 'fail') {
+            alert('이미 가입된 이메일 입니다.');
+          } else {
+            alert('다시 시도해주시기 바랍니다.');
+          }
+          console.log(err.response.data.message);
         });
     }
   };
@@ -278,16 +279,16 @@ function Form() {
       <p></p>
       <div className={styles.check_box}>
         <p className={styles.gender}>성별</p>
-        <fieldset>
-          <label>
+        <fieldset className={styles.gender_check}>
+          <label className={styles.gender_label}>
             <input type="radio" value="female" name="gender" onClick={onGender} />
             여자
           </label>
-          <label>
+          <label className={styles.gender_label}>
             <input type="radio" value="male" name="gender" onClick={onGender} />
             남자
           </label>
-          <label>
+          <label className={styles.gender_label}>
             <input type="radio" value="" name="gender" onClick={onGender} />
             선택 X
           </label>
