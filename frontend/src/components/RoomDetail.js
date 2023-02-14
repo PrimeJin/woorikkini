@@ -161,6 +161,7 @@ class RoomDetail extends Component {
   joinSession() {
     // --- OpenVidu 객체 호출 및 세션 초기화---
     this.OV = new OpenVidu();
+    this.OV.enableProdMode();
 
     this.setState({ session: this.OV.initSession() }, () => {
       const roomId = this.state.roomId;
@@ -178,7 +179,7 @@ class RoomDetail extends Component {
         this.state.session.on('streamCreated', (event) => {
           const newSubscriber = this.state.session.subscribe(
             event.stream,
-            'subscriber',
+            undefined,
             // console.log(JSON.parse(event.stream.connection.data)),
             // JSON.parse(event.stream.connection.data).clientData,
           );
@@ -310,7 +311,6 @@ class RoomDetail extends Component {
             const result = JSON.parse(event.data);
             console.log(result);
             this.setState({
-              isVoteStart: result.isVoteStart,
               voteUserId: result.voteUserId,
               voteUserNickname: result.voteUserNickname,
               total: result.total,
@@ -322,7 +322,6 @@ class RoomDetail extends Component {
             //변경된 state값을 바로 받아오지 못하므로 setTimeout
             setTimeout(() => {
               const data = {
-                isVoteStart: this.state.isVoteStart,
                 voteUserId: this.state.voteUserId,
                 voteUserNickname: this.state.voteUserNickname,
                 total: this.state.total,
@@ -332,16 +331,21 @@ class RoomDetail extends Component {
               //모두 투표했을 경우 투표 종료
               if (data.total == this.state.subscribers.length + 1) {
                 this.voteComplete(data);
-                this.setState({
-                  isVoteStart: false,
-                  voteUserId: '',
-                  voteUserNickname: '',
-                  total: 0,
-                  agree: 0,
-                  disagree: 0,
-                });
               }
             }, 1000);
+          });
+
+          this.state.session.on('signal:endVote', (event) => {
+            console.log('투표 종료');
+            const result = JSON.parse(event.data);
+            console.log(result);
+            this.setState({
+              voteUserId: result.voteUserId,
+              voteUserNickname: result.voteUserNickname,
+              total: result.total,
+              agree: result.total,
+              disagree: result.disagree,
+            });
           });
         });
         //토큰을 받았으면 connect(token)으로 세션에 연결할 수 있게 된다
@@ -565,7 +569,6 @@ class RoomDetail extends Component {
   //찬성표(유저 전체에게 신호가 감)
   agreeVote() {
     const data = {
-      isVoteStart: false,
       voteUserId: this.state.voteUserId,
       voteUserNickname: this.state.voteUserNickname,
       total: this.state.total + 1,
@@ -577,12 +580,14 @@ class RoomDetail extends Component {
       to: [],
       type: 'sendVote',
     });
+    this.setState({
+      isVoteStart: false,
+    });
   }
 
   //반대표(유저 전체에게 신호가 감)
   disagreeVote() {
     const data = {
-      isVoteStart: false,
       voteUserId: this.state.voteUserId,
       voteUserNickname: this.state.voteUserNickname,
       total: this.state.total + 1,
@@ -593,6 +598,9 @@ class RoomDetail extends Component {
       data: JSON.stringify(data),
       to: [],
       type: 'sendVote',
+    });
+    this.setState({
+      isVoteStart: false,
     });
   }
   //참여자 모두에게 보낼 추방투표 모달
@@ -642,6 +650,20 @@ class RoomDetail extends Component {
     console.log('찬성 : ' + result.agree);
     console.log('전체 : ' + result.total);
     console.log('누구 : ' + result.voteUserNickname);
+
+    const data = {
+      voteUserId: '',
+      voteUserNickname: '',
+      total: 0,
+      agree: 0,
+      disagree: 0,
+    };
+
+    this.state.session.signal({
+      data: JSON.stringify(data),
+      to: [],
+      type: 'endVote',
+    });
     const roomId = localStorage.getItem('roomId');
     const accessToken = this.props.accessToken;
     if (result.agree / result.total >= 0.5) {
@@ -817,16 +839,15 @@ class RoomDetail extends Component {
                 </div>
               ) : null}
               {this.state.subscribers.map((sub, i) => {
-                if (i !== 0)
-                  return (
-                    <div
-                      key={i}
-                      className="stream-container col-md-4 col-xs-4"
-                      // onClick={() => this.handleMainVideoStream(sub)}
-                    >
-                      <UserVideoComponent streamManager={sub} mainVideoStream={this.handleMainVideoStream} />
-                    </div>
-                  );
+                return (
+                  <div
+                    key={i}
+                    className="stream-container col-md-4 col-xs-4"
+                    // onClick={() => this.handleMainVideoStream(sub)}
+                  >
+                    <UserVideoComponent streamManager={sub} mainVideoStream={this.handleMainVideoStream} />
+                  </div>
+                );
               })}
             </div>
           </div>

@@ -42,7 +42,7 @@ function ModifyPage() {
         'Content-type': 'application/json',
       },
     }).then((response) => {
-      if (response.data.messsage === 'success') {
+      if (response.data.message === 'success') {
         alert('사용 가능한 닉네임입니다.');
         console.log(response);
         setIsNickname(true);

@@ -24,6 +24,7 @@ import axios from '../../node_modules/axios/index';
 // import Logo from '../components/user/UserPagesLogo';
 import mainlogo from '../assets/우리끼니로고.png';
 import { useState } from 'react';
+import { useEffect } from 'react';
 
 const LoginPage = () => {
   //React Hooks
@@ -97,12 +98,20 @@ const LoginPage = () => {
     setLogoClick(!logoClick);
   };
 
+  useEffect(() => {
+    if (!logoClick)
+      setTimeout(() => {
+        onLogoClick();
+      }, 2000);
+  });
+
   return (
     <div className={styles.login}>
       <div className={logoClick ? styles.sentence_pause : styles.sentence}>
         <span>식</span>
         <span>구</span>
         <span>가</span>
+        <span>&nbsp;</span>
         <span>필</span>
         <span>요</span>
         <span>해</span>
