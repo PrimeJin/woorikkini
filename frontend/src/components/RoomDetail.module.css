@@ -140,13 +140,13 @@
   flex-direction: column;
   overflow: hidden;
 
-  align-items: center;
+  align-items: baseline;
   /* justify-content: center; */
   /* padding: auto; */
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
 
-  width: 19vw;
+  width: 25vw;
   height: 55vh;
   background: #ffffff;
   border-radius: 50px;

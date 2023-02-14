@@ -26,8 +26,8 @@ const ReportUser = (props) => {
       const reportData = {
         reportCategory: reason,
         reportContent: reasonDetail,
-        reportUser: currentUserId,
-        reportedUser: reportedUserId,
+        reportUserId: currentUserId,
+        reportedUserId: reportedUserId,
       };
       console.log(reportData);
       axios({
@@ -36,6 +36,7 @@ const ReportUser = (props) => {
         data: reportData,
       })
         .then((res) => {
+          console.log(res);
           if (res.data.message === 'success') {
             alert('신고가 접수되었습니다.');
           }

@@ -30,13 +30,10 @@ public class ExitService {
     }
 
     public int findExitUser(String roomId, String userId) {
-        Exit exit = exitRepository.findByOutcaster(Integer.parseInt(userId));
+        Exit exit = exitRepository.findByOutcasterAndRoomId_RoomId(Integer.parseInt(userId), Integer.parseInt(roomId));
         if (exit == null){
             return 0;
-        } else if(exit.getRoomId().getRoomId() != Integer.parseInt(roomId)){
-            return 0;
         }
-
         return 1;
     }
 }

@@ -17,4 +17,6 @@ public class ReportListDto {
     private String reportedUser;
 
     private long reportedCount;
+
+    private String userActivation;
 }

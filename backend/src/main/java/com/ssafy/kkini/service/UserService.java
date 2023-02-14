@@ -33,7 +33,7 @@ public class UserService {
     }
 
     public User login(UserLoginFormDto userLoginFormDto) {
-        Optional<User> user = userRepository.findByUserEmail(userLoginFormDto.getUserEmail());
+        Optional<User> user = userRepository.findByUserEmailAndUserProviderIsNull(userLoginFormDto.getUserEmail());
         if(user.isPresent()){
             if(user.get().getUserActivation().isAfter(LocalDateTime.now())){
                 throw new LockedException("Your Account is denied");
@@ -78,11 +78,14 @@ public class UserService {
 
     @Transactional
     public User updatePasswordByEmail(String email, String newPassword) {
-        User user = userRepository.findByUserEmail(email).get();
-        UserInfoDto userInfoDto = new UserInfoDto(user);
-        userInfoDto.setUserPassword(bCryptPasswordEncoder.encode(newPassword));
-
-        return userRepository.save(userInfoDto.toEntity());
+        Optional<User> user = userRepository.findByUserEmail(email);
+        if(user.isPresent()) {
+            UserInfoDto userInfoDto = new UserInfoDto(user.get());
+            userInfoDto.setUserPassword(bCryptPasswordEncoder.encode(newPassword));
+            return userRepository.save(userInfoDto.toEntity());
+        } else {
+            return null;
+        }
     }
 
     //관리자 전체회원 조회
@@ -94,6 +97,7 @@ public class UserService {
             UserListDto userDto = new UserListDto();
             userDto.setUserId(x.getUserId());
             userDto.setUserName(x.getUserName());
+            userDto.setUserNickname(x.getUserNickname());
             userDto.setUserEmail(x.getUserEmail());
             userDto.setUserBirthYear(x.getUserBirthYear());
 

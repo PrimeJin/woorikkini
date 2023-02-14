@@ -20,7 +20,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user")
-@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS})
 public class UserController {
     private UserService userService;
     private AuthCodeService authCodeService;
@@ -30,6 +29,7 @@ public class UserController {
 
     private PasswordCodeService passwordCodeService;
 
+    private static final String MESSAGE = "message";
     private static final String SUCCESS = "success";
     private static final String FAIL = "fail";
 
@@ -52,11 +52,11 @@ public class UserController {
         User joinUser = userService.join(userCreateFormDto);
 
         if(joinUser!=null){
-            resultMap.put("message", SUCCESS);
+            resultMap.put(MESSAGE, SUCCESS);
             status = HttpStatus.OK;
         }
         else {
-            resultMap.put("message", FAIL);
+            resultMap.put(MESSAGE, FAIL);
             status = HttpStatus.BAD_REQUEST;
         }
 
@@ -82,14 +82,14 @@ public class UserController {
                 resultMap.put("userNickname",loginUser.getUserNickname());
                 resultMap.put("userId", loginUser.getUserId());
                 resultMap.put("userRole", loginUser.getUserRole());
-                resultMap.put("message", SUCCESS);
+                resultMap.put(MESSAGE, SUCCESS);
                 status = HttpStatus.OK;
             } else {
-                resultMap.put("message", FAIL);
+                resultMap.put(MESSAGE, FAIL);
                 status = HttpStatus.BAD_REQUEST;
             }
         } catch (LockedException e) {
-            resultMap.put("message", e.getMessage());
+            resultMap.put(MESSAGE, e.getMessage());
             status = HttpStatus.NO_CONTENT;
         }
 
@@ -104,10 +104,10 @@ public class UserController {
 
         try {
             tokenProviderService.deleteRefreshToken(userid);
-            resultMap.put("message", SUCCESS);
+            resultMap.put(MESSAGE, SUCCESS);
             status = HttpStatus.OK;
         } catch (Exception e) {
-            resultMap.put("message", FAIL);
+            resultMap.put(MESSAGE, FAIL);
             status = HttpStatus.BAD_REQUEST;
         }
 
@@ -122,10 +122,10 @@ public class UserController {
         HttpStatus status = null;
 
         if (userService.delete(userid) > 0) {
-            resultMap.put("message", SUCCESS);
+            resultMap.put(MESSAGE, SUCCESS);
             status = HttpStatus.OK;
         } else {
-            resultMap.put("message", FAIL);
+            resultMap.put(MESSAGE, FAIL);
             status = HttpStatus.BAD_REQUEST;
         }
 
@@ -142,11 +142,11 @@ public class UserController {
         User user = userService.nicknameModify(userNicknameModifyFormDto);
 
         if(user != null){
-            resultMap.put("message" , SUCCESS);
+            resultMap.put(MESSAGE , SUCCESS);
             resultMap.put("userNickname", user.getUserNickname());
             status = HttpStatus.OK;
         } else {
-            resultMap.put("message", FAIL);
+            resultMap.put(MESSAGE, FAIL);
             status = HttpStatus.BAD_REQUEST;
         }
 
@@ -162,10 +162,10 @@ public class UserController {
 
         User user = userService.passwordModify(userPasswordModifyFormDto);
         if(user != null){
-            resultMap.put("message" , SUCCESS);
+            resultMap.put(MESSAGE , SUCCESS);
             status = HttpStatus.OK;
         } else {
-            resultMap.put("message", FAIL);
+            resultMap.put(MESSAGE, FAIL);
             status = HttpStatus.BAD_REQUEST;
         }
 
@@ -178,12 +178,12 @@ public class UserController {
     public ResponseEntity<Map<String, Object>> sendEmailCheck(@ApiParam(value = "회원가입에서 입력한 이메일" )@RequestParam String authCodeUserEmail) {
         Map<String, Object> map = new HashMap<>();
         if(userService.getUserByUserEmail(authCodeUserEmail).isPresent()) {  //기존 회원이면 중복이므로 실패처리
-            map.put("message", "fail");
+            map.put(MESSAGE, FAIL);
             return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
         } else {
             emailService.sendEmailAuthCode(authCodeUserEmail);
-            map.put("message", "success");
-            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.ACCEPTED);
+            map.put(MESSAGE, SUCCESS);
+            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
         }
     }
 
@@ -197,11 +197,11 @@ public class UserController {
         //인증코드에 담긴 이메일과 입력한 이메일 비교
         if(authCodeUserEmail.equals(authCode.getAuthCodeUserEmail())
         && !(authCodeService.checkExpireAuthCode(authCode))) {
-            map.put("message", "success");
+            map.put(MESSAGE, SUCCESS);
             authCodeService.useAuthCode(authCode);  //인증코드 사용처리
-            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.ACCEPTED);
+            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
         } else {
-            map.put("message", "fail");
+            map.put(MESSAGE, FAIL);
             return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
         }
 
@@ -215,10 +215,10 @@ public class UserController {
 
         User user = userService.nicknameCheck(userNickname);
         if(user == null){
-            resultMap.put("message" , SUCCESS);
+            resultMap.put(MESSAGE , SUCCESS);
             status = HttpStatus.OK;
         } else {
-            resultMap.put("message", FAIL);
+            resultMap.put(MESSAGE, FAIL);
             status = HttpStatus.BAD_REQUEST;
         }
 
@@ -237,11 +237,11 @@ public class UserController {
             PasswordCode passwordCode = passwordCodeService.createPasswordCode(userEmail);  //비밀번호 코드 생성
             if(passwordCode != null) {
                 emailService.sendEmailPasswordCode(userEmail, passwordCode.getPasswordCodeContent());  //이메일로 전송
-                map.put("message", "success");
-                return new ResponseEntity<Map<String, Object>>(map, HttpStatus.ACCEPTED);
+                map.put(MESSAGE, SUCCESS);
+                return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
             }
         }
-        map.put("message", "fail");
+        map.put(MESSAGE, FAIL);
         return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
     }
 
@@ -253,14 +253,16 @@ public class UserController {
 
         //비밀번호 코드 가져오기
         PasswordCode originalPasswordCode = passwordCodeService.getCodeByUserEmail(userEmail);
-        if(passwordCodeContent.equals(originalPasswordCode.getPasswordCodeContent())) {  //입력된 코드가 가장최근 코드와 같지 않으면 검사 필요없이 실패
-            boolean expireYn = passwordCodeService.checkExpirePasswordCode(originalPasswordCode);
-            if(!expireYn) {  //비밀번호 코드 유효 검사
-                map.put("message", "success");
-                return new ResponseEntity<Map<String, Object>>(map, HttpStatus.ACCEPTED);
+        if(originalPasswordCode != null) {
+            if(passwordCodeContent.equals(originalPasswordCode.getPasswordCodeContent())) {  //입력된 코드가 가장최근 코드와 같지 않으면 검사 필요없이 실패
+                boolean expireYn = passwordCodeService.checkExpirePasswordCode(originalPasswordCode);
+                if(!expireYn) {  //비밀번호 코드 유효 검사
+                    map.put(MESSAGE, SUCCESS);
+                    return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+                }
             }
         }
-        map.put("message", "fail");
+        map.put(MESSAGE, FAIL);
         return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
     }
 
@@ -277,24 +279,26 @@ public class UserController {
 
         //비밀번호 코드 가져오기
         PasswordCode originalPasswordCode = passwordCodeService.getCodeByUserEmail(userEmail);
-        if(!passwordCodeContent.equals(originalPasswordCode.getPasswordCodeContent())) {  //입력된 코드가 가장최근 코드와 같지 않으면 검사 필요없이 실패
-            map.put("message", "fail");
-            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
-        }
-        //마지막으로 비밀번호 코드 유효한지 검사, 유효 -> 입력한 새 비멀번호와 비밀번화 확인에 입력한 값 일치 확인
-        boolean expireYn = passwordCodeService.checkExpirePasswordCode(originalPasswordCode);
-        if(!expireYn && newPassword.equals(newPasswordCheck)) {
-            //비밀번호 변경처리
-            User updatedUser = userService.updatePasswordByEmail(userEmail, newPassword);
-            if(updatedUser != null) {
-                //비밀번호 코드 사용처리
-                passwordCodeService.usePasswordCode(originalPasswordCode);
-                map.put("message", "success");
-                return new ResponseEntity<Map<String, Object>>(map, HttpStatus.ACCEPTED);
+        if(originalPasswordCode != null) {
+            if(!passwordCodeContent.equals(originalPasswordCode.getPasswordCodeContent())) {  //입력된 코드가 가장최근 코드와 같지 않으면 검사 필요없이 실패
+                map.put(MESSAGE, FAIL);
+                return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
+            }
+
+            //마지막으로 비밀번호 코드 유효한지 검사, 유효 -> 입력한 새 비멀번호와 비밀번화 확인에 입력한 값 일치 확인
+            boolean expireYn = passwordCodeService.checkExpirePasswordCode(originalPasswordCode);
+            if(!expireYn && newPassword.equals(newPasswordCheck)) {
+                //비밀번호 변경처리
+                User updatedUser = userService.updatePasswordByEmail(userEmail, newPassword);
+                if(updatedUser != null) {
+                    //비밀번호 코드 사용처리
+                    passwordCodeService.usePasswordCode(originalPasswordCode);
+                    map.put(MESSAGE, SUCCESS);
+                    return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
+                }
             }
         }
-
-        map.put("message", "fail");
+        map.put(MESSAGE, FAIL);
         return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
     }
 
@@ -304,12 +308,12 @@ public class UserController {
         Map<String, Object> map = new HashMap<>();
         try {
             List<UserListDto> userListDto = userService.getUserList();
-            map.put("message", "success");
+            map.put(MESSAGE, SUCCESS);
             map.put("userList", userListDto);
             map.put("totalSize", userListDto.size());
-            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.ACCEPTED);
+            return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
         } catch (Exception e) {
-            map.put("message", "fail");
+            map.put(MESSAGE, FAIL);
             return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
         }
     }

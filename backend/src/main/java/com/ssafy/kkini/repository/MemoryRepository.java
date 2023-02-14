@@ -11,9 +11,6 @@ import java.util.Optional;
 public interface MemoryRepository extends JpaRepository<Memory, Integer> {
     List<Memory> findByUser_UserId(int userId);
 
-    Optional<Memory> findByMemoryId(int memoryId);
-
-//    List<Memory> getAllByUserId(int memoryId);
-
+    Memory findByMemoryId(int memoryId);
 
 }

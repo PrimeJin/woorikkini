@@ -28,11 +28,14 @@ public class StatsService {
         List<StatsGetDto> list = new ArrayList<>();
 
         int femaleStats = userRepository.countAllByUserGender("female");
-        StatsGetDto female = new StatsGetDto("female",femaleStats);
+        StatsGetDto female = new StatsGetDto("여성",femaleStats);
         list.add(female);
         int maleStats = userRepository.countAllByUserGender("male");
-        StatsGetDto male = new StatsGetDto("male",femaleStats);
+        StatsGetDto male = new StatsGetDto("남성",maleStats);
         list.add(male);
+        int notSelectStats = userRepository.countAllByUserGender("");
+        StatsGetDto notSelect = new StatsGetDto("선택안함",notSelectStats);
+        list.add(notSelect);
 
         return list;
     }
@@ -43,26 +46,25 @@ public class StatsService {
         int nowYear = 0;
         LocalDate now = LocalDate.now();
         // 포맷 정의
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         // 포맷 적용
         nowYear = Integer.parseInt(now.format(formatter));
-        System.out.println(nowYear);
 
         //20대
-        int twenityesStats = userRepository.countByUserBirthYearBetween(nowYear-30 ,nowYear-20);
-        StatsGetDto twenityes = new StatsGetDto("twenty",twenityesStats);
+        int twenityesStats = userRepository.countByUserBirthYearBetween(nowYear-300000 ,nowYear-200000);
+        StatsGetDto twenityes = new StatsGetDto("20대",twenityesStats);
         list.add(twenityes);
         //30대
-        int thirtiesStats = userRepository.countByUserBirthYearBetween(nowYear-40,nowYear-30);
-        StatsGetDto thirties = new StatsGetDto("thirties",thirtiesStats);
+        int thirtiesStats = userRepository.countByUserBirthYearBetween(nowYear-400000,nowYear-300000);
+        StatsGetDto thirties = new StatsGetDto("30대",thirtiesStats);
         list.add(thirties);
         //40대
-        int fortiesStats = userRepository.countByUserBirthYearBetween(nowYear-50, nowYear-40);
-        StatsGetDto forties = new StatsGetDto("forties",fortiesStats);
+        int fortiesStats = userRepository.countByUserBirthYearBetween(nowYear-500000, nowYear-400000);
+        StatsGetDto forties = new StatsGetDto("40대",fortiesStats);
         list.add(forties);
         //50대
-        int fiftiesStats = userRepository.countByUserBirthYearBetween(nowYear-60, nowYear-50);
-        StatsGetDto fifties = new StatsGetDto("fifties",fiftiesStats);
+        int fiftiesStats = userRepository.countByUserBirthYearBetween(nowYear-600000, nowYear-500000);
+        StatsGetDto fifties = new StatsGetDto("50대",fiftiesStats);
         list.add(fifties);
 
         return list;

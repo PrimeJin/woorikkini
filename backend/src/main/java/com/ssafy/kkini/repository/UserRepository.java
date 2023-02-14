@@ -23,4 +23,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     int countAllByUserGender(String gender);
 
     int countByUserBirthYearBetween(int greater, int less);
+
+    Optional<User> findByUserEmailAndUserProviderIsNull(String userEmail);
 }

@@ -35,7 +35,7 @@ const PwChange = () => {
       })
       .catch((err) => {
         if (err.response.data.message === "fail") {
-          alert("만료된 링크입니다.");
+          alert("유효하지 않은 요청입니다.");
         } else {
           alert("유효하지 않은 요청입니다.");
           console.log(err, "pwchange check 에러");
@@ -84,15 +84,15 @@ const PwChange = () => {
 
   // 비밀번호 체크
   useEffect(() => {
-    if (validationCheck(pw, inputRegexs.pwReg) || pw === "") {
+    if (!validationCheck(pw, inputRegexs.pwReg) && pw != "") {
       setErrorMessage({
         ...errorMessage,
-        pwError: "",
+        pwError: "8 ~ 12자의 비밀번호를 입력해야 합니다",
       });
     } else {
       setErrorMessage({
         ...errorMessage,
-        pwError: "하나 이상의 문자와 숫자를 포함하여 8자 이상이여야 합니다.",
+        pwError: "",
       });
     }
   }, [pw]);
@@ -107,7 +107,7 @@ const PwChange = () => {
     } else {
       setErrorMessage({
         ...errorMessage,
-        matchError: "비밀번호 확인이 일치하지 않습니다.",
+        matchError: "비밀번호가 일치하지 않습니다.",
       });
     }
   }, [pw2]);
@@ -115,40 +115,42 @@ const PwChange = () => {
   const navigate = useNavigate();
 
   function goPw() {
-    if (pwError === "" && matchError === "") {
-      axios({
-        url: `https://i8a804.p.ssafy.io/api/user/password`,
-        method: "PATCH",
-        data: {
-          userEmail: email,
-          passwordCodeContent: code,
-          userPassword: pw,
-          userPasswordCheck: pw2,
-        },
-      })
-        .then((res) => {
-          alert("비밀번호 변경에 성공하였습니다.");
-          navigate("/user/login");
-        })
-        .catch((err) => {
-          console.log(err, "goPw 에러");
-        });
-    } else {
-      console.log("pwchange error");
-      console.log(errorMessage);
-    }
+    pw
+      ? pw2
+        ? errorMessage === ""
+          ? axios({
+              url: `https://i8a804.p.ssafy.io/api/user/password`,
+              method: "PATCH",
+              data: {
+                userEmail: email,
+                passwordCodeContent: code,
+                userPassword: pw,
+                userPasswordCheck: pw2,
+              },
+            })
+              .then((res) => {
+                alert("비밀번호 변경에 성공하였습니다.");
+                navigate("/user/login");
+              })
+              .catch((err) => {
+                console.log(err, "goPw 에러");
+              })
+          : errorMessage.pwError
+          ? alert(pwError)
+          : alert(matchError)
+        : alert("비밀번호 확인을 입력해주세요.")
+      : alert("비밀번호를 입력해주세요.");
   }
 
   return (
     <div>
       {check && (
         <div>
-          {/* <img className="logo" src="logo.png" alt="이미지없음" /> */}
-          <p className={styles.logo}>
-            우리
-            <br />
-            끼니
-          </p>
+          <img
+            className={styles.logo}
+            src={`${process.env.PUBLIC_URL}/logo.png`}
+            alt="이미지없음"
+          />
           <div className={styles.all}>
             <form className={styles.pwForm}>
               <p className={styles.pwChange}>비밀번호 변경</p>
@@ -162,7 +164,20 @@ const PwChange = () => {
                   onChange={pwInput}
                 />
                 <br />
-                {pwError ? <span>{pwError}</span> : ""}
+                {pwError ? (
+                  <h5
+                    style={{
+                      color: "red",
+                      textAlign: "left",
+                      margin: 0,
+                      marginLeft: "10%",
+                    }}
+                  >
+                    {pwError}
+                  </h5>
+                ) : (
+                  ""
+                )}
               </div>
               <input
                 className={styles.userInfo}
@@ -173,7 +188,20 @@ const PwChange = () => {
                 style={{ marginTop: "10%" }}
               />
               <br />
-              {matchError ? <span>{matchError}</span> : ""}
+              {matchError ? (
+                <h5
+                  style={{
+                    color: "red",
+                    textAlign: "left",
+                    margin: 0,
+                    marginLeft: "10%",
+                  }}
+                >
+                  {matchError}
+                </h5>
+              ) : (
+                ""
+              )}
               <br />
               <input
                 type="button"

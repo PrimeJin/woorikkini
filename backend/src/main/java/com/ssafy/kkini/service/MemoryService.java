@@ -9,6 +9,8 @@ import com.ssafy.kkini.entity.User;
 import com.ssafy.kkini.repository.MemoryRepository;
 import com.ssafy.kkini.repository.PhotoRepository;
 import com.ssafy.kkini.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,11 +19,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class MemoryService {
@@ -33,6 +35,7 @@ public class MemoryService {
     private String fileDir;
 
     private String parentDir;
+    private static final Logger logger = LoggerFactory.getLogger(MemoryService.class);
 
     public MemoryService(UserRepository userRepository,MemoryRepository memoryRepository,PhotoRepository photoRepository){
         this.userRepository = userRepository;
@@ -40,12 +43,19 @@ public class MemoryService {
         this.photoRepository = photoRepository;
     }
 
-    public List<MemoryGetFormDto> getMemory(int userId) {
+    public List<MemoryGetFormDto> getMemory(int userId) throws MalformedURLException {
         List<MemoryGetFormDto> memoryGetFormDtoList = new ArrayList<>();
         for (Memory memory : memoryRepository.findByUser_UserId(userId)) {
-            MemoryGetFormDto memoryGetFormDto = new MemoryGetFormDto();
-            memoryGetFormDto.setMemory(memory);
-            memoryGetFormDto.setPhotoList(photoRepository.findAllByMemory_MemoryId(memory.getMemoryId()));
+            MemoryGetFormDto memoryGetFormDto = new MemoryGetFormDto(memory);
+
+            List<Photo> photoList = photoRepository.findAllByMemory_MemoryId(memory.getMemoryId());
+            List<String> photoPathList = new ArrayList<>();
+
+            for (Photo photo : photoList) {
+                photoPathList.add(photo.getFilePath());
+            }
+
+            memoryGetFormDto.setPhotoPathList(photoPathList);
             memoryGetFormDtoList.add(memoryGetFormDto);
         }
         return memoryGetFormDtoList;
@@ -58,36 +68,83 @@ public class MemoryService {
             memory.setUser(user);
             Memory createMemory = memoryRepository.save(memory);
 
-            System.out.println("createMemory  : " + createMemory.getMemoryTitle());
-
-            if(createMemory != null && !memoryImgFiles.isEmpty()){
-                System.out.println("memoryImagFiles OK");
-                uploadPhoto(memoryImgFiles,createMemory);
+            if(createMemory != null){
+                if(memoryImgFiles != null && !memoryImgFiles.isEmpty()){
+                    List<Photo> photoList =  uploadPhoto(memoryImgFiles,createMemory);
+                    if(photoList.isEmpty()){
+                        deleteMemory(createMemory.getMemoryId());
+                        return null;
+                    }
+                }
+                return createMemory;
             }
-            return createMemory;
-        }else {
-            return null;
         }
+        return null;
     }
 
 
     public Memory updateMemory(MemoryUpdateFormDto memoryUpdateFormDto, List<MultipartFile> memoryImgFiles) throws IOException {
-        Optional<Memory> memory = memoryRepository.findByMemoryId(Integer.parseInt(memoryUpdateFormDto.getMemoryId()));
+        Memory memory = memoryRepository.findByMemoryId(Integer.parseInt(memoryUpdateFormDto.getMemoryId()));
         User user = userRepository.findByUserId(Integer.parseInt(memoryUpdateFormDto.getUserId()));
-        if(memory.isPresent() && user != null){
+
+        if(memory != null && user != null){
             Memory updateMemory = memoryUpdateFormDto.toEntity();
             updateMemory.setUser(user);
-            updateMemory = memoryRepository.save(updateMemory);
-            if(updateMemory != null){
-                deletePhoto(Integer.parseInt(memoryUpdateFormDto.getMemoryId()));
-                if(!memoryImgFiles.isEmpty()){
-                    uploadPhoto(memoryImgFiles,updateMemory);
+            Memory newUpdateMemory =  memoryRepository.save(updateMemory);
+            if(newUpdateMemory != null){
+                logger.debug(String.valueOf(memoryUpdateFormDto.getPhotoPathList().size()));
+                //기존 사진들에 대한 처리
+                List<Photo> photoList = photoRepository.findAllByMemory_MemoryId(newUpdateMemory.getMemoryId());
+                reUploadPhoto(memoryUpdateFormDto.getPhotoPathList(),photoList);
+
+                //새로운 사진 저장이 있으면 저장
+                if (memoryImgFiles != null && !memoryImgFiles.isEmpty()){
+                    List<Photo> potoList = uploadPhoto(memoryImgFiles,newUpdateMemory);
+                    logger.debug(String.valueOf(memoryImgFiles.size()));
+                    //실패 시 추억 수정 실패
+                    if (potoList.isEmpty()){
+                        logger.debug("사진이 안들어와는데 왜 사이즈가 있냐고");
+                        memoryRepository.save(memory);
+                        for (Photo photo : photoList) {
+                            photoRepository.save(photo);
+                        }
+                        return null;
+                    }
                 }
 
             }
-            return updateMemory;
+            return newUpdateMemory;
         }else{
             return null;
+        }
+    }
+
+    private void reUploadPhoto(List<String> photoPathList,List<Photo> photoList) {
+        for (Photo photo : photoList) {
+            if(photoPathList.isEmpty()){
+                File file = new File(photo.getFilePath());
+
+                if(file.exists()) { // 파일이 존재하면
+                    file.delete(); // 파일 삭제
+                }
+                photoRepository.delete(photo);
+            }
+            for (int i = 0; i < photoPathList.size(); i++) {
+                //기존 사진 그대로 들어온 경우
+                if(photo.getFilePath().equals(photoPathList.get(i))){
+                    break;
+                }
+                //사진이 삭제되어 수정됐을 떄
+                if (i == photoPathList.size()-1) {
+                    //현재 게시판에 존재하는 파일객체를 만듬
+                    File file = new File(photo.getFilePath());
+
+                    if(file.exists()) { // 파일이 존재하면
+                        file.delete(); // 파일 삭제
+                    }
+                    photoRepository.delete(photo);
+                }
+            }
         }
     }
 
@@ -102,15 +159,12 @@ public class MemoryService {
         uploadFolderPath = uploadFolderPath + File.separator;
         //폴더 생성
         String hostname = InetAddress.getLocalHost().getHostName();
-        File uploadPath = null;
 
         if(hostname.substring(0, 7).equals ("DESKTOP") ) parentDir = fileDir;
         else if (hostname.contains("MacBookAir")) parentDir = fileDir;
         else parentDir = "./images";
 
-        uploadPath = new File(parentDir, uploadFolderPath); // 오늘 날짜의 경로를 문자열로 생성
-
-        System.out.println("host_name = " + hostname + ", uploadPath = " + uploadPath);
+        File uploadPath = new File(parentDir, uploadFolderPath); // 오늘 날짜의 경로를 문자열로 생성
 
         if (uploadPath.exists() == false) {
             uploadPath.mkdirs();
@@ -143,7 +197,7 @@ public class MemoryService {
 
             Photo photo = new Photo();
             photo.setMemory(memory);
-            photo.setFilePath(parentDir + "/" + uploadFolderPath + new_file_name);
+            photo.setFilePath("api/memory/images/" + uploadFolderPath + new_file_name);
             photo.setOriginalFilename(originFileName);
 
             photoList.add(photoRepository.save(photo));
@@ -161,7 +215,7 @@ public class MemoryService {
     @Transactional
     public void deletePhoto(int memoryId){
         List<Photo> photoList = photoRepository.findAllByMemory_MemoryId(memoryId);
-        if(!photoList.isEmpty() && photoList.size() != 0){
+        if(!photoList.isEmpty()){
             for (Photo photo : photoList) {
                 //현재 게시판에 존재하는 파일객체를 만듬
                 File file = new File(photo.getFilePath());
@@ -171,17 +225,13 @@ public class MemoryService {
                 }
                 photoRepository.delete(photo);
             }
-
         }
-
     }
-
-
     public int deleteMemory(int memoryId) {
-        Optional<Memory> deleteMemory = memoryRepository.findByMemoryId(memoryId);
-        if(deleteMemory.isPresent()){
+        Memory deleteMemory = memoryRepository.findByMemoryId(memoryId);
+        if(deleteMemory != null){
             deletePhoto(memoryId);
-            memoryRepository.delete(deleteMemory.get());
+            memoryRepository.delete(deleteMemory);
             return 1;
         }
         return 0;

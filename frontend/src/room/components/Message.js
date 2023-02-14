@@ -9,7 +9,7 @@ const Username = styled.p`
 `;
 
 const MessageContainer = styled.div`
-  width: 100px;
+  width: 20vw;
 
   background: #d6ebfc;
 `;
