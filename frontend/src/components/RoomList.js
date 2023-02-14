@@ -38,13 +38,14 @@ const RoomList = (props) => {
       },
     })
       .then((res) => {
-        console.log('입장성공');
         localStorage.setItem('roomToken', res.data.sessionId); //토큰 받아오기
         navigate(`${roomId}`);
       })
       .catch((err) => {
         if (err.response.data.message === 'fail') {
           alert('비밀번호가 일치하지 않습니다.');
+        } else if (err.response.data.message === 'denied') {
+          alert('추방당한 유저입니다.');
         } else {
           console.log('goDetail에러', err);
         }

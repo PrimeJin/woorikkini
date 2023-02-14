@@ -94,8 +94,6 @@ const RoomCreate = (props) => {
         })
         .then((response) => {
           resolve(response.data);
-          console.log('createToken');
-          console.log(response);
           // this.setState({
           //   token: response.data.token,
           // });

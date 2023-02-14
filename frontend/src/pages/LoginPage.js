@@ -12,7 +12,6 @@ import { useForm } from 'react-hook-form';
 import { setRefreshToken } from '../storage/Cookies';
 import { Link } from 'react-router-dom';
 
-import { loginUser } from '../api/Users';
 import { SET_USER } from '../store/User';
 import { SET_TOKEN } from '../store/Auth';
 
@@ -74,7 +73,7 @@ const LoginPage = () => {
         }
       })
       .catch((err) => {
-        console.log('???', err);
+        console.log(err);
       });
 
     //input폼 비워주는 코드
@@ -84,10 +83,6 @@ const LoginPage = () => {
 
   const onSignUp = () => {
     navigate('/user/signup');
-  };
-
-  const goHome = () => {
-    navigate('/');
   };
 
   return (
@@ -117,9 +112,9 @@ const LoginPage = () => {
               type="password"
               placeholder="비밀번호를 입력하세요"
               {...register('userPassword', {
-                minLength: {
-                  value: 4,
-                  message: '4자리 이상 비밀번호를 사용해주세요.',
+                pattern: {
+                  value: /^[a-zA-z0-9]{8,12}$/,
+                  message: '8자리 이상 12자리 이하의 비밀번호를 사용해주세요.',
                 },
               })}
             />
