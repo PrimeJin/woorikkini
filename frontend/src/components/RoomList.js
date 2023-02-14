@@ -18,35 +18,39 @@ const RoomList = (props) => {
   const navigate = useNavigate();
   const [modal, setModal] = useState(false);
   const [inputPassword, setInputPassword] = useState('');
-  const userId = useSelector((state) => state.user.id);
+
+  // 임시 지정
+  const userId = localStorage.getItem('userId');
 
   function modalChange() {
     recent === limit ? alert('이미 가득찬 방입니다') : modal ? setModal(false) : setModal(true);
   }
 
+  //방 입장 요청
   function goDetail() {
-    if (isPrivate) {
-      axios({
-        url: `https://i8a804.p.ssafy.io/api/room/enter/${roomId}/${userId}`,
-        method: 'POST',
-        data: {
-          roomPrivate: isPrivate,
-          roomPassword: inputPassword,
-        },
+    localStorage.setItem('roomId', roomId);
+    localStorage.setItem('roomTitle', title);
+    axios({
+      url: `https://i8a804.p.ssafy.io/api/room/enter/${roomId}/${userId}`,
+      method: 'POST',
+      data: {
+        roomPrivate: isPrivate,
+        roomPassword: inputPassword,
+      },
+    })
+      .then((res) => {
+        localStorage.setItem('roomToken', res.data.sessionId); //토큰 받아오기
+        navigate(`${roomId}`);
       })
-        .then((res) => {
-          navigate(`${roomId}`);
-        })
-        .catch((err) => {
-          if (err.response.data.message === 'fail') {
-            alert('비밀번호가 일치하지 않습니다.');
-          } else {
-            console.log('goDetail에러', err);
-          }
-        });
-    } else {
-      navigate(`${roomId}`);
-    }
+      .catch((err) => {
+        if (err.response.data.message === 'fail') {
+          alert('비밀번호가 일치하지 않습니다.');
+        } else if (err.response.data.message === 'denied') {
+          alert('추방당한 유저입니다.');
+        } else {
+          console.log('goDetail에러', err);
+        }
+      });
   }
 
   return (

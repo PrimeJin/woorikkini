@@ -12,7 +12,6 @@ import { useForm } from 'react-hook-form';
 import { setRefreshToken } from '../storage/Cookies';
 import { Link } from 'react-router-dom';
 
-// import { loginUser } from '../api/Users';
 import { SET_USER } from '../store/User';
 import { SET_TOKEN } from '../store/Auth';
 
@@ -64,12 +63,9 @@ const LoginPage = () => {
           //store에 Access Token 저장하도록 Action Dispatch
           //참고: /store/Auth.js
           dispatch(SET_TOKEN(response.data.accessToken));
-          dispatch(
-            SET_USER({
-              id: response.data.userId,
-              nickname: response.data.userNickname,
-            }),
-          );
+          dispatch(SET_USER({ id: response.data.userId, nickname: response.data.userNickname }));
+          localStorage.setItem('userId', response.data.userId);
+          localStorage.setItem('userNickname', response.data.userNickname);
           //화면 이동(메인)
           navigate('/');
         } else {
@@ -79,7 +75,7 @@ const LoginPage = () => {
         }
       })
       .catch((err) => {
-        console.log('???', err);
+        console.log(err);
       });
 
     //input폼 비워주는 코드

@@ -10,7 +10,7 @@ export default class UserVideoComponent extends Component {
 
   // 유저의 닉네임 가져오기
   getNicknameTag() {
-    return JSON.parse(this.props.streamManager.stream.connection.data).clientData;
+    return localStorage.getItem('userNickname');
   }
 
   // 비디오 클릭 시 이벤트

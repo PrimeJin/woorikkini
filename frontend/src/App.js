@@ -14,7 +14,6 @@ import DeletePage from './pages/DeletePage';
 import ErrorPage from './pages/ErrorPage';
 import PwFind from './components/PwFind';
 import PwChange from './components/PwChange';
-import VideoRoom from './room/VideoRoom';
 import AdminNotice from './components/admin/AdminNotice';
 import AdminNoticeDetail from './components/admin/AdminNoticeDetail';
 import AdminNoticeCreate from './components/admin/AdminNoticeCreate';
