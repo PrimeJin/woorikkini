@@ -33,7 +33,7 @@ const LogoutPage = () => {
       },
       id,
     }).then((response) => {
-      if (response.status === 202) {
+      if (response.status === 200 || 202) {
         console.log('로그아웃 성공');
         //store에 저장된 Access Token 삭제
         dispatch(DELETE_TOKEN());
@@ -43,7 +43,7 @@ const LogoutPage = () => {
         localStorage.clear();
         //Cookie에 저장된 Refresh Token 삭제
         removeCookieToken();
-        navigate('/');
+        navigate('/user/login');
       } else {
         console.log('로그아웃 실패');
         navigate(-1);
