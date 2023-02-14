@@ -4,6 +4,7 @@
   flex-flow: nowrap;
   margin: 2% 0 0 2%;
   width: 130px;
+  cursor: pointer;
 }
 
 .mypage_logo {

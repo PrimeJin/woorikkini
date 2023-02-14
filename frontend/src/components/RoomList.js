@@ -1,8 +1,9 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import styles from "./Room.module.css";
-import LockIcon from "@mui/icons-material/Lock";
-import axios from "axios";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import styles from './Room.module.css';
+import LockIcon from '@mui/icons-material/Lock';
+import axios from 'axios';
+import { useSelector } from 'react-redux';
 
 const RoomList = (props) => {
   const roomId = props.room.roomId;
@@ -16,24 +17,18 @@ const RoomList = (props) => {
   const keywordList = props.keywordList;
   const navigate = useNavigate();
   const [modal, setModal] = useState(false);
-  const [inputPassword, setInputPassword] = useState("");
-
-  // 임시 지정
-  const userId = 1;
+  const [inputPassword, setInputPassword] = useState('');
+  const userId = useSelector((state) => state.user.id);
 
   function modalChange() {
-    recent === limit
-      ? alert("이미 가득찬 방입니다")
-      : modal
-      ? setModal(false)
-      : setModal(true);
+    recent === limit ? alert('이미 가득찬 방입니다') : modal ? setModal(false) : setModal(true);
   }
 
   function goDetail() {
     if (isPrivate) {
       axios({
         url: `https://i8a804.p.ssafy.io/api/room/enter/${roomId}/${userId}`,
-        method: "POST",
+        method: 'POST',
         data: {
           roomPrivate: isPrivate,
           roomPassword: inputPassword,
@@ -43,10 +38,10 @@ const RoomList = (props) => {
           navigate(`${roomId}`);
         })
         .catch((err) => {
-          if (err.response.data.message === "fail") {
-            alert("비밀번호가 일치하지 않습니다.");
+          if (err.response.data.message === 'fail') {
+            alert('비밀번호가 일치하지 않습니다.');
           } else {
-            console.log("goDetail에러", err);
+            console.log('goDetail에러', err);
           }
         });
     } else {
@@ -57,44 +52,38 @@ const RoomList = (props) => {
   return (
     <div
       style={{
-        margin: "2%",
-        marginBottom: "5%",
-        display: "flex",
-        flexFlow: "wrap row",
-        justifyContent: "center",
+        margin: '2%',
+        marginBottom: '5%',
+        display: 'flex',
+        flexFlow: 'wrap row',
+        justifyContent: 'center',
       }}
     >
-      {" "}
+      {' '}
       {modal && (
         <div className={styles.roomEnter}>
           <div className={styles.enterModal}>
             <h2>{title}</h2>
-            {content && (
-              <pre className={`${styles.enterContent} ${styles.scroll}`}>
-                {content}
-              </pre>
-            )}
+            {content && <pre className={`${styles.enterContent} ${styles.scroll}`}>{content}</pre>}
 
             {isPrivate && (
               <div
                 style={{
-                  margin: "30px",
-                  marginBottom: "0px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  margin: '30px',
+                  marginBottom: '0px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
               >
-                <label style={{ marginRight: "30px", fontSize: "20px" }}>
-                  비밀번호
-                </label>
+                <label style={{ marginRight: '30px', fontSize: '20px' }}>비밀번호</label>
                 <input
                   style={{
-                    borderRadius: "10px",
-                    paddingLeft: "5%",
-                    border: "none",
-                    height: "30px",
-                    boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+                    borderRadius: '10px',
+                    paddingLeft: '5%',
+                    border: 'none',
+                    height: '30px',
+                    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
                   }}
                   type="password"
                   value={inputPassword}
@@ -105,11 +94,7 @@ const RoomList = (props) => {
             <button onClick={goDetail} className={styles.btn}>
               입장하기
             </button>
-            <button
-              onClick={modalChange}
-              className={styles.btn}
-              style={{ backgroundColor: "#FF8D89" }}
-            >
+            <button onClick={modalChange} className={styles.btn} style={{ backgroundColor: '#FF8D89' }}>
               취소하기
             </button>
           </div>
@@ -119,32 +104,30 @@ const RoomList = (props) => {
         onClick={modalChange}
         className={styles[preset]}
         style={{
-          cursor: "pointer",
-          width: "80%",
-          minHeight: "150px",
-          position: "relative",
+          cursor: 'pointer',
+          width: '80%',
+          minHeight: '150px',
+          position: 'relative',
         }}
       >
         <h2>{title}</h2>
         {keywords.map((keyword, index) => (
-          <span style={{ margin: "1%" }} key={index}>
+          <span style={{ margin: '1%' }} key={index}>
             # {keywordList[keyword - 1].keyword}
           </span>
         ))}
 
         <p
           style={{
-            position: "absolute",
-            right: "10%",
-            bottom: "5%",
-            display: "flex",
-            alignItems: "center",
+            position: 'absolute',
+            right: '10%',
+            bottom: '5%',
+            display: 'flex',
+            alignItems: 'center',
           }}
         >
-          {isPrivate && (
-            <LockIcon style={{ fontSize: "90%", marginInline: "20%" }} />
-          )}
-          {recent}/{limit ? limit : "인원제한"}
+          {isPrivate && <LockIcon style={{ fontSize: '90%', marginInline: '20%' }} />}
+          {recent}/{limit ? limit : '인원제한'}
         </p>
       </div>
     </div>
