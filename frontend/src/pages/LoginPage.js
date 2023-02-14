@@ -99,10 +99,11 @@ const LoginPage = () => {
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      setLogoClick(!logoClick);
-    }, 2000);
-  }, []);
+    if (!logoClick)
+      setTimeout(() => {
+        onLogoClick();
+      }, 2000);
+  });
 
   return (
     <div className={styles.login}>
@@ -110,6 +111,7 @@ const LoginPage = () => {
         <span>식</span>
         <span>구</span>
         <span>가</span>
+        <span>&nbsp;</span>
         <span>필</span>
         <span>요</span>
         <span>해</span>
