@@ -26,6 +26,7 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 public class AuthController {
     private final static long THREE_DAYS_MSEC = 1000 * 60 * 60 * 24 * 3;
+    private static final String MESSAGE = "message";
     private static final String SUCCESS = "success";
     private static final String FAIL = "fail";
     private final RefreshTokenRepository refreshTokenRepository;
@@ -41,7 +42,7 @@ public class AuthController {
         try{
             tokenProvider.validateToken(userRefreshToken);
         } catch (Exception ex){
-            resultMap.put("message", "accessToken " + ex.getMessage());
+            resultMap.put(MESSAGE, "accessToken " + ex.getMessage());
             status = HttpStatus.UNAUTHORIZED;
             return new ResponseEntity<Map<String, Object>>(resultMap, status);
         }
@@ -51,7 +52,7 @@ public class AuthController {
         RefreshToken refreshToken = refreshTokenRepository.findByRefreshToken(userRefreshToken);
         if (refreshToken == null) {
             status = HttpStatus.UNAUTHORIZED;
-            resultMap.put("message", FAIL);
+            resultMap.put(MESSAGE, FAIL);
             resultMap.put("result", "정지된 회원");
             return new ResponseEntity<Map<String, Object>>(resultMap, status);
         }
@@ -67,13 +68,13 @@ public class AuthController {
             // DB에 refresh 토큰 업데이트
             refreshTokenRepository.save(new RefreshToken(refreshToken.getUser(), newRefreshToken));
 
-            status = HttpStatus.ACCEPTED;
+            status = HttpStatus.OK;
             resultMap.put("refreshToken", newRefreshToken);
-            resultMap.put("message", SUCCESS);
+            resultMap.put(MESSAGE, SUCCESS);
             return new ResponseEntity<Map<String, Object>>(resultMap, status);
         }
-        status = HttpStatus.ACCEPTED;
-        resultMap.put("message", SUCCESS);
+        status = HttpStatus.OK;
+        resultMap.put(MESSAGE, SUCCESS);
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
     }
 }

@@ -13,6 +13,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ReportService {
@@ -36,7 +37,9 @@ public class ReportService {
     @Transactional
     //신고하기 (저장)
     public Report createReport(ReportCreateFormDto reportCreateFormDto) {
-        this.plusReportedCount(reportCreateFormDto.getReportedUser());
+        User reportedUser = userRepository.findByUserId(reportCreateFormDto.getReportedUserId());
+        reportCreateFormDto.setReportedUser(reportedUser);
+        this.plusReportedCount(reportCreateFormDto.getReportedUserId());
         return reportRepository.save(reportCreateFormDto.toEntity());
     }
 
@@ -51,9 +54,12 @@ public class ReportService {
             reportDto.setReportCategory(x.getReportCategory());
             reportDto.setReportContent(x.getReportContent());
 
-            User user = userRepository.findByUserId(x.getReportedUser());
+            User user = x.getReportedUser();
             reportDto.setReportedUser(user.getUserEmail());
             reportDto.setReportedCount(user.getUserReportedCount());
+            if(user.getUserActivation().isAfter(LocalDateTime.now())) {
+                reportDto.setUserActivation("활동정지");
+            }
 
             reportListDto.add(reportDto);
         }
@@ -64,12 +70,21 @@ public class ReportService {
     //활동정지 시키기
     public User userSuspend(int userId) {
         User user = userRepository.findByUserId(userId);
-        UserInfoDto userInfoDto = new UserInfoDto(user);
-        userInfoDto.setUserActivation(LocalDateTime.now().plusDays(7));
-        return userRepository.save(userInfoDto.toEntity());
+        if(user != null) {
+            UserInfoDto userInfoDto = new UserInfoDto(user);
+            userInfoDto.setUserActivation(LocalDateTime.now().plusDays(7));
+            return userRepository.save(userInfoDto.toEntity());
+        } else {
+            return null;
+        }
     }
 
     public Report getReportByReportId(int reportId) {
-        return reportRepository.findById(reportId).get();
+        Optional<Report> report = reportRepository.findById(reportId);
+        Report reportEntity = null;
+        if(report.isPresent()) {
+            reportEntity = report.get();
+        }
+        return reportEntity;
     }
 }

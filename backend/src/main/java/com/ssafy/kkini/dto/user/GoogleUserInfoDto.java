@@ -22,14 +22,14 @@ public class GoogleUserInfoDto implements OAuth2UserInfoDto {
 
     @Override
     public String getNickName() {
-        return getProvider() + "_" + getProviderId();
+        return new StringBuilder().append(getProvider()).append("_").append(getProviderId()).toString();
     }
 
     @Override
     public String getName() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(attributes.get("name"));
-        return sb.toString();
+        String name = (String) attributes.get("name");
+        if(name == null) return "";
+        else return name;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class GoogleUserInfoDto implements OAuth2UserInfoDto {
 
     @Override
     public String getGender() {
-        return null;
+        return "";
     }
 
     @Override

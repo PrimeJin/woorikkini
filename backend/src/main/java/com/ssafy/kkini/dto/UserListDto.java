@@ -12,6 +12,8 @@ public class UserListDto {
 
     private String userName;
 
+    private String userNickname;
+
     private String userEmail;
 
     private int userBirthYear;

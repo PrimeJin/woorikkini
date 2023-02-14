@@ -14,10 +14,10 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/stats")
-@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS})
 public class StatsController {
     private StatsService statsService;
 
+    private static final String MESSAGE = "message";
     private static final String SUCCESS = "success";
     private static final String FAIL = "fail";
 
@@ -40,10 +40,10 @@ public class StatsController {
             resultMap.put("genderStatsList",genderStatsList);
             resultMap.put("ageStatsList",ageStatsList);
             resultMap.put("keywordStatsList",keywordStatsList);
-            resultMap.put("message", SUCCESS);
+            resultMap.put(MESSAGE, SUCCESS);
             status = HttpStatus.ACCEPTED;
         }else{
-            resultMap.put("message", FAIL);
+            resultMap.put(MESSAGE, FAIL);
             status = HttpStatus.BAD_REQUEST;
         }
 

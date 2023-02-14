@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StatsGetDto {
-    private String data;
-    private int stats;
+    private String id;
+    private int value;
 
 }

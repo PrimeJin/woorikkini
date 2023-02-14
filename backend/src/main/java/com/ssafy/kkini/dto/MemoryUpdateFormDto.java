@@ -21,6 +21,7 @@ public class MemoryUpdateFormDto {
     private String memoryTitle;
     private String memoryContent;
     private String userId;
+    private List<String> photoPathList;
 
     public Memory toEntity(){
         return Memory.builder().title(this.memoryTitle)
