@@ -47,7 +47,6 @@ function App() {
           <Route path="/oauth/callback/kakao" element={<Kakao />} />
           <Route path="/oauth/callback/naver" element={<Naver />} />
           <Route path="/oauth/callback/google" element={<Google />} />
-          <Route path="/test" element={<VideoRoom />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/admin/report" element={<AdminReport />} />
           <Route path="/admin/stats" element={<AdminStats />} />
