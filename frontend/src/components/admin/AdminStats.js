@@ -3,23 +3,22 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import AdminSidebar from "./AdminSidebar";
 import { ResponsivePie } from "@nivo/pie";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function AdminStats() {
   const [genderList, setGenderList] = useState([]);
   const [ageList, setAgeList] = useState([]);
   const [keywordList, setKeywordList] = useState([]);
   const chart = [
-    { list: ageList, title: "나이 통계", color: { scheme: "nivo" } },
+    { list: ageList, title: "연령 통계", color: { scheme: "paired" } },
     {
       list: genderList,
       title: "성별 통계",
-      color: { scheme: "paired" },
+      color: { scheme: "accent" },
     },
-    { list: keywordList, title: "키워드 통계", color: { scheme: "set2" } },
+    { list: keywordList, title: "키워드 통계", color: { scheme: "nivo" } },
   ];
   const navigate = useNavigate();
-  const location = useLocation();
 
   function getList() {
     axios({
@@ -49,7 +48,7 @@ function AdminStats() {
   return (
     <div>
       <div className={styles.admin}></div>
-      {location.pathname != "/admin" && <AdminSidebar />}
+      <AdminSidebar />
       <div
         style={{
           marginLeft: "10%",
@@ -61,6 +60,7 @@ function AdminStats() {
         <h1 style={{ width: "100%" }}>회원 통계</h1>
         {chart.map((data, index) => (
           <div
+            key={index}
             style={{
               width: "500px",
               height: "250px",
@@ -69,9 +69,9 @@ function AdminStats() {
           >
             <h3>{data.title}</h3>
             <ResponsivePie
-              key={index}
               data={data.list}
               margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
+              sortByValue={true}
               activeOuterRadiusOffset={8}
               colors={data.color}
               borderWidth={2}
@@ -81,15 +81,10 @@ function AdminStats() {
               arcLinkLabelsThickness={2}
               arcLinkLabelsColor={{ from: "color" }}
               arcLabelsSkipAngle={10}
-              arcLabelsTextColor={{
-                from: "color",
-                modifiers: [["darker", "3"]],
-              }}
               legends={[
                 {
                   anchor: "bottom",
                   direction: "row",
-                  justify: false,
                   translateX: 0,
                   translateY: 56,
                   itemsSpacing: 0,

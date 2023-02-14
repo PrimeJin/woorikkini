@@ -50,11 +50,13 @@ function Notice() {
       <h1 style={{ width: "100%" }}>공지사항</h1>
       <div className={`${styles1.noticeTable} ${styles.notice}`}>
         <table>
-          <tr>
-            <th style={{ width: "15%" }}>번호</th>
-            <th style={{ width: "70%" }}>제목</th>
-            <th style={{ width: "15%" }}>작성일자</th>
-          </tr>
+          <thead>
+            <tr>
+              <th style={{ width: "15%" }}>번호</th>
+              <th style={{ width: "70%" }}>제목</th>
+              <th style={{ width: "15%" }}>작성일자</th>
+            </tr>
+          </thead>
           {list.map((notice, index) => (
             <NoticeList key={index} notice={notice} />
           ))}
@@ -78,17 +80,19 @@ function NoticeList(props) {
   const time = props.notice.createdTime.substr(0, 10);
 
   return (
-    <tr>
-      <td>{id}</td>
-      <td>
-        <Link
-          to={`${props.notice.noticeId}`}
-          style={{ textDecoration: "none", color: "black" }}
-        >
-          {title}
-        </Link>
-      </td>
-      <td>{time}</td>
-    </tr>
+    <tbody>
+      <tr>
+        <td>{id}</td>
+        <td>
+          <Link
+            to={`${props.notice.noticeId}`}
+            style={{ textDecoration: "none", color: "black" }}
+          >
+            {title}
+          </Link>
+        </td>
+        <td>{time}</td>
+      </tr>
+    </tbody>
   );
 }

@@ -1,10 +1,9 @@
 import React from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation} from "react-router-dom";
 import styles from "./Admin.module.css";
 
 export default function AdminSidebar() {
   const location = useLocation();
-  const navigate = useNavigate();
   const adminList = [
     {
       to: "/admin/notice",
@@ -24,10 +23,6 @@ export default function AdminSidebar() {
     },
   ];
 
-  function goDash() {
-    navigate("/admin");
-  }
-
   return (
     <div className={styles.sidebar}>
       <div className={styles.logoDiv}>
@@ -35,7 +30,6 @@ export default function AdminSidebar() {
           <img
             className={styles.logo}
             src={`${process.env.PUBLIC_URL}/logo.png`}
-            onClick={goDash}
           />
         </Link>
         <button className={styles.logout}>LOGOUT</button>

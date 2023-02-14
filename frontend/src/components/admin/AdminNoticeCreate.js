@@ -60,7 +60,6 @@ const AdminNoticeCreate = (props) => {
         <h1 style={{ width: "100%" }}>공지사항</h1>
         <div className={styles.update}>
           <label className={styles.noticeLabel}>제목</label>
-          <br />
           <input
             className={styles.inputTitle}
             type="text"
@@ -70,7 +69,6 @@ const AdminNoticeCreate = (props) => {
           ></input>
           <br />
           <label className={styles.noticeLabel}>내용</label>
-          <br />
           <textarea
             className={styles.inputContent}
             type="text"
