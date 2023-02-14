@@ -24,6 +24,7 @@ import axios from '../../node_modules/axios/index';
 // import Logo from '../components/user/UserPagesLogo';
 import mainlogo from '../assets/우리끼니로고.png';
 import { useState } from 'react';
+import { useEffect } from 'react';
 
 const LoginPage = () => {
   //React Hooks
@@ -96,6 +97,12 @@ const LoginPage = () => {
   const onLogoClick = () => {
     setLogoClick(!logoClick);
   };
+
+  useEffect(() => {
+    setTimeout(() => {
+      setLogoClick(!logoClick);
+    }, 2000);
+  }, []);
 
   return (
     <div className={styles.login}>
