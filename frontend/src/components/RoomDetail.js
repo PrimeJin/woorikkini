@@ -24,7 +24,6 @@ import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 
 import Timer from '../room/components/Timer';
-import UserModel from './UserModel';
 
 const OPENVIDU_SERVER_URL = 'https://i8a804.p.ssafy.io:8443'; //도커에 올린 openvidu server
 const OPENVIDU_SERVER_SECRET = 'kkini'; //시크릿키값, 바꿔주면 좋음
@@ -64,6 +63,8 @@ class RoomDetail extends Component {
       myUserName: userName,
       myUserId: userId,
       roomId: roomId,
+      connections: [],
+      connectionId: undefined,
       session: undefined, //현재 접속해있는 세션
       localUser: undefined,
       subscribers: [], //다른 사용자의 활성 웹캠 스트림
@@ -187,12 +188,24 @@ class RoomDetail extends Component {
           const newSubscribers = this.state.subscribers;
           newSubscribers.push(newSubscriber);
 
+          const newConnection = event.stream.connection;
+          const newConnections = this.state.connections;
+          newConnections.push(newConnection);
+          console.log(newConnections);
+
           const newUser = JSON.parse(event.stream.connection.data);
           const newUsers = this.state.users;
           newUsers.push(newUser);
+
+          //중복 제거
+          const usersSet = new Set(newUsers);
+          const subscribersSet = new Set(newSubscribers);
+          const users = [...usersSet];
+          const subscribers = [...subscribersSet];
           this.setState({
-            users: newUsers,
-            subscribers: newSubscribers,
+            users: users,
+            subscribers: subscribers,
+            connections: newConnections,
           });
         });
 
@@ -226,9 +239,13 @@ class RoomDetail extends Component {
           }
         });
 
+        // this.state.session.on('connectionCreated', (event) => {
+        //   this.setState({ connection: event.connection });
+        // });
+
         this.getToken(res.data.result.roomTitle).then((token) => {
           this.state.session
-            .connect(token, { userId: userId, userNickname: userNickname })
+            .connect(token, { userId: userId, userNickname: userNickname, connection: this.state.connection })
             .then(async () => {
               this.OV.getUserMedia({
                 audioSource: false,
@@ -330,7 +347,11 @@ class RoomDetail extends Component {
               };
               //모두 투표했을 경우 투표 종료
               if (data.total == this.state.subscribers.length + 1) {
-                this.voteComplete(data);
+                this.state.session.signal({
+                  data: JSON.stringify(data),
+                  to: [],
+                  type: 'endVote',
+                });
               }
             }, 1000);
           });
@@ -346,33 +367,19 @@ class RoomDetail extends Component {
               agree: result.total,
               disagree: result.disagree,
             });
+
+            this.voteComplete(result);
+          });
+
+          this.state.session.on('signal:getout', (event) => {
+            alert('추방되었습니다!');
+            this.leaveSession();
           });
         });
-        //토큰을 받았으면 connect(token)으로 세션에 연결할 수 있게 된다
-        //2번째 파라미터로 세션에 있는 모든 사용자에게 넘길 데이터를 공유할 수 있다
       });
     });
   }
 
-  // updateSubscribers() {
-  //   var subscribers = this.remotes;
-  //   this.setState(
-  //     {
-  //       subscribers: subscribers,
-  //     },
-  //     () => {
-  //       if (this.state.localUser) {
-  //         this.sendSignalUserChanged({
-  //           isAudioActive: this.state.localUser.isAudioActive(),
-  //           isVideoActive: this.state.localUser.isVideoActive(),
-  //           nickname: this.state.localUser.getNickname(),
-  //           isScreenShareActive: this.state.localUser.isScreenShareActive(),
-  //         });
-  //       }
-  //       // this.updateLayout();
-  //     },
-  //   );
-  // }
   // 모달 관련 함수들
   openModal(e) {
     if (e.target.name === 'report') {
@@ -541,13 +548,6 @@ class RoomDetail extends Component {
       disagree: 0,
     });
     const data = {
-      // isVoteStart: this.state.isVoteStart,
-      // voteUserId: this.state.voteUserId,
-      // voteUserNickname: this.state.voteUserNickname,
-      // total: this.state.total,
-      // agree: this.state.agree,
-      // disagree: this.state.disagree,
-
       isVoteStart: false,
       voteUserId: userId,
       voteUserNickname: userNickname,
@@ -651,23 +651,18 @@ class RoomDetail extends Component {
     console.log('전체 : ' + result.total);
     console.log('누구 : ' + result.voteUserNickname);
 
-    const data = {
+    this.setState({
+      isVoteStart: false,
       voteUserId: '',
       voteUserNickname: '',
       total: 0,
       agree: 0,
       disagree: 0,
-    };
-
-    this.state.session.signal({
-      data: JSON.stringify(data),
-      to: [],
-      type: 'endVote',
     });
+
     const roomId = localStorage.getItem('roomId');
     const accessToken = this.props.accessToken;
     if (result.agree / result.total >= 0.5) {
-      alert(`${result.voteUserNickname}님이 추방되었습니다`);
       // 백엔드 및 openvidu 서버에 추방 요청을 보냄
       axios({
         url: `https://i8a804.p.ssafy.io/api/room/exit/${roomId}/${result.voteUserId}`,
@@ -679,6 +674,16 @@ class RoomDetail extends Component {
       })
         .then((res) => {
           if (res.status == 200 || 202) {
+            alert(`${result.voteUserNickname}님이 추방되었습니다`);
+            this.state.connections.map((connection) => {
+              const connectionUser = JSON.parse(connection.data);
+              if (connectionUser.userId == result.voteUserId && connectionUser.userNickname == result.voteUserNickname)
+                this.state.session.signal({
+                  data: result.voteUserNickname,
+                  to: [connection],
+                  type: 'getout',
+                });
+            });
           }
         })
         .catch((err) => console.log(err));
@@ -776,40 +781,6 @@ class RoomDetail extends Component {
       console.error(e);
     }
   }
-  userList() {
-    this.state.users.map((user, index) => {
-      return (
-        <li>
-          <Box>
-            <Stack direction="row" spacing={3}>
-              <div>{user.userNickname}</div>
-
-              <Button
-                name="report"
-                value={user.userId}
-                variant="contained"
-                color="error"
-                size="small"
-                onClick={this.openModal}
-              >
-                신고
-              </Button>
-              <Button
-                onClick={() => this.startVote({ userId: user.userId, userNickname: user.userNickname })}
-                name="vote"
-                value={user.userId}
-                variant="contained"
-                color="error"
-                size="small"
-              >
-                강퇴
-              </Button>
-            </Stack>
-          </Box>
-        </li>
-      );
-    });
-  }
 
   //채팅창 스크롤 자동으로 내려주는 기능
   scrollToBottom = () => {
@@ -829,7 +800,9 @@ class RoomDetail extends Component {
         <div className={styles.inmain}>
           <div className={styles.inbody}>
             <div id="video-container" className={`${styles.videobox} ${'col-md-12 col-xs-12'}`}>
-              {this.state.isVoteStart ? this.showVoteModal(this.state.eventData) : null}
+              {this.state.isVoteStart && this.state.eventData.voteUserId !== this.state.myUserId
+                ? this.showVoteModal(this.state.eventData)
+                : null}
               {this.state.publisher !== undefined ? (
                 <div
                   className="stream-container col-md-4 col-xs-4"
@@ -987,7 +960,7 @@ class RoomDetail extends Component {
           // console.log(response);
           if (error.response) {
             if (error.response.status === 409) {
-              resolve(sessionId);
+              resolve(localStorage.getItem('roomTitle'));
               console.log('이미 있는 세션입니다');
             } else if (
               window.confirm(
@@ -1018,6 +991,7 @@ class RoomDetail extends Component {
           resolve(response.data.token);
           this.setState({
             token: response.data.token,
+            connectionId: response.data.connectionId,
           });
         })
         .catch((error) => reject(error));
