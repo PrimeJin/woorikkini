@@ -27,6 +27,7 @@ import java.util.Map;
 @RequestMapping("/api/memory")
 public class MemoryController {
 
+    private static final String MESSAGE = "message";
     private static final String SUCCESS = "success";
     private static final String FAIL = "fail";
     private final MemoryService memoryService;
@@ -50,15 +51,15 @@ public class MemoryController {
         try {
             Memory createMemory = memoryService.createMemory(memoryCreateFormDto, memoryImgFiles);
             if(createMemory != null){
-                resultMap.put("message", SUCCESS);
+                resultMap.put(MESSAGE, SUCCESS);
                 status = HttpStatus.OK;
             }
             else {
-                resultMap.put("message", FAIL);
+                resultMap.put(MESSAGE, FAIL);
                 status = HttpStatus.BAD_REQUEST;
             }
         } catch (IOException e) {
-            resultMap.put("message", FAIL);
+            resultMap.put(MESSAGE, FAIL);
             status = HttpStatus.BAD_REQUEST;
         }
 
@@ -75,16 +76,16 @@ public class MemoryController {
         try {
             Memory updateMemory = memoryService.updateMemory(memoryUpdateFormDto ,memoryImgFiles);
             if(updateMemory != null){
-                resultMap.put("message", SUCCESS);
+                resultMap.put(MESSAGE, SUCCESS);
                 status = HttpStatus.OK;
             }
             else {
-                resultMap.put("message", FAIL);
+                resultMap.put(MESSAGE, FAIL);
                 status = HttpStatus.BAD_REQUEST;
             }
 
         } catch (IOException e) {
-            resultMap.put("message", FAIL);
+            resultMap.put(MESSAGE, FAIL);
             status = HttpStatus.BAD_REQUEST;
         }
 
@@ -99,11 +100,11 @@ public class MemoryController {
         Map<String, Object> resultMap = new HashMap<>();
 
         if(memoryService.deleteMemory(memoryId) > 0){
-            resultMap.put("message", SUCCESS);
+            resultMap.put(MESSAGE, SUCCESS);
             status = HttpStatus.OK;
         }
         else {
-            resultMap.put("message", FAIL);
+            resultMap.put(MESSAGE, FAIL);
             status = HttpStatus.BAD_REQUEST;
         }
 
@@ -122,15 +123,15 @@ public class MemoryController {
             List<MemoryGetFormDto> memoryGetFormDtoList = memoryService.getMemory(userId);
 
             if(!memoryGetFormDtoList.isEmpty()){
-                resultMap.put("message", SUCCESS);
+                resultMap.put(MESSAGE, SUCCESS);
                 resultMap.put("memoryList", memoryGetFormDtoList);
                 status = HttpStatus.OK;
             }else{
-                resultMap.put("message", FAIL);
+                resultMap.put(MESSAGE, FAIL);
                 status = HttpStatus.BAD_REQUEST;
             }
         }catch (MalformedURLException e){
-            resultMap.put("message", e.getMessage());
+            resultMap.put(MESSAGE, e.getMessage());
             status = HttpStatus.BAD_REQUEST;
         }
         return new ResponseEntity<Map<String,Object>>(resultMap,status);

@@ -13,6 +13,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ReportService {
@@ -69,12 +70,21 @@ public class ReportService {
     //활동정지 시키기
     public User userSuspend(int userId) {
         User user = userRepository.findByUserId(userId);
-        UserInfoDto userInfoDto = new UserInfoDto(user);
-        userInfoDto.setUserActivation(LocalDateTime.now().plusDays(7));
-        return userRepository.save(userInfoDto.toEntity());
+        if(user != null) {
+            UserInfoDto userInfoDto = new UserInfoDto(user);
+            userInfoDto.setUserActivation(LocalDateTime.now().plusDays(7));
+            return userRepository.save(userInfoDto.toEntity());
+        } else {
+            return null;
+        }
     }
 
     public Report getReportByReportId(int reportId) {
-        return reportRepository.findById(reportId).get();
+        Optional<Report> report = reportRepository.findById(reportId);
+        Report reportEntity = null;
+        if(report.isPresent()) {
+            reportEntity = report.get();
+        }
+        return reportEntity;
     }
 }

@@ -24,6 +24,7 @@ public class NoticeController {
         this.noticeService = noticeService;
     }
 
+    private static final String MESSAGE = "message";
     private static final String SUCCESS = "success";
     private static final String FAIL = "fail";
 
@@ -35,12 +36,12 @@ public class NoticeController {
         Map<String, Object> map = new HashMap<>();
         try {
             Page<Notice> noticeList = noticeService.getNoticeList(page, limit);
-            map.put("message", SUCCESS);
+            map.put(MESSAGE, SUCCESS);
             map.put("noticeList", noticeList);
             map.put("totalSize", noticeList.getTotalElements());
             return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
         } catch (Exception e) {
-            map.put("message", FAIL);
+            map.put(MESSAGE, FAIL);
             return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
         }
     }
@@ -52,10 +53,10 @@ public class NoticeController {
         Map<String, Object> map = new HashMap<>();
 
         if(noticeService.createNotice(noticeCreateFormDto) != null) {
-            map.put("message", SUCCESS);
+            map.put(MESSAGE, SUCCESS);
             return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
         } else {
-            map.put("message", FAIL);
+            map.put(MESSAGE, FAIL);
             return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
         }
     }
@@ -66,11 +67,11 @@ public class NoticeController {
     public ResponseEntity<Map<String, Object>> getNotice(@PathVariable @ApiParam(value = "조회할 공지사항 번호", example = "0") int noticeId) {
         Map<String, Object> map = new HashMap<>();
         if(noticeService.getNotice(noticeId) != null) {
-            map.put("message", SUCCESS);
+            map.put(MESSAGE, SUCCESS);
             map.put("notice", noticeService.getNotice(noticeId));
             return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
         } else {
-            map.put("message", FAIL);
+            map.put(MESSAGE, FAIL);
             return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
         }
     }
@@ -84,11 +85,11 @@ public class NoticeController {
 
         Notice updatedNotice = noticeService.updateNotice(noticeUpdateFormDto);
         if(updatedNotice != null) {
-            map.put("message", SUCCESS);
+            map.put(MESSAGE, SUCCESS);
             map.put("notice", updatedNotice);
             return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
         } else {
-            map.put("message", FAIL);
+            map.put(MESSAGE, FAIL);
             return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
         }
     }
@@ -99,10 +100,10 @@ public class NoticeController {
     public ResponseEntity<Map<String, Object>> deleteNotice(@PathVariable @ApiParam(value = "삭제할 공지사항 번호", example = "0") int noticeId) {
         Map<String, Object> map = new HashMap<>();
         if(noticeService.deleteNotice(noticeId) == 1) {
-            map.put("message", SUCCESS);
+            map.put(MESSAGE, SUCCESS);
             return new ResponseEntity<Map<String, Object>>(map, HttpStatus.OK);
         } else {
-            map.put("message", FAIL);
+            map.put(MESSAGE, FAIL);
             return new ResponseEntity<Map<String, Object>>(map, HttpStatus.BAD_REQUEST);
         }
     }

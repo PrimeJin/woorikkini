@@ -78,11 +78,14 @@ public class UserService {
 
     @Transactional
     public User updatePasswordByEmail(String email, String newPassword) {
-        User user = userRepository.findByUserEmail(email).get();
-        UserInfoDto userInfoDto = new UserInfoDto(user);
-        userInfoDto.setUserPassword(bCryptPasswordEncoder.encode(newPassword));
-
-        return userRepository.save(userInfoDto.toEntity());
+        Optional<User> user = userRepository.findByUserEmail(email);
+        if(user.isPresent()) {
+            UserInfoDto userInfoDto = new UserInfoDto(user.get());
+            userInfoDto.setUserPassword(bCryptPasswordEncoder.encode(newPassword));
+            return userRepository.save(userInfoDto.toEntity());
+        } else {
+            return null;
+        }
     }
 
     //관리자 전체회원 조회

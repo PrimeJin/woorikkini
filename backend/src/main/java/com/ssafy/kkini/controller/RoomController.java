@@ -22,6 +22,7 @@ import java.util.Map;
 @Api("Room RestController V1")
 @RequestMapping("/api/room")
 public class RoomController {
+    private static final String MESSAGE = "message";
     private static final String SUCCESS = "success";
     private static final String FAIL = "fail";
     private RoomService roomService;
@@ -44,10 +45,10 @@ public class RoomController {
         RoomDto room = roomService.createRoom(roomCreateFormDto);
         if (room == null){
             status = HttpStatus.BAD_REQUEST;
-            resultMap.put("message", FAIL);
+            resultMap.put(MESSAGE, FAIL);
         } else {
             status = HttpStatus.OK;
-            resultMap.put("message", SUCCESS);
+            resultMap.put(MESSAGE, SUCCESS);
             resultMap.put("result", room);
         }
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
@@ -62,10 +63,10 @@ public class RoomController {
         RoomDetailDto roomDetail = roomService.detailRoom(Integer.valueOf(roomId));
         if (roomDetail == null){
             status = HttpStatus.BAD_REQUEST;
-            resultMap.put("message", FAIL);
+            resultMap.put(MESSAGE, FAIL);
         } else {
             status = HttpStatus.OK;
-            resultMap.put("message", SUCCESS);
+            resultMap.put(MESSAGE, SUCCESS);
             resultMap.put("result", roomDetail);
         }
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
@@ -79,10 +80,10 @@ public class RoomController {
         List<RoomDto> roomList = roomService.getAllRoom();
         if (roomList == null){
             status = HttpStatus.BAD_REQUEST;
-            resultMap.put("message", FAIL);
+            resultMap.put(MESSAGE, FAIL);
         } else {
             status = HttpStatus.OK;
-            resultMap.put("message", SUCCESS);
+            resultMap.put(MESSAGE, SUCCESS);
             resultMap.put("result", roomList);
         }
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
@@ -97,10 +98,10 @@ public class RoomController {
         List<RoomDto> roomList = roomService.searchRoom(subject, content);
         if (roomList == null){
             status = HttpStatus.BAD_REQUEST;
-            resultMap.put("message", FAIL);
+            resultMap.put(MESSAGE, FAIL);
         } else {
             status = HttpStatus.OK;
-            resultMap.put("message", SUCCESS);
+            resultMap.put(MESSAGE, SUCCESS);
             resultMap.put("result", roomList);
         }
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
@@ -114,10 +115,10 @@ public class RoomController {
         List<KeywordDto> keywordList = keywordService.getKeyword();
         if (keywordList == null){
             status = HttpStatus.BAD_REQUEST;
-            resultMap.put("message", FAIL);
+            resultMap.put(MESSAGE, FAIL);
         } else {
             status = HttpStatus.OK;
-            resultMap.put("message", SUCCESS);
+            resultMap.put(MESSAGE, SUCCESS);
             resultMap.put("result", keywordList);
         }
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
@@ -138,15 +139,15 @@ public class RoomController {
 
             if (result == null){
                 status = HttpStatus.BAD_REQUEST;
-                resultMap.put("message", FAIL);
+                resultMap.put(MESSAGE, FAIL);
             } else {
                 status = HttpStatus.OK;
                 resultMap.put("sessionId", result.getSessionId());
-                resultMap.put("message", SUCCESS);
+                resultMap.put(MESSAGE, SUCCESS);
             }
         } else{
             status = HttpStatus.UNAUTHORIZED;
-            resultMap.put("message", "denied");
+            resultMap.put(MESSAGE, "denied");
         }
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
     }
@@ -160,15 +161,15 @@ public class RoomController {
         int result = exitService.addExitUser(roomId, userId);
         if (result == 0){
             status = HttpStatus.BAD_REQUEST;
-            resultMap.put("message", FAIL);
+            resultMap.put(MESSAGE, FAIL);
         } else {
             int cnt = roomService.exitRoom(Integer.parseInt(roomId));
             if(cnt == 0){
                 status = HttpStatus.BAD_REQUEST;
-                resultMap.put("message", FAIL);
+                resultMap.put(MESSAGE, FAIL);
             } else{
                 status = HttpStatus.OK;
-                resultMap.put("message", SUCCESS);
+                resultMap.put(MESSAGE, SUCCESS);
             }
         }
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
@@ -183,10 +184,10 @@ public class RoomController {
         int result = roomService.exitRoom(Integer.parseInt(roomId));
         if (result == 0){
             status = HttpStatus.BAD_REQUEST;
-            resultMap.put("message", FAIL);
+            resultMap.put(MESSAGE, FAIL);
         } else {
             status = HttpStatus.OK;
-            resultMap.put("message", SUCCESS);
+            resultMap.put(MESSAGE, SUCCESS);
         }
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
     }
@@ -200,10 +201,10 @@ public class RoomController {
         int result = roomService.deleteRoom(Integer.valueOf(roomId));
         if (result == 0){
             status = HttpStatus.BAD_REQUEST;
-            resultMap.put("message", FAIL);
+            resultMap.put(MESSAGE, FAIL);
         } else {
             status = HttpStatus.OK;
-            resultMap.put("message", SUCCESS);
+            resultMap.put(MESSAGE, SUCCESS);
         }
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
     }

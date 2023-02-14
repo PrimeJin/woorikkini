@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class PasswordCodeService {
@@ -25,9 +26,9 @@ public class PasswordCodeService {
 
     //입력한 이메일과 이름이 찾으려는 유저정보와 일치하는지 검사
     public boolean checkEmailAndName(String userEmail, String userName) {
-        if(userRepository.findByUserEmail(userEmail).isPresent()) {
-            User user = userRepository.findByUserEmail(userEmail).get();
-            if(user.getUserName().equals(userName)) {
+        Optional<User> user = userRepository.findByUserEmail(userEmail);
+        if(user.isPresent()) {
+            if(user.get().getUserName().equals(userName)) {
                 return true;
             }
         }
@@ -42,25 +43,31 @@ public class PasswordCodeService {
     @Transactional
     //비밀번호 코드 생성
     public PasswordCode createPasswordCode(String email) {
-        User user = userRepository.findByUserEmail(email).get();
-        String passwordCodeContent = this.getPasswordCodeContent(email);  //인증코드 내용 가져오기
-        LocalDateTime passwordCodeExpireDate = LocalDateTime.now().plusHours(1);  //지금으로부터 1시간 뒤로 코드만료 시간설정
+        Optional<User> user = userRepository.findByUserEmail(email);
+        PasswordCode passwordCode = null;
+        if(user.isPresent()) {
+            String passwordCodeContent = this.getPasswordCodeContent(email);  //인증코드 내용 가져오기
+            LocalDateTime passwordCodeExpireDate = LocalDateTime.now().plusHours(1);  //지금으로부터 1시간 뒤로 코드만료 시간설정
+            PasswordCodeCreateDto passwordCodeCreateDto = new PasswordCodeCreateDto();
+            passwordCodeCreateDto.setPasswordCodeContent(passwordCodeContent);
+            passwordCodeCreateDto.setPasswordCodeExpireDate(passwordCodeExpireDate);
+            passwordCodeCreateDto.setPasswordCodeUseYn("N");
+            passwordCodeCreateDto.setUser(user.get());
 
-        PasswordCodeCreateDto passwordCodeCreateDto = new PasswordCodeCreateDto();
-        passwordCodeCreateDto.setPasswordCodeContent(passwordCodeContent);
-        passwordCodeCreateDto.setPasswordCodeExpireDate(passwordCodeExpireDate);
-        passwordCodeCreateDto.setPasswordCodeUseYn("N");
-        passwordCodeCreateDto.setUser(user);
-        PasswordCode passwordCode = passwordCodeCreateDto.toEntity();
+            passwordCode = passwordCodeCreateDto.toEntity();
+        }
 
         return passwordCodeRepository.save(passwordCode);
     }
 
     //코드 사용여부 확인하기 위해 유저이메일로 일치하는 비밀번호코드 찾기
     public PasswordCode getCodeByUserEmail(String email) {
-        User user = userRepository.findByUserEmail(email).get();
-
-        return passwordCodeRepository.findFirstByUserOrderByCreatedTimeDesc(user);
+        Optional<User> user = userRepository.findByUserEmail(email);
+        User userEntity = null;
+        if(user.isPresent()) {
+            userEntity = user.get();
+        }
+        return passwordCodeRepository.findFirstByUserOrderByCreatedTimeDesc(userEntity);
     }
 
     @Transactional
