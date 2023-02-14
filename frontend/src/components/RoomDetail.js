@@ -833,6 +833,13 @@ class RoomDetail extends Component {
               {this.state.publisher !== undefined ? (
                 <div
                   className="stream-container col-md-4 col-xs-4"
+                  style={{
+                    cursor: 'pointer',
+                    width: '80%',
+                    minHeight: '150px',
+                    position: 'relative',
+                  }}
+                  title={this.state.myUserName}
                   // onClick={() => this.handleMainVideoStream(this.state.publisher)}
                 >
                   <UserVideoComponent streamManager={this.state.publisher} />
@@ -843,6 +850,13 @@ class RoomDetail extends Component {
                   <div
                     key={i}
                     className="stream-container col-md-4 col-xs-4"
+                    style={{
+                      cursor: 'pointer',
+                      width: '80%',
+                      minHeight: '150px',
+                      position: 'relative',
+                    }}
+                    title={this.state.users[i].userNickname}
                     // onClick={() => this.handleMainVideoStream(sub)}
                   >
                     <UserVideoComponent streamManager={sub} mainVideoStream={this.handleMainVideoStream} />

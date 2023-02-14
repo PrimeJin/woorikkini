@@ -39,6 +39,7 @@ const RoomList = (props) => {
       },
     })
       .then((res) => {
+        console.log(res);
         localStorage.setItem('roomToken', res.data.sessionId); //토큰 받아오기
         navigate(`${roomId}`);
       })

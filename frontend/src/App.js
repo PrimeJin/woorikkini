@@ -25,9 +25,28 @@ import Room from './components/Room';
 import RoomDetail from './components/RoomDetail';
 import Notice from './components/Notice';
 import NoticeDetail from './components/NoticeDetail';
+import { useDispatch } from 'react-redux';
+import { SET_USER } from './store/User';
+import { RESET_TOKEN } from './store/Auth';
 import './App.css';
+import { useEffect } from 'react';
 
 function App() {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const userId = localStorage.getItem('userId');
+    const userNickname = localStorage.getItem('userNickname');
+    const accessToken = localStorage.getItem('accessToken');
+    if (accessToken) {
+      dispatch(
+        RESET_TOKEN({
+          accessToken,
+        }),
+      );
+      dispatch(SET_USER({ id: userId, nickname: userNickname }));
+    }
+  }, []);
+
   return (
     <div className="App">
       <Helmet>

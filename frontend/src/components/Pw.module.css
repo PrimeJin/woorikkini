@@ -1,10 +1,17 @@
-.logo {
+.change {
   text-align: center;
-  font-family: "NanumSquareRound";
-  font-weight: 1000;
-  font-size: 80px;
-  color: #eb6123;
-  margin-bottom: 5%;
+  font-family: 'NanumSquareRound';
+  /* 가로로 가운데 정렬 */
+  display: flex;
+  align-items: center;
+  flex-flow: column nowrap;
+
+  background: #fffdfa;
+}
+
+.logo {
+  margin-top: 5%;
+  margin-bottom: 2%;
 }
 
 .all {
@@ -18,28 +25,25 @@
   justify-content: center;
   width: 482px;
   height: 422px;
-
+  text-align: center;
   background: #fefaef;
   mix-blend-mode: normal;
-  box-shadow: 0px 100px 80px rgba(0, 0, 0, 0.07),
-    0px 50.0488px 40.0391px rgba(0, 0, 0, 0.0532233),
-    0px 30.1471px 24.1177px rgba(0, 0, 0, 0.0456112),
-    0px 19.3198px 15.4559px rgba(0, 0, 0, 0.0399626),
-    0px 12.5216px 10.0172px rgba(0, 0, 0, 0.035),
-    0px 7.88218px 6.30574px rgba(0, 0, 0, 0.0300374),
-    0px 4.5288px 3.62304px rgba(0, 0, 0, 0.0243888),
-    0px 1.99324px 1.59459px rgba(0, 0, 0, 0.0167767);
+  box-shadow: 0px 100px 80px rgba(0, 0, 0, 0.07), 0px 50.0488px 40.0391px rgba(0, 0, 0, 0.0532233),
+    0px 30.1471px 24.1177px rgba(0, 0, 0, 0.0456112), 0px 19.3198px 15.4559px rgba(0, 0, 0, 0.0399626),
+    0px 12.5216px 10.0172px rgba(0, 0, 0, 0.035), 0px 7.88218px 6.30574px rgba(0, 0, 0, 0.0300374),
+    0px 4.5288px 3.62304px rgba(0, 0, 0, 0.0243888), 0px 1.99324px 1.59459px rgba(0, 0, 0, 0.0167767);
   border-radius: 50px;
 }
 
 .userInfo {
   width: 384px;
   height: 53px;
+  margin-top: 5%;
   padding-left: 5%;
   background: #ffffff;
   border-radius: 10px;
   font-size: 20px;
-  font-family: "NanumSquareRound";
+  font-family: 'NanumSquareRound';
   font-style: normal;
   font-weight: 300;
   border: none;
@@ -48,9 +52,9 @@
 
 .pwChange {
   justify-content: center;
-  margin-top: 10%;
-  margin-bottom: 5%;
-  font-family: "NanumSquareRound";
+  margin-top: 12%;
+  margin-bottom: 1%;
+  font-family: 'NanumSquareRound';
   font-style: normal;
   font-weight: 800;
   font-size: 32px;
@@ -58,21 +62,17 @@
   display: flex;
   align-items: center;
   text-align: center;
-
   color: #090936;
 }
 
 .check {
+  justify-content: center;
   width: 123px;
   height: 56px;
   margin-top: 8%;
   font-size: 20px;
+  text-align: center;
   border: none;
   background: #d6ebfc;
   border-radius: 17px;
-}
-
-.logo {
-  height: 200px;
-  margin: 2%;
 }
