@@ -25,22 +25,18 @@ const SwiperContainer = () => {
       axios({
         url: `https://i8a804.p.ssafy.io/api/memory?userId=${userId}`,
         method: 'GET',
-      })
-        .then((res) => {
-          console.log(res);
-          const response = res;
-          const inputData = response.data.memoryList.map((rowData) => ({
-            id: rowData.memory.memoryId,
-            img: rowData.photoList,
-            date: rowData.memory.createdTime.slice(0, 10),
-            title: rowData.memory.memoryTitle,
-            content: rowData.memory.memoryContent,
-          }));
-          setCardList(inputData);
-        })
-        .then((res) => {
-          console.log('!!!', cardList);
-        });
+      }).then((res) => {
+        console.log('?', res);
+        const response = res;
+        const responseData = response.data.memoryList.map((rowData) => ({
+          id: rowData.memoryId,
+          img: rowData.photoPathList,
+          date: rowData.createdTime.slice(0, 10),
+          title: rowData.memoryTitle,
+          content: rowData.memoryContent,
+        }));
+        setCardList(responseData);
+      });
     } catch (e) {
       console.error('*', e);
     }
@@ -107,16 +103,12 @@ const SwiperContainer = () => {
               >
                 <div className={styles.swiper_wrapper}>
                   <div className={`${styles.card} ${styles.swiper_slide}`}>
-                    {/* <SwiperSlide> */}
-                    {/* 이미지 들어갈 자리 */}
-                    {/* <img src={data.img} className={styles.slider_image_wrapper} alt="SliderImg" />
-                    </SwiperSlide> */}
-
-                    {data.img.map((item, id) => {
+                    {data.img.map((filePath, id) => {
                       return (
                         <SwiperSlide key={id}>
                           {/* 이미지 들어갈 자리 */}
-                          <img src={item.filePath} className="slider-image-wrapper" alt="SliderImg" />
+                          <img src={filePath} className={styles.slider_image_wrapper} alt="SliderImg" />
+                          <p>{console.log(filePath)}</p>
                         </SwiperSlide>
                       );
                     })}
@@ -145,17 +137,17 @@ const SwiperContainer = () => {
                         cardUpdate(data);
                         openModal();
                       }}
-                      style={{ width: 25, height: 25, marginLeft: '5%' }}
+                      style={{ width: 25, height: 25, margin: '1% 5%' }}
                     ></img>
-                    <div>{data.date}</div>
+                    <div style={{ fontWeight: '900', fontSize: 'small', lineHeight: 2.5 }}>{data.date}</div>
                     <img
                       src={'img/삭제 아이콘.png'}
                       onClick={() => cardDelete(data.id)}
-                      style={{ width: 25, height: 25, marginRight: '5%' }}
+                      style={{ width: 25, height: 25, margin: '1% 5%' }}
                     ></img>
                   </div>
-                  <div>{data.title}</div>
-                  <div>{data.content}</div>
+                  <div style={{ fontWeight: '900' }}>{data.title}</div>
+                  <div style={{ fontWeight: '500', fontSize: 'medium' }}>{data.content}</div>
                 </div>
               </div>
             </div>

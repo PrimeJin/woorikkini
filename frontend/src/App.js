@@ -17,14 +17,19 @@ import PwChange from './components/PwChange';
 import AdminNotice from './components/admin/AdminNotice';
 import AdminNoticeDetail from './components/admin/AdminNoticeDetail';
 import AdminNoticeCreate from './components/admin/AdminNoticeCreate';
+import AdminAllUsers from './components/admin/AdminAllUsers';
+import AdminStats from './components/admin/AdminStats';
+import AdminReport from './components/admin/AdminReport';
+import Admin from './components/admin/Admin';
 import Room from './components/Room';
 import RoomDetail from './components/RoomDetail';
-// import Notice from './components/Notice';
-// import NoticeDetail from './components/NoticeDetail';
+import Notice from './components/Notice';
+import NoticeDetail from './components/NoticeDetail';
+import './App.css';
 
 function App() {
   return (
-    <>
+    <div className="App">
       <Helmet>
         <title>우리끼니</title>
       </Helmet>
@@ -42,15 +47,22 @@ function App() {
           <Route path="/oauth/callback/kakao" element={<Kakao />} />
           <Route path="/oauth/callback/naver" element={<Naver />} />
           <Route path="/oauth/callback/google" element={<Google />} />
+          <Route path="/test" element={<VideoRoom />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/report" element={<AdminReport />} />
+          <Route path="/admin/stats" element={<AdminStats />} />
+          <Route path="/admin/allUsers" element={<AdminAllUsers />} />
           <Route path="/admin/notice" element={<AdminNotice />} />
           <Route path="/admin/notice/:noticeId" element={<AdminNoticeDetail />} />
           <Route path="/admin/notice/create" element={<AdminNoticeCreate />} />
+          <Route path="/notice" element={<Notice />} />
+          <Route path="/notice/:noticeId" element={<NoticeDetail />} />
           <Route path="/room" element={<Room />} />
           <Route path="/room/:roomId" element={<RoomDetail />} />
           <Route path="/*" element={<ErrorPage />} />
         </Routes>
       </BrowserRouter>
-    </>
+    </div>
   );
 }
 

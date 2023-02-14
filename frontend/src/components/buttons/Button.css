@@ -1,14 +1,33 @@
 .kakao-button {
+  width: 260px;
+  height: 45px;
   border: none;
-  background: none;
+  background: #fee500;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  transition: 0.5s;
+  margin: 0 0 3% 1%;
 }
 
 .naver-button {
+  width: 260px;
+  height: 45px;
   border: none;
-  background: none;
+  background: #03c75a;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  transition: 0.5s;
+  align-items: center;
+  margin: 5% 0 3% 1%;
 }
 
 .google-button {
-  border: none;
-  background: none;
+  width: 260px;
+  height: 45px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  background: #ffffff;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  transition: 0.5s;
+  margin: 0 0 15% 1%;
 }

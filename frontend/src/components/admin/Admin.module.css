@@ -10,49 +10,44 @@
 }
 
 .new {
-  width: 84px;
-  height: 39px;
-
+  width: 85px;
+  height: 40px;
   background: #f2f0f0;
   border-radius: 10px;
-  font-family: NanumSquareRound;
-  font-weight: 400;
   font-size: 15px;
-  line-height: 17px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   border: none;
-  margin-right: 5%;
   cursor: pointer;
 }
+
 .noticeTable {
   justify-content: center;
   display: flex;
-  margin: 1%;
   flex-flow: wrap;
+  width: 100%;
 }
 
 .noticeTable table {
   width: 100%;
+  height: 100%;
   border-collapse: collapse;
   line-height: 24px;
-  margin-inline: 10%;
+  margin-inline: 5%;
   margin-bottom: 3%;
 }
 .noticeTable table th {
   border-bottom: 3px solid black;
   padding: 10px;
+  padding-inline: 15px;
 }
-
 .noticeTable table td {
   border-bottom: 1px solid black;
   padding: 10px;
+  padding-inline: 15px;
 }
 
 .detail {
   box-sizing: border-box;
-  width: 60%;
+  width: 80%;
   height: auto;
   margin: 1%;
   border: 1px solid #000000;
@@ -64,6 +59,7 @@
   margin: 4%;
   margin-bottom: 0%;
 }
+
 .content {
   font-size: 150%;
   text-align: left;
@@ -72,8 +68,8 @@
 }
 
 .btn {
-  width: 64px;
-  height: 43px;
+  width: 60px;
+  height: 40px;
   border: none;
   background: #f2f0f0;
   border-radius: 10px;
@@ -83,9 +79,8 @@
 }
 
 .toList {
-  width: 84px;
-  height: 39px;
-
+  width: 80px;
+  height: 40px;
   background: #f2f0f0;
   border-radius: 10px;
   border: none;
@@ -95,34 +90,28 @@
 
 .update {
   box-sizing: border-box;
-  width: 60%;
-  height: auto;
+  width: 70%;
   margin: 1%;
   background: #f2f0f0;
   border-radius: 20px;
 }
 
 .noticeLabel {
-  width: 117px;
-  height: 26px;
-
   font-size: 20px;
   display: flex;
   text-align: left;
   margin-left: 5%;
-  margin-top: 3%;
+  margin-top: 4%;
+  margin-bottom: 1%;
 }
 
 .inputTitle {
   box-sizing: border-box;
   width: 90%;
-  height: auto;
-  min-height: 50px;
-
   background: #ffffff;
   border: 1px solid #000000;
   border-radius: 10px;
-  padding: 3%;
+  padding: 2%;
   font-size: 25px;
 }
 
@@ -131,7 +120,6 @@
   width: 90%;
   height: auto;
   min-height: 300px;
-
   background: #ffffff;
   border: 1px solid #000000;
   border-radius: 10px;
@@ -145,7 +133,6 @@
   height: 45px;
   margin: 2%;
   margin-inline: 6%;
-
   background: #ffffff;
   border: 1px solid #000000;
   border-radius: 10px;
@@ -173,4 +160,114 @@
   padding: 3%;
   padding-inline: 5%;
   cursor: pointer;
+}
+
+.reportBtn {
+  width: 90px;
+  height: 35px;
+  background: #eb2323;
+  border-radius: 15px;
+  border: none;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.hide {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  cursor: pointer;
+}
+
+.hide:hover {
+  text-decoration: underline;
+}
+
+.full {
+  cursor: pointer;
+}
+
+.full:hover {
+  text-decoration: underline;
+}
+
+.sidebar {
+  height: 100%;
+  width: 150px;
+  position: fixed;
+  display: flex;
+  background-color: #f2f0f0;
+  justify-content: center;
+  flex-flow: wrap column;
+}
+
+.link {
+  text-decoration: none;
+  color: #000000;
+  margin: 15px;
+  font-size: 20px;
+}
+
+.here {
+  text-decoration: none;
+  color: #000000;
+  font-size: 24px;
+  font-weight: 800;
+  margin: 15px;
+  cursor: default;
+}
+
+.logo {
+  width: 100px;
+  margin-top: 10%;
+}
+
+.logoDiv {
+  height: 30%;
+  width: 150px;
+  position: absolute;
+  top: 0;
+}
+
+.logout {
+  width: 100px;
+  height: 30px;
+  background: #eb6123;
+  border-radius: 15px;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.dash {
+  background-color: #f2f0f0;
+  width: 100%;
+  height: 280px;
+  overflow: hidden;
+  border: 1.5px solid black;
+  font-size: 20px;
+  text-decoration: none;
+  color: #000000;
+}
+
+.dash > h4 {
+  border-bottom: 1px solid black;
+  text-align: left;
+  margin: 5%;
+  margin-bottom: 2%;
+  padding-bottom: 2%;
+}
+
+.dash > div {
+  display: flex;
+  margin: 3%;
+  padding: 1%;
+}
+
+.dash > div > span {
+  margin-inline: 2%;
+  text-overflow: ellipsis;
 }

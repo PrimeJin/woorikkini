@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styles from './Room.module.css';
 import LockIcon from '@mui/icons-material/Lock';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
 
 const RoomList = (props) => {
   const roomId = props.room.roomId;
@@ -55,7 +56,8 @@ const RoomList = (props) => {
   return (
     <div
       style={{
-        margin: '5%',
+        margin: '2%',
+        marginBottom: '5%',
         display: 'flex',
         flexFlow: 'wrap row',
         justifyContent: 'center',
@@ -66,7 +68,7 @@ const RoomList = (props) => {
         <div className={styles.roomEnter}>
           <div className={styles.enterModal}>
             <h2>{title}</h2>
-            {content && <pre className={styles.enterContent}>{content}</pre>}
+            {content && <pre className={`${styles.enterContent} ${styles.scroll}`}>{content}</pre>}
 
             {isPrivate && (
               <div
@@ -107,7 +109,7 @@ const RoomList = (props) => {
         className={styles[preset]}
         style={{
           cursor: 'pointer',
-          width: '90%',
+          width: '80%',
           minHeight: '150px',
           position: 'relative',
         }}

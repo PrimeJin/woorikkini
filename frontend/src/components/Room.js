@@ -3,6 +3,11 @@ import axios from 'axios';
 import RoomList from './RoomList';
 import RoomCreate from './RoomCreate';
 import styles from './Room.module.css';
+import Refresh from '@mui/icons-material/ReplayCircleFilledOutlined';
+import { useNavigate } from 'react-router-dom';
+import Navbar from './Navbar';
+import PageLogo from './PageLogo';
+import NoticeIcon from './NoticeIcon';
 
 const Room = () => {
   const [list, setList] = useState([]);
@@ -15,6 +20,7 @@ const Room = () => {
   const [isSearch, setIsSearch] = useState(true);
   const [searchStatus, setSearchStatus] = useState(false);
   const [keywordList, setKeywordList] = useState([]);
+  const navigate = useNavigate();
 
   function getKeywordList() {
     axios({
@@ -39,7 +45,13 @@ const Room = () => {
         setFiltered(res.data.result);
       })
       .catch((err) => {
-        console.log(err, '방 목록 에러');
+        if (err.response.data.message === 'fail') {
+          alert('로그인이 필요한 서비스입니다.');
+          navigate('/user/login');
+        } else {
+          alert('유효하지 않은 요청입니다.');
+          console.log(err, '방 목록 에러');
+        }
       });
   }
 
@@ -119,6 +131,11 @@ const Room = () => {
     });
   }
 
+  function refresh() {
+    window.location.replace('room');
+    // window.location.reload();
+  }
+
   return (
     <div>
       {modal && (
@@ -127,7 +144,11 @@ const Room = () => {
         </div>
       )}
       <div>
-        <h1 style={{ marginTop: 0, paddingTop: '2%', fontWeight: '900' }}>방 목록</h1>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <PageLogo />
+          <h1 style={{ fontSize: '50px' }}>방 목록</h1>
+          <Navbar />
+        </div>
         <div
           style={{
             display: 'flex',
@@ -203,7 +224,7 @@ const Room = () => {
                     borderRadius: '50px',
                   }}
                 >
-                  <option value="" selected>
+                  <option disabled selected>
                     키워드 종류
                   </option>
                   {keywordList.map((keyword, index) => (
@@ -220,7 +241,13 @@ const Room = () => {
           </button>
         </div>
         <br />
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
           <label className={styles.filterLabel}>
             {' '}
             <input
@@ -246,19 +273,23 @@ const Room = () => {
             />
             공개방만 보기
           </label>
+          <Refresh style={{ marginLeft: '2%', cursor: 'pointer', color: '#eb6123' }} onClick={refresh} />
         </div>
         <div
           style={{
+            maxHeight: '490px',
             display: 'grid',
-            gridTemplateColumns: 'repeat(2,1fr)',
-            marginInline: '3%',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            margin: '1%',
           }}
+          className={styles.scroll}
         >
           {filtered.map((room, index) => (
             <RoomList key={index} room={room} keywordList={keywordList} />
           ))}
         </div>
       </div>
+      <NoticeIcon />
     </div>
   );
 };

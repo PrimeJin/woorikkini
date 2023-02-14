@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom';
 
 const GoogleButton = () => {
   return (
-    <Link to="https://i8a804.p.ssafy.io/api/oauth2/authorize/google?redirect_uri=https://i8a804.p.ssafy.io/oauth/callback/google">
-      <button type="button" className="google-button">
-        <img src={'img/google_login.png'} width="222" height="50" alt="google" />
-      </button>
+    <Link to="http://i8a804.p.ssafy.io:8040/oauth2/authorize/google?redirect_uri=http://localhost:3000/oauth/callback/google">
+      <div className="google-button">
+        <img src={'img/구글로그인버튼.png'} height="100%" alt="google" />
+      </div>
     </Link>
   );
 };
