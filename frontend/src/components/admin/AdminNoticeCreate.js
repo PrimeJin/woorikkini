@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import styles from "./AdminNotice.module.css";
+import styles from "./Admin.module.css";
+import AdminSidebar from "./AdminSidebar";
 
 const AdminNoticeCreate = (props) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-
   const navigate = useNavigate();
 
   function save(e) {
@@ -29,7 +29,13 @@ const AdminNoticeCreate = (props) => {
           navigate("/admin/notice");
         })
         .catch((err) => {
-          console.log("공지사항 create에러", err);
+          if (err.response.data.message === "fail") {
+            alert("로그인이 필요한 서비스입니다.");
+            navigate("/user/login");
+          } else {
+            alert("유효하지 않은 요청입니다.");
+            console.log(err, "공지사항 create에러");
+          }
         });
     }
   }
@@ -40,17 +46,20 @@ const AdminNoticeCreate = (props) => {
 
   return (
     <div>
-      <h1>공지사항</h1>
+      <div className={styles.admin}></div>
+      <AdminSidebar />
       <div
         style={{
           display: "flex",
           justifyContent: "center",
+          flexFlow: "wrap row",
           marginBottom: "2%",
+          marginLeft: "10%",
         }}
       >
+        <h1 style={{ width: "100%" }}>공지사항</h1>
         <div className={styles.update}>
           <label className={styles.noticeLabel}>제목</label>
-          <br />
           <input
             className={styles.inputTitle}
             type="text"
@@ -60,7 +69,6 @@ const AdminNoticeCreate = (props) => {
           ></input>
           <br />
           <label className={styles.noticeLabel}>내용</label>
-          <br />
           <textarea
             className={styles.inputContent}
             type="text"

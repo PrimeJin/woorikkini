@@ -7,21 +7,20 @@ function NoticeIcon() {
     navigate(`/notice/`);
   };
   return (
-    <div style={{ margin: '2rem', display: 'inline', position: 'fixed', bottom: 0 }}>
+    <div style={{ margin: '1rem', display: 'inline', position: 'fixed', bottom: 0, left: 0, cursor: 'pointer' }}>
       <img
         onClick={NoticeGo}
         className="notice-icon"
         src={'img/공지사항_아이콘.png'}
-        style={{ width: 80, height: 90 }}
+        style={{ width: 50, height: 60 }}
       ></img>
       <div
         onClick={NoticeGo}
         style={{
           margin: 0,
-          fontFamily: 'NanumSquareRound',
           fontWeight: 900,
           textAlign: 'center',
-          width: 80,
+          width: 60,
           color: '#endregion',
         }}
       >

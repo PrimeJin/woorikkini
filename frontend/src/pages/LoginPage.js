@@ -12,7 +12,6 @@ import { useForm } from 'react-hook-form';
 import { setRefreshToken } from '../storage/Cookies';
 import { Link } from 'react-router-dom';
 
-import { loginUser } from '../api/Users';
 import { SET_USER } from '../store/User';
 import { SET_TOKEN } from '../store/Auth';
 
@@ -21,8 +20,10 @@ import NaverButton from '../components/buttons/NaverButton';
 import GoogleButton from '../components/buttons/GoogleButton';
 import logo from '../assets/우리끼니로고.png';
 import styles from '../styles/LoginPage.module.css';
-import CenterLogo from '../styles/CenterLogo';
 import axios from '../../node_modules/axios/index';
+// import Logo from '../components/user/UserPagesLogo';
+import mainlogo from '../assets/우리끼니로고.png';
+import { useState } from 'react';
 
 const LoginPage = () => {
   //React Hooks
@@ -63,6 +64,8 @@ const LoginPage = () => {
           //참고: /store/Auth.js
           dispatch(SET_TOKEN(response.data.accessToken));
           dispatch(SET_USER({ id: response.data.userId, nickname: response.data.userNickname }));
+          localStorage.setItem('userId', response.data.userId);
+          localStorage.setItem('userNickname', response.data.userNickname);
           //화면 이동(메인)
           navigate('/');
         } else {
@@ -72,7 +75,7 @@ const LoginPage = () => {
         }
       })
       .catch((err) => {
-        console.log('???', err);
+        console.log(err);
       });
 
     //input폼 비워주는 코드
@@ -88,62 +91,97 @@ const LoginPage = () => {
     navigate('/');
   };
 
+  // 로고 클릭 -> 로그인 폼 나타내기
+  const [logoClick, setLogoClick] = useState(false);
+  const onLogoClick = () => {
+    setLogoClick(!logoClick);
+  };
+
   return (
     <div className={styles.login}>
-      <div className={styles.logo_box}>
-        <CenterLogo />
-        <h3>같이 밥먹을래?</h3>
+      <div className={logoClick ? styles.sentence_pause : styles.sentence}>
+        <span>식</span>
+        <span>구</span>
+        <span>가</span>
+        <span>필</span>
+        <span>요</span>
+        <span>해</span>
+        <span>?</span>
       </div>
-      <form className={styles.loginform} onSubmit={handleSubmit(onValid)}>
-        <div className={styles.inputform}>
-          <div className={styles.inputs}>
-            <input
-              id={styles.userEmail}
-              type="email"
-              placeholder="이메일을 입력하세요"
-              {...register('userEmail', {
-                required: '이메일은 필수 입력사항입니다.',
-                pattern: {
-                  value: /\S+@\S+\.\S+/, //정규식
-                  message: '이메일이 형식에 맞지 않습니다.',
-                },
-              })}
-            />
-            {errors.email && <small role="alert">{errors.email.message}</small>}
-            <input
-              id={styles.userPassword}
-              type="password"
-              placeholder="비밀번호를 입력하세요"
-              {...register('userPassword', {
-                minLength: {
-                  value: 4,
-                  message: '4자리 이상 비밀번호를 사용해주세요.',
-                },
-              })}
-            />
-            {errors.password && <small role="alert">{errors.password.message}</small>}
+      <div className={logoClick ? styles.login_logo_pause : styles.login_logo} onClick={onLogoClick}>
+        <img src={mainlogo} style={{ width: 150, height: 165 }} />
+      </div>
+      {logoClick ? (
+        <form className={styles.loginform} onSubmit={handleSubmit(onValid)}>
+          <div className={styles.inputform}>
+            <div className={styles.inputs}>
+              <input
+                id={styles.userEmail}
+                type="email"
+                placeholder="이메일을 입력하세요"
+                {...register('userEmail', {
+                  required: '이메일은 필수 입력사항입니다.',
+                  pattern: {
+                    value: /\S+@\S+\.\S+/, //정규식
+                    message: '이메일이 형식에 맞지 않습니다.',
+                  },
+                })}
+              />
+
+              {errors.email && <small role="alert">{errors.email.message}</small>}
+              <input
+                id={styles.userPassword}
+                type="password"
+                placeholder="비밀번호를 입력하세요"
+                {...register('userPassword', {
+                  minLength: {
+                    value: 4,
+                    message: '4자리 이상 비밀번호를 사용해주세요.',
+                  },
+                })}
+              />
+              {errors.password && <small role="alert">{errors.password.message}</small>}
+            </div>
+
+            <button className={styles.loginButton} type="submit" disabled={isSubmitting}>
+              로그인
+            </button>
           </div>
 
-          <button className={styles.loginButton} type="submit" disabled={isSubmitting}>
-            로그인
+          <button className={styles.signUpButton} onClick={onSignUp}>
+            회원가입
           </button>
-        </div>
-
-        <button className={styles.signUpButton} onClick={onSignUp}>
-          회원가입
-        </button>
-        <Link
-          to="/user/findpw"
-          style={{ color: 'blue', textDecoration: 'none', textAlign: 'right', marginRight: '50px', padding: '5px' }}
-        >
-          <small>비밀번호 찾기</small>
-        </Link>
-        <div className={styles.socialLogin}>
-          <NaverButton />
-          <KakaoButton />
-          <GoogleButton />
-        </div>
-      </form>
+          <Link
+            to="/user/findpw"
+            style={{
+              position: 'relative',
+              color: 'blue',
+              textDecoration: 'none',
+              marginBottom: '10%',
+            }}
+          >
+            <div
+              style={{
+                padding: '2% 0% 5% 30%',
+                position: 'absolute',
+                width: '100px',
+                left: 40,
+                top: 10,
+                fontSize: 'small',
+              }}
+            >
+              비밀번호 찾기
+            </div>
+          </Link>
+          <div className={styles.socialLogin}>
+            <NaverButton />
+            <KakaoButton />
+            <GoogleButton />
+          </div>
+        </form>
+      ) : (
+        <div style={{ display: 'none' }}></div>
+      )}
     </div>
   );
 };

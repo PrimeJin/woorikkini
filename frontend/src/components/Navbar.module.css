@@ -10,6 +10,7 @@ nav {
   height: 25px;
   align-items: flex-end;
   line-height: 26px;
+  /* background-color: #fffdfa; */
 }
 .toggle_menu {
   width: 100%;
@@ -38,4 +39,5 @@ nav {
 
   color: #ffffff;
   float: right;
+  cursor: pointer;
 }

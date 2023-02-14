@@ -14,3 +14,8 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
+
+:root {
+  --swiper-navigation-size: 30px;
+  --swiper-theme-color: #ffb200;
+}
