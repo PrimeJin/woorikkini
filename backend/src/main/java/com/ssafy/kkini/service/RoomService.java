@@ -71,8 +71,18 @@ public class RoomService {
         if(cnt == 0) return null;
         return room;
     }
+
+    @Transactional
     public int exitRoom(int roomId) {
-        return roomRepository.decreaseRecentUserInRoom(roomId);
+        int cnt = roomRepository.decreaseRecentUserInRoom(roomId);
+        if(cnt == 0) return cnt;
+        else {
+            Room room = roomRepository.findByRoomId(roomId);
+            if(room.getRoomRecentUser() <= 0){
+                return deleteRoom(roomId);
+            }
+        }
+        return cnt;
     }
 
     @Transactional
