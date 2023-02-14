@@ -64,7 +64,12 @@ const LoginPage = () => {
           //store에 Access Token 저장하도록 Action Dispatch
           //참고: /store/Auth.js
           dispatch(SET_TOKEN(response.data.accessToken));
-          dispatch(SET_USER({ id: response.data.userId, nickname: response.data.userNickname }));
+          dispatch(
+            SET_USER({
+              id: response.data.userId,
+              nickname: response.data.userNickname,
+            }),
+          );
           //화면 이동(메인)
           navigate('/');
         } else {
@@ -90,6 +95,7 @@ const LoginPage = () => {
     navigate('/');
   };
 
+  // 로고 클릭 -> 로그인 폼 나타내기
   const [logoClick, setLogoClick] = useState(false);
   const onLogoClick = () => {
     setLogoClick(!logoClick);
@@ -97,7 +103,7 @@ const LoginPage = () => {
 
   return (
     <div className={styles.login}>
-      <div className={styles.sentence}>
+      <div className={logoClick ? styles.sentence_pause : styles.sentence}>
         <span>식</span>
         <span>구</span>
         <span>가</span>
@@ -106,17 +112,9 @@ const LoginPage = () => {
         <span>해</span>
         <span>?</span>
       </div>
-      <div className={styles.login_logo} onClick={onLogoClick}>
+      <div className={logoClick ? styles.login_logo_pause : styles.login_logo} onClick={onLogoClick}>
         <img src={mainlogo} style={{ width: 150, height: 165 }} />
       </div>
-      {/* <div className={styles.sentence}>
-        <span>우</span>
-        <span>리</span>
-        <span>끼</span>
-        <span>니</span>
-        <span>해</span>
-        <span>!</span>
-      </div> */}
       {logoClick ? (
         <form className={styles.loginform} onSubmit={handleSubmit(onValid)}>
           <div className={styles.inputform}>
@@ -159,7 +157,12 @@ const LoginPage = () => {
           </button>
           <Link
             to="/user/findpw"
-            style={{ position: 'relative', color: 'blue', textDecoration: 'none', marginBottom: '10%' }}
+            style={{
+              position: 'relative',
+              color: 'blue',
+              textDecoration: 'none',
+              marginBottom: '10%',
+            }}
           >
             <div
               style={{

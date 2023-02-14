@@ -17,6 +17,7 @@
     "@testing-library/user-event": "^13.2.1",
     "axios": "^1.2.6",
     "express": "^4.18.2",
+    "gsap": "^3.11.4",
     "immer": "^9.0.18",
     "multer": "^1.4.5-lts.1",
     "openvidu-browser": "^2.25.0",

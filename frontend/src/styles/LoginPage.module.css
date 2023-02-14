@@ -7,12 +7,22 @@
   display: flex;
   align-items: center;
   flex-flow: column nowrap;
+
+  justify-content: center;
+  min-height: 100vh;
 }
 .login_logo {
-  margin: 3% 0;
-  top: auto;
+  margin-bottom: 1%;
+  margin: 1rem;
+  animation: jittery 4s infinite;
+  animation-play-state: running;
 }
 
+.login_logo_pause {
+  margin-bottom: 1%;
+  margin: 1rem;
+  /* animation-play-state: paused; */
+}
 /* Rectangle 19 */
 .loginform {
   width: 360px;
@@ -37,9 +47,8 @@
   background: #d6ebfc;
   border-radius: 10px;
   border: none;
-
+  margin-left: 1.5%;
   font-family: 'NanumSquareRound';
-  /* font-style: normal; */
   font-weight: 700;
   font-size: 18px;
   line-height: 27px;
@@ -72,7 +81,7 @@
 
 /* Rectangle 22 */
 #userEmail {
-  width: 188px;
+  width: 90%;
   height: 40px;
 
   background: #ffffff;
@@ -89,7 +98,7 @@
 }
 
 #userPassword {
-  width: 188px;
+  width: 90%;
   height: 40px;
 
   background: #ffffff;
@@ -130,6 +139,8 @@
   transition: 0.5s;
   color: #090936;
 }
+
+/* 로고 애니메이션 */
 @keyframes login-form-ani {
   from {
     opacity: 0;
@@ -141,24 +152,11 @@
   }
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&display=swap');
-* {
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box;
-}
-
-body {
-  /* background-color:  #151719; */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-}
+/* 로고 위 문장 애니메이션 */
 .sentence {
   position: relative;
-  /* -webkit-box-reflect: below -20px linear-gradient(transparent, rgba(0, 0, 0, 0.2)); */
   font-size: 60px;
+  padding-left: 1%;
 }
 .sentence span {
   font-family: 'NanumSquareRound';
@@ -168,9 +166,39 @@ body {
   font-size: large;
   font-weight: 900;
   text-transform: uppercase;
-  animation: waviy 1s infinite;
-  animation-delay: calc(0.1s * var(--i));
+  animation: waviy 2s infinite;
 }
+.sentence span:nth-child(1) {
+  animation-delay: 0.2s;
+}
+.sentence span:nth-child(2) {
+  animation-delay: 0.4s;
+}
+.sentence span:nth-child(3) {
+  animation-delay: 0.6s;
+}
+.sentence span:nth-child(4) {
+  animation-delay: 0.8s;
+}
+.sentence span:nth-child(5) {
+  animation-delay: 1s;
+}
+.sentence span:nth-child(6) {
+  animation-delay: 1.2s;
+}
+.sentence span:nth-child(7) {
+  animation-delay: 1.4s;
+}
+.sentence_pause {
+  font-family: 'NanumSquareRound';
+  position: relative;
+  display: inline-block;
+  color: #090936;
+  font-size: large;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
 @keyframes waviy {
   0%,
   40%,
@@ -179,5 +207,39 @@ body {
   }
   20% {
     transform: translateY(-20px);
+  }
+}
+@keyframes jittery {
+  5%,
+  50% {
+    transform: scale(1);
+  }
+
+  10% {
+    transform: scale(0.9);
+  }
+
+  15% {
+    transform: scale(1.15);
+  }
+
+  20% {
+    transform: scale(1.15) rotate(-5deg);
+  }
+
+  25% {
+    transform: scale(1.15) rotate(5deg);
+  }
+
+  30% {
+    transform: scale(1.15) rotate(-3deg);
+  }
+
+  35% {
+    transform: scale(1.15) rotate(2deg);
+  }
+
+  40% {
+    transform: scale(1.15) rotate(0);
   }
 }
