@@ -66,9 +66,9 @@
 .video_setting_bar {
   width: 500px;
   height: 60px;
-  position: fixed;
+  position: absolute;
   bottom: 8%;
-  left: 12%;
+  left: 18%;
   border: 1px solid rgba(0, 0, 0, 0.2);
   background: #ffffff;
   box-shadow: 0px 100px 80px rgba(0, 0, 0, 0.07), 0px 41.7776px 33.4221px rgba(0, 0, 0, 0.0503198),
@@ -90,6 +90,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  cursor: pointer;
 }
 
 /* CHATBOX
@@ -110,8 +111,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  z-index: -123456;
-  transition: all 0.5s ease-in-out;
 }
 
 .chatdiv {
@@ -186,15 +185,12 @@
   display: flex;
   flex-flow: wrap column;
   align-items: center;
+  margin: 3% 10%;
   width: 80%;
-  height: 80%;
+  height: 78%;
   background: #ffffff;
-  border-radius: 50px 0px 0px 50px;
-  margin: 5%;
-  margin-top: 0%;
-  padding: 1%;
-  padding-top: 5%;
-  overflow: auto;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .listBtn {
@@ -313,12 +309,12 @@
 }
 
 /* CONTENT ISOPEN */
-.chatbox__active {
+/* .chatbox__active {
   min-height: 60vh;
   transform: translateY(-40px);
   z-index: 123456;
   opacity: 1;
-}
+} */
 
 .form_group {
   background: '#ffd4c3';
