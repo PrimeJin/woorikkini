@@ -84,87 +84,97 @@ const SwiperContainer = () => {
 
   return (
     <>
-      <div className={styles.cardlist_top}>
-        {cardList.map((data, idx) => {
-          return (
-            <div key={idx} className={styles.card_whole}>
-              <Swiper
-                pagination={{
-                  clickable: true,
-                  dynamicBullets: true,
-                }}
-                navigation
-                slidesPerView={1}
-                spaceBetween={20}
-                effect={'fade'}
-                loop={true}
-                speed={300}
-                className={styles.swiper_container}
-              >
-                <div className={styles.swiper_wrapper}>
-                  <div className={`${styles.card} ${styles.swiper_slide}`}>
-                    {data.img.map((filePath, id) => {
-                      return (
-                        <SwiperSlide key={id}>
-                          {/* 이미지 들어갈 자리 */}
-                          <img src={filePath} className={styles.slider_image_wrapper} alt="SliderImg" />
-                          <p>{console.log(filePath)}</p>
-                        </SwiperSlide>
-                      );
-                    })}
-                  </div>
+      <div
+        style={{
+          maxHeight: '490px',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          margin: '1%',
+        }}
+        className={styles.scroll}
+      >
+        <div className={styles.cardlist_top}>
+          {cardList.map((data, idx) => {
+            return (
+              <div key={idx} className={styles.card_whole}>
+                <Swiper
+                  pagination={{
+                    clickable: true,
+                    dynamicBullets: true,
+                  }}
+                  navigation
+                  slidesPerView={1}
+                  spaceBetween={20}
+                  effect={'fade'}
+                  loop={true}
+                  speed={300}
+                  className={styles.swiper_container}
+                >
+                  <div className={styles.swiper_wrapper}>
+                    <div className={`${styles.card} ${styles.swiper_slide}`}>
+                      {data.img.map((filePath, id) => {
+                        return (
+                          <SwiperSlide key={id}>
+                            {/* 이미지 들어갈 자리 */}
+                            <img src={filePath} className={styles.slider_image_wrapper} alt="SliderImg" />
+                            <p>{console.log(filePath)}</p>
+                          </SwiperSlide>
+                        );
+                      })}
+                    </div>
 
-                  <div className={styles.slider_buttons}>
-                    <button className={styles.swiper_button_prev}>Prev</button>
-                    <button className={styles.swiper_button_next}>Next</button>
+                    <div className={styles.slider_buttons}>
+                      <button className={styles.swiper_button_prev}>Prev</button>
+                      <button className={styles.swiper_button_next}>Next</button>
+                    </div>
                   </div>
-                </div>
-              </Swiper>
-              <div
-                style={{
-                  position: 'relative',
-                  textAlign: 'center',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  width: '300px',
-                }}
-              >
-                <div>
-                  <div style={{ justifyContent: 'space-between', width: '300px', display: 'flex' }}>
-                    <img
-                      src={'img/수정 아이콘.png'}
-                      onClick={() => {
-                        cardUpdate(data);
-                        openModal();
-                      }}
-                      style={{ width: 25, height: 25, margin: '1% 5%' }}
-                    ></img>
-                    <div style={{ fontWeight: '900', fontSize: 'small', lineHeight: 2.5 }}>{data.date}</div>
-                    <img
-                      src={'img/삭제 아이콘.png'}
-                      onClick={() => cardDelete(data.id)}
-                      style={{ width: 25, height: 25, margin: '1% 5%' }}
-                    ></img>
+                </Swiper>
+                <div
+                  style={{
+                    position: 'relative',
+                    textAlign: 'center',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    width: '300px',
+                  }}
+                >
+                  <div>
+                    <div style={{ justifyContent: 'space-between', width: '300px', display: 'flex' }}>
+                      <img
+                        src={'img/수정 아이콘.png'}
+                        onClick={() => {
+                          cardUpdate(data);
+                          openModal();
+                        }}
+                        style={{ width: 25, height: 25, margin: '1% 5%' }}
+                      ></img>
+                      <div style={{ fontWeight: '900', fontSize: 'small', lineHeight: 2.5 }}>{data.date}</div>
+                      <img
+                        src={'img/삭제 아이콘.png'}
+                        onClick={() => cardDelete(data.id)}
+                        style={{ width: 25, height: 25, margin: '1% 5%' }}
+                      ></img>
+                    </div>
+                    <div style={{ fontWeight: '900' }}>{data.title}</div>
+                    <div style={{ fontWeight: '500', fontSize: 'medium' }}>{data.content}</div>
                   </div>
-                  <div style={{ fontWeight: '900' }}>{data.title}</div>
-                  <div style={{ fontWeight: '500', fontSize: 'medium' }}>{data.content}</div>
                 </div>
               </div>
-            </div>
-          );
-        })}
-        {update ? (
-          <UpdateCard
-            style={{ display: 'none' }}
-            currentCard={currentCard}
-            getCardList={getCardList}
-            closeModal={closeModal}
-            modalOpen={modalOpen}
-          ></UpdateCard>
-        ) : (
-          <div style={{ display: 'none' }}></div>
-        )}
-        <CreateCard getCardList={getCardList}></CreateCard>
+            );
+          })}
+          {update ? (
+            <UpdateCard
+              style={{ display: 'none' }}
+              currentCard={currentCard}
+              getCardList={getCardList}
+              closeModal={closeModal}
+              modalOpen={modalOpen}
+            ></UpdateCard>
+          ) : (
+            <div style={{ display: 'none' }}></div>
+          )}
+          <CreateCard getCardList={getCardList}></CreateCard>
+        </div>
       </div>
     </>
   );

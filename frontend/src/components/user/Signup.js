@@ -18,7 +18,7 @@ function Form() {
   const [nickVisible, setNickVisible] = useState(false);
   const [possible, setPossible] = useState(false);
   const [impossible, setImpossible] = useState(false);
-  const [Date, setDate] = useState('');
+  const [Birth, setBirth] = useState('');
   const [Gender, setGender] = useState('');
 
   // 이메일 입력
@@ -148,8 +148,13 @@ function Form() {
     }
   };
   // 생년월일 입력
-  const onDate = (event) => {
-    setDate(event.currentTarget.value);
+  const onBirth = (event) => {
+    const inputBirth = event.currentTarget.value;
+    setBirth(inputBirth.split('-').join(''));
+
+    // 현재 날짜 구하기
+    // let today = new Date(new Date().toString().split('GMT')[0] + ' UTC').toISOString().slice(0, 10);
+    // console.log(today);
   };
   // 성별 입력
   const onGender = (event) => {
@@ -171,14 +176,13 @@ function Form() {
       alert('인증을 진행해주세요.');
     } else {
       event.preventDefault();
-      const Year = Date.slice(0, 4);
-      console.log(Year);
+      const Birth = Birth.split('-').join('');
       const userData = {
         userEmail: Email,
         userPassword: Password,
         userName: Name,
         userNickname: Nickname,
-        userBirth: Year,
+        userBirth: Birth,
         userGender: Gender,
       };
       console.log(userData);
@@ -270,8 +274,10 @@ function Form() {
       <p></p>
       <input
         type="date"
-        value={Date}
-        onChange={onDate}
+        value={Birth}
+        // 최대 선택 날짜는 오늘까지
+        max={new Date(new Date().toString().split('GMT')[0] + ' UTC').toISOString().slice(0, 10)}
+        onChange={onBirth}
         className={styles.date_input}
         data-placeholder="생년월일"
         required
