@@ -110,6 +110,7 @@ class RoomDetail extends Component {
     this.switchCamera = this.switchCamera.bind(this);
     this.handleChangeSessionId = this.handleChangeSessionId.bind(this);
     this.handleChangeUserName = this.handleChangeUserName.bind(this);
+    this.deleteSubscriber = this.deleteSubscriber.bind(this);
 
     // modal 관련 함수들
     this.openModal = this.openModal.bind(this);
@@ -180,7 +181,6 @@ class RoomDetail extends Component {
       // const roomTitle = this.state.roomTitle;
       const userId = this.state.myUserId;
       const userNickname = this.state.myUserName;
-      console.log('방번호: ', roomId);
       // OpenVidu 환경에서 토큰 발급받기
       //방 상세정보 제공받기
       axios({
@@ -199,10 +199,12 @@ class RoomDetail extends Component {
           const newSubscribers = this.state.subscribers;
           newSubscribers.push(newSubscriber);
 
-          const newConnection = event.stream.connection;
-          const newConnections = this.state.connections;
-          newConnections.push(newConnection);
-          console.log(newConnections);
+          console.log('subscriber');
+          console.log(newSubscribers);
+          // const newConnection = event.stream.connection;
+          // const newConnections = this.state.connections;
+          // newConnections.push(newConnection);
+          // console.log(newConnections);
 
           const newUser = JSON.parse(event.stream.connection.data);
           const newUsers = this.state.users;
@@ -216,19 +218,7 @@ class RoomDetail extends Component {
           this.setState({
             users: users,
             subscribers: subscribers,
-            connections: newConnections,
           });
-        });
-
-        this.state.session.on('reconnecting', () => console.warn('Oops! Trying to reconnect to the session'));
-        this.state.session.on('reconnected', () => console.log('Hurray! You successfully reconnected to the session'));
-        this.state.session.on('sessionDisconnected', (event) => {
-          if (event.reason === 'networkDisconnect') {
-            console.warn('Dang-it... You lost your connection to the session');
-          } else {
-            // Disconnected from the session for other reason than a network drop
-          }
-          this.deleteSubscriber(event.stream.streamManager);
         });
 
         //사용자가 화상회의를 떠나면 Session객체에서 소멸된 stream을 받아와
@@ -238,26 +228,11 @@ class RoomDetail extends Component {
           this.deleteSubscriber(event.stream.streamManager);
         });
 
-        this.state.session.on('exception', (event) => {
-          if (event.name === 'ICE_CONNECTION_FAILED') {
-            var stream = event.origin;
-            console.warn('Stream ' + stream.streamId + ' broke!');
-            console.warn('Reconnection process automatically started');
-          }
-          if (event.name === 'ICE_CONNECTION_DISCONNECTED') {
-            var stream = event.origin;
-            console.warn('Stream ' + stream.streamId + ' disconnected!');
-            console.warn('Giving it some time to be restored. If not possible, reconnection process will start');
-          }
-        });
-
-        // this.state.session.on('connectionCreated', (event) => {
-        //   this.setState({ connection: event.connection });
-        // });
+        this.state.session.on('exception', () => {});
 
         this.getToken(res.data.result.roomTitle).then((token) => {
           this.state.session
-            .connect(token, { userId: userId, userNickname: userNickname, connection: this.state.connection })
+            .connect(token, { userId: userId, userNickname: userNickname })
             .then(async () => {
               this.OV.getUserMedia({
                 audioSource: false,
@@ -359,7 +334,7 @@ class RoomDetail extends Component {
                 disagree: this.state.disagree,
               };
               //모두 투표했을 경우 투표 종료
-              if (data.total == this.state.subscribers.length + 1) {
+              if (data.total >= this.state.subscribers.length) {
                 this.state.session.signal({
                   data: JSON.stringify(data),
                   to: [],
@@ -1021,8 +996,6 @@ class RoomDetail extends Component {
           },
         })
         .then((response) => {
-          console.log('세션을 만들었어요');
-          console.log(response);
           resolve(response.data.id);
         })
         .catch((response) => {
@@ -1057,8 +1030,6 @@ class RoomDetail extends Component {
           },
         })
         .then((response) => {
-          console.log('연결 생성');
-          console.log(response);
           resolve(response.data.token);
           this.setState({
             token: response.data.token,
