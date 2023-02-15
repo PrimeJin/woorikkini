@@ -87,7 +87,7 @@ const SwiperContainer = () => {
       <div
         style={{
           maxHeight: '490px',
-          margin: '5%',
+          margin: '3% 5% 0.5% 5%',
         }}
         className={styles.scroll}
       >
