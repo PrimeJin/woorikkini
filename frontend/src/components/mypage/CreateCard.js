@@ -117,6 +117,7 @@ function CreateCard(props) {
         setFileData('');
         setTitleData('');
         setContentData('');
+        setPreviewData([]);
       })
       .catch((err) => {
         console.log(err);
