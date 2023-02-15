@@ -43,7 +43,7 @@ function Nav() {
     <nav>
       <div className={styles.navbar} onClick={toggleChange}>
         <div style={{ width: 100 }}>
-          <text style={{ fontSize: 17 }}>{nickname}</text>
+          <text style={{ fontSize: 17, fontWeight: 900 }}>{nickname}</text>
         </div>
         {toggleMenu && (
           <div mode="horizontal" onClick={onMenuClick} className={styles.toggle_menu}>
