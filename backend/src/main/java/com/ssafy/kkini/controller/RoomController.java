@@ -208,4 +208,21 @@ public class RoomController {
         }
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
     }
+
+    @ApiOperation(value = "방 정보를 업데이트 시킨다.", notes = "방 정보를 업데이트 시킨다.", response = Map.class)
+    @PatchMapping("/{roomId}")
+    public ResponseEntity<?> updateRoom(@ApiParam(value = "방 아이디", required = true)
+                                        @PathVariable String roomId, @RequestParam String roomRecentUser) {
+        HttpStatus status = null;
+        Map<String, Object> resultMap = new HashMap<>();
+        int result = roomService.updateRoom(Integer.valueOf(roomId), Integer.parseInt(roomRecentUser));
+        if (result == 0){
+            status = HttpStatus.BAD_REQUEST;
+            resultMap.put("message", FAIL);
+        } else {
+            status = HttpStatus.OK;
+            resultMap.put("message", SUCCESS);
+        }
+        return new ResponseEntity<Map<String, Object>>(resultMap, status);
+    }
 }
