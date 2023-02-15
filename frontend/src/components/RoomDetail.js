@@ -22,6 +22,11 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
+import QuestionAnswerTwoToneIcon from '@mui/icons-material/QuestionAnswerTwoTone';
+import VolumeUpTwoToneIcon from '@mui/icons-material/VolumeUpTwoTone';
+import VideocamTwoToneIcon from '@mui/icons-material/VideocamTwoTone';
+import PeopleAltTwoToneIcon from '@mui/icons-material/PeopleAltTwoTone';
+import MicNoneTwoToneIcon from '@mui/icons-material/MicNoneTwoTone';
 
 import Timer from '../room/components/Timer';
 
@@ -99,7 +104,7 @@ class RoomDetail extends Component {
     this.joinSession = this.joinSession.bind(this);
     this.closeSession = this.closeSession.bind(this);
     this.leaveSession = this.leaveSession.bind(this);
-    this.switchCamera = this.switchCamera.bind(this);
+    // this.switchCamera = this.switchCamera.bind(this);
     this.handleChangeSessionId = this.handleChangeSessionId.bind(this);
     this.handleChangeUserName = this.handleChangeUserName.bind(this);
 
@@ -178,6 +183,7 @@ class RoomDetail extends Component {
           const newSubscriber = this.state.session.subscribe(
             event.stream,
             undefined,
+            { insertMode: 'APPEND' },
             // console.log(JSON.parse(event.stream.connection.data)),
             // JSON.parse(event.stream.connection.data).clientData,
           );
@@ -258,13 +264,14 @@ class RoomDetail extends Component {
                   videoSource: videoTrack,
                   publishAudio: true,
                   publishVideo: true,
+                  videoSimulcast: true,
                   insertMode: 'APPEND',
                   mirror: true, //좌우반전 옵션
                 });
                 this.state.session.publish(newPublisher);
 
                 this.setState({
-                  mainStreamManager: newPublisher,
+                  // mainStreamManager: newPublisher,
                   publisher: newPublisher,
                 });
               });
@@ -504,7 +511,7 @@ class RoomDetail extends Component {
     const remoteUsers = this.state.subscribers;
     // const subscribers = this.state.subscribers;
     const users = this.state.users;
-    const userStream = remoteUsers.filter((user) => user === streamManager)[0];
+    const userStream = remoteUsers.filter((user) => user == streamManager)[0];
     const index = remoteUsers.indexOf(userStream, 0);
     if (index > -1) {
       remoteUsers.splice(index, 1);
@@ -747,38 +754,38 @@ class RoomDetail extends Component {
       });
   }
 
-  async switchCamera() {
-    try {
-      const devices = await this.OV.getDevices();
-      var videoDevices = devices.filter((device) => device.kind === 'videoinput');
+  // async switchCamera() {
+  //   try {
+  //     const devices = await this.OV.getDevices();
+  //     var videoDevices = devices.filter((device) => device.kind === 'videoinput');
 
-      if (videoDevices && videoDevices.length > 1) {
-        var newVideoDevice = videoDevices.filter(
-          (device) => device.deviceId !== this.state.currentVideoDevice.deviceId,
-        );
+  //     if (videoDevices && videoDevices.length > 1) {
+  //       var newVideoDevice = videoDevices.filter(
+  //         (device) => device.deviceId !== this.state.currentVideoDevice.deviceId,
+  //       );
 
-        if (newVideoDevice.length > 0) {
-          var newPublisher = this.OV.initPublisher(undefined, {
-            videoSource: newVideoDevice[0].deviceId,
-            publishAudio: true,
-            publishVideo: true,
-            mirror: true,
-          });
+  //       if (newVideoDevice.length > 0) {
+  //         var newPublisher = this.OV.initPublisher(undefined, {
+  //           videoSource: newVideoDevice[0].deviceId,
+  //           publishAudio: true,
+  //           publishVideo: true,
+  //           mirror: true,
+  //         });
 
-          await this.state.session.unpublish(this.state.mainStreamManager);
+  //         await this.state.session.unpublish(this.state.mainStreamManager);
 
-          await this.state.session.publish(newPublisher);
-          this.setState({
-            currentVideoDevice: newVideoDevice[0],
-            mainStreamManager: newPublisher,
-            publisher: newPublisher,
-          });
-        }
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  }
+  //         await this.state.session.publish(newPublisher);
+  //         this.setState({
+  //           currentVideoDevice: newVideoDevice[0],
+  //           mainStreamManager: newPublisher,
+  //           publisher: newPublisher,
+  //         });
+  //       }
+  //     }
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+  // }
 
   //채팅창 스크롤 자동으로 내려주는 기능
   scrollToBottom = () => {
@@ -805,13 +812,10 @@ class RoomDetail extends Component {
                 <div
                   className="stream-container col-md-4 col-xs-4"
                   style={{
-                    cursor: 'pointer',
                     width: '80%',
-                    minHeight: '150px',
                     position: 'relative',
                   }}
                   title={this.state.myUserName}
-                  // onClick={() => this.handleMainVideoStream(this.state.publisher)}
                 >
                   <UserVideoComponent streamManager={this.state.publisher} />
                 </div>
@@ -822,32 +826,49 @@ class RoomDetail extends Component {
                     key={i}
                     className="stream-container col-md-4 col-xs-4"
                     style={{
-                      cursor: 'pointer',
                       width: '80%',
-                      minHeight: '150px',
                       position: 'relative',
                     }}
                     title={this.state.users[i].userNickname}
-                    // onClick={() => this.handleMainVideoStream(sub)}
                   >
                     <UserVideoComponent streamManager={sub} mainVideoStream={this.handleMainVideoStream} />
                   </div>
                 );
               })}
             </div>
+            <div className={styles.video_setting_bar} onChange={this.handleChange} aria-label="icon label tabs example">
+              <div className={styles.icons}>
+                <div className={styles.icon} onClick={this.clickVolume} name="audio">
+                  <VolumeUpTwoToneIcon fontSize="large" />
+                </div>
+                <div className={styles.icon} onClick={this.clickVideo}>
+                  <VideocamTwoToneIcon fontSize="large" />
+                </div>
+                <div className={styles.icon} onClick={this.clickMic}>
+                  <MicNoneTwoToneIcon fontSize="large" />
+                </div>
+                <div className={styles.icon} onClick={this.clickMsg}>
+                  <QuestionAnswerTwoToneIcon fontSize="large" />
+                </div>
+                <div className={styles.icon}>
+                  <PeopleAltTwoToneIcon fontSize="large" />
+                </div>
+              </div>
+            </div>
           </div>
           <div className={styles.sidebar}>
             <TabContext value={this.state.value} sx={{ background: '#ffd4c3' }}>
               <TabPanel value="1" sx={{ background: '#ffd4c3' }}>
-                <div className={`${styles.chatWrapper} ${styles.chatbox__active}`}>
+                <div className={styles.chatdiv}>
                   <div className={styles.chatHeader}>
                     <h2>채팅</h2>
                   </div>
-                  <div className={styles.chatLogBox}>
-                    <Messages messages={messages} />
-                    <div ref={this.messagesEndRef} />
+                  <div className={`${styles.chatLogBox} ${styles.scroll}`}>
+                    <div className={this.state.writerMe ? styles.myMessage : styles.otherMessage}>
+                      <Messages messages={messages} />
+                      <div ref={this.messagesEndRef} />
+                    </div>
                   </div>
-
                   <div className={styles.chatFooter}>
                     <input
                       id={styles.chatInputForm}
@@ -858,7 +879,7 @@ class RoomDetail extends Component {
                       value={this.state.message}
                     />
                     <button className={styles.chatSendButton} onClick={this.sendMessageByClick}>
-                      보내기
+                      전송하기
                     </button>
                   </div>
                 </div>
@@ -906,9 +927,9 @@ class RoomDetail extends Component {
                 </div>
               </TabPanel>
               <TabList onChange={this.handleChange} aria-label="icon label tabs example" sx={{ background: '#ffd4c3' }}>
-                <Tab icon={<ChatIcon />} label="채팅" value="1" sx={{ background: '#ffd4c3' }} />
+                {/* <Tab icon={<ChatIcon />} label="채팅" value="1" sx={{ background: '#ffd4c3' }} />
                 <Tab icon={<UserIcon />} label="참여자목록" value="2" sx={{ background: '#ffd4c3' }} />
-                <Tab icon={<CancelIcon />} label="퇴장" onClick={this.leaveSession} sx={{ background: '#ffd4c3' }} />
+                <Tab icon={<CancelIcon />} label="퇴장" onClick={this.leaveSession} sx={{ background: '#ffd4c3' }} /> */}
               </TabList>
             </TabContext>
             {this.state.reportModalOpen ? (

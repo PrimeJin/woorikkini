@@ -1,9 +1,9 @@
 /* 비디오 개별 화면*/
 video {
-  width: 40%;
-  height: auto;
-  float: left;
-  cursor: pointer;
+  width: 90%;
+  height: 90%;
+  float: none;
+  /* cursor: pointer; */
   border-radius: 20px;
 }
 
