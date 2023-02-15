@@ -87,9 +87,7 @@ const SwiperContainer = () => {
       <div
         style={{
           maxHeight: '490px',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
-          margin: '1%',
+          margin: '5%',
         }}
         className={styles.scroll}
       >
