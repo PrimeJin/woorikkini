@@ -56,33 +56,134 @@ function App() {
       </Helmet>
       <BrowserRouter>
         <Routes>
-          <Route element={<PrivateRoute authentication={true} />}>
-            <Route path="/user/logout" element={<LogoutPage />} />
-            <Route path="/user/modify" element={<ModifyPage />} />
-            <Route path="/user/delete" element={<DeletePage />} />
-            <Route path="/mypage" element={<Mypage />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/admin/report" element={<AdminReport />} />
-            <Route path="/admin/stats" element={<AdminStats />} />
-            <Route path="/admin/allUsers" element={<AdminAllUsers />} />
-            <Route path="/admin/notice" element={<AdminNotice />} />
-            <Route path="/admin/notice/:noticeId" element={<AdminNoticeDetail />} />
-            <Route path="/admin/notice/create" element={<AdminNoticeCreate />} />
-            <Route path="/notice" element={<Notice />} />
-            <Route path="/notice/:noticeId" element={<NoticeDetail />} />
-            <Route path="/room" element={<Room />} />
-            <Route path="/room/:roomId" element={<RoomDetail />} />
-          </Route>
-          <Route element={<PrivateRoute authentication={false} />}>
-            <Route path="/user/password" element={<PwChange />} />
-            <Route path="/user/findpw" element={<PwFind />} />
-            <Route path="/" element={<LoginPage />} />
-            <Route path="/user/signup" element={<Signup />} />
-            <Route path="/user/login" element={<LoginPage />} />
-            <Route path="/oauth/callback/kakao" element={<Kakao />} />
-            <Route path="/oauth/callback/naver" element={<Naver />} />
-            <Route path="/oauth/callback/google" element={<Google />} />
-          </Route>
+          <Route
+            path="/user/logout"
+            element={
+              <PrivateRoute>
+                <LogoutPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/user/modify"
+            element={
+              <PrivateRoute>
+                <ModifyPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/user/delete"
+            element={
+              <PrivateRoute>
+                <DeletePage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/mypage"
+            element={
+              <PrivateRoute>
+                <Mypage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <PrivateRoute>
+                <Admin />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/report"
+            element={
+              <PrivateRoute>
+                <AdminReport />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/stats"
+            element={
+              <PrivateRoute>
+                <AdminStats />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/allUsers"
+            element={
+              <PrivateRoute>
+                <AdminAllUsers />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/notice"
+            element={
+              <PrivateRoute>
+                <AdminNotice />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/notice/:noticeId"
+            element={
+              <PrivateRoute>
+                <AdminNoticeDetail />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/notice/create"
+            element={
+              <PrivateRoute>
+                <AdminNoticeCreate />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/notice"
+            element={
+              <PrivateRoute>
+                <Notice />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/notice/:noticeId"
+            element={
+              <PrivateRoute>
+                <NoticeDetail />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/room"
+            element={
+              <PrivateRoute>
+                <Room />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/room/:roomId"
+            element={
+              <PrivateRoute>
+                <RoomDetail />
+              </PrivateRoute>
+            }
+          />
+          <Route path="/user/password" element={<PwChange />} />
+          <Route path="/user/findpw" element={<PwFind />} />
+          <Route path="/user/signup" element={<Signup />} />
+          <Route path="/" element={<LoginPage />} />
+          <Route path="/user/login" element={<LoginPage />} />
+          <Route path="/oauth/callback/kakao" element={<Kakao />} />
+          <Route path="/oauth/callback/naver" element={<Naver />} />
+          <Route path="/oauth/callback/google" element={<Google />} />
           <Route path="/*" element={<ErrorPage />} />
         </Routes>
       </BrowserRouter>

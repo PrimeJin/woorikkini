@@ -1,15 +1,15 @@
 /* 비디오 개별 화면*/
 video {
-  width: 40%;
-  height: auto;
+  width: 95%;
+  height: 100%;
   float: left;
   cursor: pointer;
-  border-radius: 20px;
 }
 
 /* 비디오 전체*/
 .streamcomponent {
-  width: 100%;
+  display: flex;
+  grid: 0%;
 }
 
 .streamcomponentDiv {
