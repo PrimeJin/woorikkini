@@ -9,8 +9,7 @@ video {
 
 /* 비디오 전체*/
 .streamcomponent {
-  display: flex;
-  grid: 0%;
+  width: 100%;
 }
 
 .streamcomponentDiv {
