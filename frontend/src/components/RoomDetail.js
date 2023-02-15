@@ -5,53 +5,129 @@ import axios from 'axios';
 import UserVideoComponent from '../room/UserVideoComponent';
 import { OpenVidu } from 'openvidu-browser';
 
-  function getDetail() {
-    axios({
-      url: `https://i8a804.p.ssafy.io/api/room/exit/${roomId}`,
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-        authorization: `Bearer ${accessToken}`,
-      },
-    }).then(() => {
-      if (mySession) mySession.disconnect();
-      this.OV = null; //Openvidu 객체 삭제
-      this.setState({
-        session: undefined,
-        subscribers: [],
-        mySessionId: 'SessionA',
-        myUserName: 'Participant' + Math.floor(Math.random() * 100),
-        mainStreamManager: undefined,
-        publisher: undefined,
-        localUser: undefined,
-      });
-    });
-    window.location.replace('/');
-  }
+// modal
+import ReportModal from '../room/components/ReportModal';
 
-  //세션 닫기(세션의 모든 참가자 퇴장)
-  closeSession() {
-    //백엔드에 퇴장 요청 보내기
-    axios
-      .delete(`${OPENVIDU_SERVER_URL}/openvidu/api/sessions/${this.state.mySessionId}`, {
-        headers: {
-          Authorization: `Basic ${EncodeBase64(`OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`)}`,
-          'Content-Type': 'application/json',
-        },
-      })
-      .then((res) => {
-        // //모든 속성(프로퍼티) 초기화
-        this.OV = null; //Openvidu 객체 삭제
-        this.setState({
-          // session: undefined,
-          subscribers: [],
-          mySessionId: 'SessionA',
-          myUserName: 'Participant' + Math.floor(Math.random() * 100),
-          mainStreamManager: undefined,
-          publisher: undefined,
-        });
-        // window.location.reload();
-      });
+//style
+import CenterLogo from '../styles/CenterLogo';
+import styles from './RoomDetail.module.css';
+import Messages from '../room/components/Messages';
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
+import Tab from '@mui/material/Tab';
+import TabPanel from '@mui/lab/TabPanel';
+import ChatIcon from '@mui/icons-material/Chat';
+import UserIcon from '@mui/icons-material/Person';
+import CancelIcon from '@mui/icons-material/Cancel';
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
+import Box from '@mui/material/Box';
+
+import Timer from '../room/components/Timer';
+import UserModel from './UserModel';
+
+const OPENVIDU_SERVER_URL = 'https://i8a804.p.ssafy.io:8443'; //도커에 올린 openvidu server
+const OPENVIDU_SERVER_SECRET = 'kkini'; //시크릿키값, 바꿔주면 좋음
+
+const EncodeBase64 = (data) => {
+  return Buffer.from(data).toString('base64');
+};
+
+//redux를 이용한 store에서 state와 reducer 가져오기
+//this.props.authData 같은 식으로 사용 가능
+const mapStateToProps = (state) => ({
+  currentUserId: state.user.id,
+  currentUserNickname: state.user.nickname,
+  accessToken: state.token.accessToken,
+
+  userData: state.user,
+});
+
+const mapDispatchToProps = (dispatch) => {};
+
+class RoomDetail extends Component {
+  //초기설정 생성자
+  constructor(props) {
+    super(props);
+
+    const roomId = localStorage.getItem('roomId');
+    const roomTitle = localStorage.getItem('roomTitle');
+    const roomToken = localStorage.getItem('roomToken');
+    const sessionId = localStorage.getItem('sessionId');
+    const userName = localStorage.getItem('userNickname');
+    const userId = localStorage.getItem('userId');
+
+    this.messagesEndRef = React.createRef(null);
+    //state
+    this.state = {
+      mySessionId: roomTitle,
+      myUserName: userName,
+      myUserId: userId,
+      roomId: roomId,
+      session: undefined, //현재 접속해있는 세션
+      localUser: undefined,
+      subscribers: [], //다른 사용자의 활성 웹캠 스트림
+      mainStreamManager: undefined, // 스트림 종합한 페이지의 메인 비디오
+      publisher: undefined, //로컬 웹캠 스트림
+      isEmpty: false, //세션이 비어있는지 아닌지
+      isHost: false, //
+      isChatOn: false, //채팅팝업창이 켜져있는지 아닌지
+      isListOn: false,
+      token: '', //accessToken
+      message: '', //메시지 단일입력
+      messages: [], //메시지 로그
+      messagesEnd: null,
+      users: [], //전체 참여자
+      value: '1', //1: 채팅창, 2:참여자 목록
+      reportModalOpen: false,
+      voteModalOpen: false,
+      banModalOpen: false,
+      reportedUserId: '',
+      eventData: {},
+
+      //투표 관련 state
+      isVoteStart: false, //투표가 시작했는지
+      voteUserId: '', //투표한 유저 id
+      voteUserNickname: '', //투표한 유저 닉네임
+      total: 0, //전체 투표수
+      agree: 0, //찬성 수
+      disagree: 0, //반대 수
+    };
+
+    //method
+    this.joinSession = this.joinSession.bind(this);
+    this.closeSession = this.closeSession.bind(this);
+    this.leaveSession = this.leaveSession.bind(this);
+    this.switchCamera = this.switchCamera.bind(this);
+    this.handleChangeSessionId = this.handleChangeSessionId.bind(this);
+    this.handleChangeUserName = this.handleChangeUserName.bind(this);
+
+    // modal 관련 함수들
+    this.openModal = this.openModal.bind(this);
+    this.closeModal = this.closeModal.bind(this);
+
+    //chat
+    this.handleChangeChatMessage = this.handleChangeChatMessage.bind(this);
+    this.sendMessageByClick = this.sendMessageByClick.bind(this);
+    this.sendMessageByEnter = this.sendMessageByEnter.bind(this);
+    this.chatToggle = this.chatToggle.bind(this);
+    this.scrollToBottom = this.scrollToBottom.bind(this);
+
+    this.handleMainVideoStream = this.handleMainVideoStream.bind(this);
+    this.onbeforeunload = this.onbeforeunload.bind(this);
+    // this.getUserList = this.getUserList.bind(this);
+    // this.userList = this.userList.bind(this);
+    this.listToggle = this.listToggle.bind(this);
+
+    this.handleChange = this.handleChange.bind(this);
+
+    //투표
+    this.startVote = this.startVote.bind(this);
+    this.showVoteModal = this.showVoteModal.bind(this);
+    this.voteComplete = this.voteComplete.bind(this);
+    this.agreeVote = this.agreeVote.bind(this);
+    this.disagreeVote = this.disagreeVote.bind(this);
+    // this.userList = this.userList.bind(this);
   }
 
   //라이프 사이클
@@ -85,7 +161,6 @@ import { OpenVidu } from 'openvidu-browser';
   joinSession() {
     // --- OpenVidu 객체 호출 및 세션 초기화---
     this.OV = new OpenVidu();
-    this.OV.enableProdMode();
 
     this.setState({ session: this.OV.initSession() }, () => {
       const roomId = this.state.roomId;
@@ -103,7 +178,7 @@ import { OpenVidu } from 'openvidu-browser';
         this.state.session.on('streamCreated', (event) => {
           const newSubscriber = this.state.session.subscribe(
             event.stream,
-            undefined,
+            'subscriber',
             // console.log(JSON.parse(event.stream.connection.data)),
             // JSON.parse(event.stream.connection.data).clientData,
           );
@@ -111,24 +186,12 @@ import { OpenVidu } from 'openvidu-browser';
           const newSubscribers = this.state.subscribers;
           newSubscribers.push(newSubscriber);
 
-          const newConnection = event.stream.connection;
-          const newConnections = this.state.connections;
-          newConnections.push(newConnection);
-          console.log(newConnections);
-
           const newUser = JSON.parse(event.stream.connection.data);
           const newUsers = this.state.users;
           newUsers.push(newUser);
-
-          //중복 제거
-          const usersSet = new Set(newUsers);
-          const subscribersSet = new Set(newSubscribers);
-          const users = [...usersSet];
-          const subscribers = [...subscribersSet];
           this.setState({
-            users: users,
-            subscribers: subscribers,
-            connections: newConnections,
+            users: newUsers,
+            subscribers: newSubscribers,
           });
         });
 
@@ -162,13 +225,9 @@ import { OpenVidu } from 'openvidu-browser';
           }
         });
 
-        // this.state.session.on('connectionCreated', (event) => {
-        //   this.setState({ connection: event.connection });
-        // });
-
         this.getToken(res.data.result.roomTitle).then((token) => {
           this.state.session
-            .connect(token, { userId: userId, userNickname: userNickname, connection: this.state.connection })
+            .connect(token, { userId: userId, userNickname: userNickname })
             .then(async () => {
               this.OV.getUserMedia({
                 audioSource: false,
@@ -251,6 +310,7 @@ import { OpenVidu } from 'openvidu-browser';
             const result = JSON.parse(event.data);
             console.log(result);
             this.setState({
+              isVoteStart: result.isVoteStart,
               voteUserId: result.voteUserId,
               voteUserNickname: result.voteUserNickname,
               total: result.total,
@@ -262,6 +322,7 @@ import { OpenVidu } from 'openvidu-browser';
             //변경된 state값을 바로 받아오지 못하므로 setTimeout
             setTimeout(() => {
               const data = {
+                isVoteStart: this.state.isVoteStart,
                 voteUserId: this.state.voteUserId,
                 voteUserNickname: this.state.voteUserNickname,
                 total: this.state.total,
@@ -270,39 +331,44 @@ import { OpenVidu } from 'openvidu-browser';
               };
               //모두 투표했을 경우 투표 종료
               if (data.total == this.state.subscribers.length + 1) {
-                this.state.session.signal({
-                  data: JSON.stringify(data),
-                  to: [],
-                  type: 'endVote',
+                this.voteComplete(data);
+                this.setState({
+                  isVoteStart: false,
+                  voteUserId: '',
+                  voteUserNickname: '',
+                  total: 0,
+                  agree: 0,
+                  disagree: 0,
                 });
               }
             }, 1000);
           });
-
-          this.state.session.on('signal:endVote', (event) => {
-            console.log('투표 종료');
-            const result = JSON.parse(event.data);
-            console.log(result);
-            this.setState({
-              voteUserId: result.voteUserId,
-              voteUserNickname: result.voteUserNickname,
-              total: result.total,
-              agree: result.total,
-              disagree: result.disagree,
-            });
-
-            this.voteComplete(result);
-          });
-
-          this.state.session.on('signal:getout', (event) => {
-            alert('추방되었습니다!');
-            this.leaveSession();
-          });
         });
+        //토큰을 받았으면 connect(token)으로 세션에 연결할 수 있게 된다
+        //2번째 파라미터로 세션에 있는 모든 사용자에게 넘길 데이터를 공유할 수 있다
       });
     });
   }
 
+  // updateSubscribers() {
+  //   var subscribers = this.remotes;
+  //   this.setState(
+  //     {
+  //       subscribers: subscribers,
+  //     },
+  //     () => {
+  //       if (this.state.localUser) {
+  //         this.sendSignalUserChanged({
+  //           isAudioActive: this.state.localUser.isAudioActive(),
+  //           isVideoActive: this.state.localUser.isVideoActive(),
+  //           nickname: this.state.localUser.getNickname(),
+  //           isScreenShareActive: this.state.localUser.isScreenShareActive(),
+  //         });
+  //       }
+  //       // this.updateLayout();
+  //     },
+  //   );
+  // }
   // 모달 관련 함수들
   openModal(e) {
     if (e.target.name === 'report') {
@@ -471,6 +537,13 @@ import { OpenVidu } from 'openvidu-browser';
       disagree: 0,
     });
     const data = {
+      // isVoteStart: this.state.isVoteStart,
+      // voteUserId: this.state.voteUserId,
+      // voteUserNickname: this.state.voteUserNickname,
+      // total: this.state.total,
+      // agree: this.state.agree,
+      // disagree: this.state.disagree,
+
       isVoteStart: false,
       voteUserId: userId,
       voteUserNickname: userNickname,
@@ -492,6 +565,7 @@ import { OpenVidu } from 'openvidu-browser';
   //찬성표(유저 전체에게 신호가 감)
   agreeVote() {
     const data = {
+      isVoteStart: false,
       voteUserId: this.state.voteUserId,
       voteUserNickname: this.state.voteUserNickname,
       total: this.state.total + 1,
@@ -503,14 +577,12 @@ import { OpenVidu } from 'openvidu-browser';
       to: [],
       type: 'sendVote',
     });
-    this.setState({
-      isVoteStart: false,
-    });
   }
 
   //반대표(유저 전체에게 신호가 감)
   disagreeVote() {
     const data = {
+      isVoteStart: false,
       voteUserId: this.state.voteUserId,
       voteUserNickname: this.state.voteUserNickname,
       total: this.state.total + 1,
@@ -521,9 +593,6 @@ import { OpenVidu } from 'openvidu-browser';
       data: JSON.stringify(data),
       to: [],
       type: 'sendVote',
-    });
-    this.setState({
-      isVoteStart: false,
     });
   }
   //참여자 모두에게 보낼 추방투표 모달
@@ -573,19 +642,10 @@ import { OpenVidu } from 'openvidu-browser';
     console.log('찬성 : ' + result.agree);
     console.log('전체 : ' + result.total);
     console.log('누구 : ' + result.voteUserNickname);
-
-    this.setState({
-      isVoteStart: false,
-      voteUserId: '',
-      voteUserNickname: '',
-      total: 0,
-      agree: 0,
-      disagree: 0,
-    });
-
     const roomId = localStorage.getItem('roomId');
     const accessToken = this.props.accessToken;
     if (result.agree / result.total >= 0.5) {
+      alert(`${result.voteUserNickname}님이 추방되었습니다`);
       // 백엔드 및 openvidu 서버에 추방 요청을 보냄
       axios({
         url: `https://i8a804.p.ssafy.io/api/room/exit/${roomId}/${result.voteUserId}`,
@@ -597,16 +657,6 @@ import { OpenVidu } from 'openvidu-browser';
       })
         .then((res) => {
           if (res.status == 200 || 202) {
-            alert(`${result.voteUserNickname}님이 추방되었습니다`);
-            this.state.connections.map((connection) => {
-              const connectionUser = JSON.parse(connection.data);
-              if (connectionUser.userId == result.voteUserId && connectionUser.userNickname == result.voteUserNickname)
-                this.state.session.signal({
-                  data: result.voteUserNickname,
-                  to: [connection],
-                  type: 'getout',
-                });
-            });
           }
         })
         .catch((err) => console.log(err));
@@ -692,17 +742,6 @@ import { OpenVidu } from 'openvidu-browser';
 
           await this.state.session.unpublish(this.state.mainStreamManager);
 
-          await this.state.session.publish(newPublisher);
-          this.setState({
-            currentVideoDevice: newVideoDevice[0],
-            mainStreamManager: newPublisher,
-            publisher: newPublisher,
-          });
-        }
-      }
-    } catch (e) {
-      console.error(e);
-    }
           await this.state.session.publish(newPublisher);
           this.setState({
             currentVideoDevice: newVideoDevice[0],
