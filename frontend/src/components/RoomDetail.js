@@ -188,6 +188,7 @@ class RoomDetail extends Component {
         methods: 'GET',
       }).then((res) => {
         //subscribe
+        console.log(res, '데이터ㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓ');
         this.state.session.on('streamCreated', (event) => {
           const newSubscriber = this.state.session.subscribe(
             event.stream,

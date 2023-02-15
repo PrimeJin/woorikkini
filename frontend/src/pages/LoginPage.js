@@ -77,7 +77,6 @@ const LoginPage = () => {
             // 관리자 페이지로 이동
             navigate('/admin');
           }
-          
         } else {
           window.confirm('로그인 에러');
 

@@ -137,8 +137,7 @@ const Room = () => {
   }
 
   function refresh() {
-    window.location.replace('room');
-    // window.location.reload();
+    window.location.reload();
   }
 
   return (
