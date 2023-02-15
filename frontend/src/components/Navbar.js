@@ -31,7 +31,7 @@ function Nav() {
   };
 
   const UserUpdateGo = () => {
-    navigate(`/user/update`);
+    navigate(`/user/modify`);
   };
 
   const logOut = () => {

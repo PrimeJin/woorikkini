@@ -5,15 +5,11 @@
   height: 100%;
   border-radius: 10px;
   overflow: hidden;
-  /* display: flex;
-  flex-direction: column; */
-  /* flex-shrink: 0; */
   background: linear-gradient(270deg, rgba(247, 249, 255, 1) 0%, rgba(242, 246, 255, 1) 100%);
   cursor: grab;
 }
 
 .slider_item_content {
-  /* padding: 32px; */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -36,15 +32,11 @@
   transition: 0.2s;
 } */
 
-/* card container */
 
 .swiper_container {
   width: 300px;
   position: relative;
-  /* max_width: 420px; */
   height: 80%;
-  /* max-height: 420px; */
-  /* border-radius: 10px; */
 }
 
 .swiper_wrapper {
