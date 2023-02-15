@@ -68,8 +68,16 @@ const LoginPage = () => {
           localStorage.setItem('accessToken', response.data.accessToken);
           localStorage.setItem('userId', response.data.userId);
           localStorage.setItem('userNickname', response.data.userNickname);
-          //화면 이동(메인)
-          navigate('/');
+
+          // 관리자인지 일반 사용자인지 구분
+          if (response.data.userRole === 'ROLE_USER') {
+            // 방 목록 페이지로 이동(메인)
+            navigate('/room');
+          } else if (response.data.userRole === 'ROLE_ADMIN') {
+            // 관리자 페이지로 이동
+            navigate('/admin');
+          }
+          
         } else {
           window.confirm('로그인 에러');
 
