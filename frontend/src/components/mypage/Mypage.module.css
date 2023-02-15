@@ -1,19 +1,12 @@
-@import url('http://cdn.rawgit.com/innks/NanumSquareRound/master/nanumsquareround.min.css');
-
 .mypage {
-  font-family: 'NanumSquareRound';
   font-weight: 900;
-
-  color: #090936;
-  display: flex;
-  justify-content: space-between;
 }
 
-.title {
+/* .title {
   justify-content: center;
   text-align: center;
   align-items: baseline;
-}
+} */
 
 text {
   text-align: center;

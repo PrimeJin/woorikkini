@@ -40,7 +40,7 @@ function Nav() {
   };
 
   return (
-    <nav>
+    <nav className={styles.nav}>
       <div className={styles.navbar} onClick={toggleChange}>
         <div style={{ width: 100 }}>
           <text style={{ fontSize: 17, fontWeight: 900 }}>{nickname}</text>

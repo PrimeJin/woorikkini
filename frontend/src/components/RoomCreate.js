@@ -26,7 +26,7 @@ const RoomCreate = (props) => {
   const [limit, setLimit] = useState(2);
   const [preset, setPreset] = useState('preset1');
 
-  const limitArr = [...new Array(9)].map((_, i) => i + 2);
+  const limitArr = [...new Array(7)].map((_, i) => i + 2);
 
   const [message, setMessage] = useState('');
 
@@ -346,7 +346,7 @@ const RoomCreate = (props) => {
             <option value="preset5">프리셋 5</option>
           </select>
         </div>
-        <div style={{ margin: '7%' }} className={styles[preset]}>
+        <div style={{ margin: '3%' }} className={styles[preset]}>
           {title ? <h3 style={{ marginInline: '3%' }}>{title}</h3> : <h3>방 제목</h3>}
           {!keywords[0] ? (
             <div># 키워드</div>

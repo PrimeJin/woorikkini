@@ -142,17 +142,15 @@ const Room = () => {
 
   return (
     <div>
+      <PageLogo />
+      <Navbar />
       {modal && (
         <div className={styles.roomEnter}>
           <RoomCreate cancel={cancel} keywordList={keywordList} />
         </div>
       )}
       <div>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <PageLogo />
-          <h1 style={{ fontSize: '50px' }}>방 목록</h1>
-          <Navbar />
-        </div>
+        <h1 style={{ fontSize: '50px' }}>방 목록</h1>
         <div
           style={{
             display: 'flex',
