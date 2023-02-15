@@ -3,16 +3,13 @@
  */
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { Outlet, Navigate } from 'react-router';
-import { useLocation } from 'react-router-dom';
-
-import { CheckToken } from '../auth/CheckToken';
+import { Navigate } from 'react-router';
 
 export default function PrivateRoute({ children }) {
   // const location = useLocation();
   // const { isAuth } = CheckToken(location.key);
 
-  const isAuthenticated = useSelector((state) => state.token.authenticated);
+  const accessToken = useSelector((state) => state.token.accessToken);
 
-  return isAuthenticated === null || isAuthenticated === false ? <Navigate to="/user/login" /> : children;
+  return accessToken === undefined ? <Navigate to="/user/login" /> : children;
 }
