@@ -24,6 +24,7 @@ import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 
 import Timer from '../room/components/Timer';
+import UserModel from './UserModel';
 
 const OPENVIDU_SERVER_URL = 'https://i8a804.p.ssafy.io:8443'; //도커에 올린 openvidu server
 const OPENVIDU_SERVER_SECRET = 'kkini'; //시크릿키값, 바꿔주면 좋음
@@ -63,8 +64,6 @@ class RoomDetail extends Component {
       myUserName: userName,
       myUserId: userId,
       roomId: roomId,
-      connections: [],
-      connectionId: undefined,
       session: undefined, //현재 접속해있는 세션
       localUser: undefined,
       subscribers: [], //다른 사용자의 활성 웹캠 스트림
@@ -128,7 +127,7 @@ class RoomDetail extends Component {
     this.voteComplete = this.voteComplete.bind(this);
     this.agreeVote = this.agreeVote.bind(this);
     this.disagreeVote = this.disagreeVote.bind(this);
-    this.userList = this.userList.bind(this);
+    // this.userList = this.userList.bind(this);
   }
 
   //라이프 사이클
@@ -162,7 +161,6 @@ class RoomDetail extends Component {
   joinSession() {
     // --- OpenVidu 객체 호출 및 세션 초기화---
     this.OV = new OpenVidu();
-    this.OV.enableProdMode();
 
     this.setState({ session: this.OV.initSession() }, () => {
       const roomId = this.state.roomId;
@@ -180,7 +178,7 @@ class RoomDetail extends Component {
         this.state.session.on('streamCreated', (event) => {
           const newSubscriber = this.state.session.subscribe(
             event.stream,
-            undefined,
+            'subscriber',
             // console.log(JSON.parse(event.stream.connection.data)),
             // JSON.parse(event.stream.connection.data).clientData,
           );
@@ -188,24 +186,12 @@ class RoomDetail extends Component {
           const newSubscribers = this.state.subscribers;
           newSubscribers.push(newSubscriber);
 
-          const newConnection = event.stream.connection;
-          const newConnections = this.state.connections;
-          newConnections.push(newConnection);
-          console.log(newConnections);
-
           const newUser = JSON.parse(event.stream.connection.data);
           const newUsers = this.state.users;
           newUsers.push(newUser);
-
-          //중복 제거
-          const usersSet = new Set(newUsers);
-          const subscribersSet = new Set(newSubscribers);
-          const users = [...usersSet];
-          const subscribers = [...subscribersSet];
           this.setState({
-            users: users,
-            subscribers: subscribers,
-            connections: newConnections,
+            users: newUsers,
+            subscribers: newSubscribers,
           });
         });
 
@@ -239,13 +225,9 @@ class RoomDetail extends Component {
           }
         });
 
-        // this.state.session.on('connectionCreated', (event) => {
-        //   this.setState({ connection: event.connection });
-        // });
-
         this.getToken(res.data.result.roomTitle).then((token) => {
           this.state.session
-            .connect(token, { userId: userId, userNickname: userNickname, connection: this.state.connection })
+            .connect(token, { userId: userId, userNickname: userNickname })
             .then(async () => {
               this.OV.getUserMedia({
                 audioSource: false,
@@ -328,6 +310,7 @@ class RoomDetail extends Component {
             const result = JSON.parse(event.data);
             console.log(result);
             this.setState({
+              isVoteStart: result.isVoteStart,
               voteUserId: result.voteUserId,
               voteUserNickname: result.voteUserNickname,
               total: result.total,
@@ -339,6 +322,7 @@ class RoomDetail extends Component {
             //변경된 state값을 바로 받아오지 못하므로 setTimeout
             setTimeout(() => {
               const data = {
+                isVoteStart: this.state.isVoteStart,
                 voteUserId: this.state.voteUserId,
                 voteUserNickname: this.state.voteUserNickname,
                 total: this.state.total,
@@ -347,39 +331,44 @@ class RoomDetail extends Component {
               };
               //모두 투표했을 경우 투표 종료
               if (data.total == this.state.subscribers.length + 1) {
-                this.state.session.signal({
-                  data: JSON.stringify(data),
-                  to: [],
-                  type: 'endVote',
+                this.voteComplete(data);
+                this.setState({
+                  isVoteStart: false,
+                  voteUserId: '',
+                  voteUserNickname: '',
+                  total: 0,
+                  agree: 0,
+                  disagree: 0,
                 });
               }
             }, 1000);
           });
-
-          this.state.session.on('signal:endVote', (event) => {
-            console.log('투표 종료');
-            const result = JSON.parse(event.data);
-            console.log(result);
-            this.setState({
-              voteUserId: result.voteUserId,
-              voteUserNickname: result.voteUserNickname,
-              total: result.total,
-              agree: result.total,
-              disagree: result.disagree,
-            });
-
-            this.voteComplete(result);
-          });
-
-          this.state.session.on('signal:getout', (event) => {
-            alert('추방되었습니다!');
-            this.leaveSession();
-          });
         });
+        //토큰을 받았으면 connect(token)으로 세션에 연결할 수 있게 된다
+        //2번째 파라미터로 세션에 있는 모든 사용자에게 넘길 데이터를 공유할 수 있다
       });
     });
   }
 
+  // updateSubscribers() {
+  //   var subscribers = this.remotes;
+  //   this.setState(
+  //     {
+  //       subscribers: subscribers,
+  //     },
+  //     () => {
+  //       if (this.state.localUser) {
+  //         this.sendSignalUserChanged({
+  //           isAudioActive: this.state.localUser.isAudioActive(),
+  //           isVideoActive: this.state.localUser.isVideoActive(),
+  //           nickname: this.state.localUser.getNickname(),
+  //           isScreenShareActive: this.state.localUser.isScreenShareActive(),
+  //         });
+  //       }
+  //       // this.updateLayout();
+  //     },
+  //   );
+  // }
   // 모달 관련 함수들
   openModal(e) {
     if (e.target.name === 'report') {
@@ -548,6 +537,13 @@ class RoomDetail extends Component {
       disagree: 0,
     });
     const data = {
+      // isVoteStart: this.state.isVoteStart,
+      // voteUserId: this.state.voteUserId,
+      // voteUserNickname: this.state.voteUserNickname,
+      // total: this.state.total,
+      // agree: this.state.agree,
+      // disagree: this.state.disagree,
+
       isVoteStart: false,
       voteUserId: userId,
       voteUserNickname: userNickname,
@@ -569,6 +565,7 @@ class RoomDetail extends Component {
   //찬성표(유저 전체에게 신호가 감)
   agreeVote() {
     const data = {
+      isVoteStart: false,
       voteUserId: this.state.voteUserId,
       voteUserNickname: this.state.voteUserNickname,
       total: this.state.total + 1,
@@ -580,14 +577,12 @@ class RoomDetail extends Component {
       to: [],
       type: 'sendVote',
     });
-    this.setState({
-      isVoteStart: false,
-    });
   }
 
   //반대표(유저 전체에게 신호가 감)
   disagreeVote() {
     const data = {
+      isVoteStart: false,
       voteUserId: this.state.voteUserId,
       voteUserNickname: this.state.voteUserNickname,
       total: this.state.total + 1,
@@ -598,9 +593,6 @@ class RoomDetail extends Component {
       data: JSON.stringify(data),
       to: [],
       type: 'sendVote',
-    });
-    this.setState({
-      isVoteStart: false,
     });
   }
   //참여자 모두에게 보낼 추방투표 모달
@@ -650,19 +642,10 @@ class RoomDetail extends Component {
     console.log('찬성 : ' + result.agree);
     console.log('전체 : ' + result.total);
     console.log('누구 : ' + result.voteUserNickname);
-
-    this.setState({
-      isVoteStart: false,
-      voteUserId: '',
-      voteUserNickname: '',
-      total: 0,
-      agree: 0,
-      disagree: 0,
-    });
-
     const roomId = localStorage.getItem('roomId');
     const accessToken = this.props.accessToken;
     if (result.agree / result.total >= 0.5) {
+      alert(`${result.voteUserNickname}님이 추방되었습니다`);
       // 백엔드 및 openvidu 서버에 추방 요청을 보냄
       axios({
         url: `https://i8a804.p.ssafy.io/api/room/exit/${roomId}/${result.voteUserId}`,
@@ -674,16 +657,6 @@ class RoomDetail extends Component {
       })
         .then((res) => {
           if (res.status == 200 || 202) {
-            alert(`${result.voteUserNickname}님이 추방되었습니다`);
-            this.state.connections.map((connection) => {
-              const connectionUser = JSON.parse(connection.data);
-              if (connectionUser.userId == result.voteUserId && connectionUser.userNickname == result.voteUserNickname)
-                this.state.session.signal({
-                  data: result.voteUserNickname,
-                  to: [connection],
-                  type: 'getout',
-                });
-            });
           }
         })
         .catch((err) => console.log(err));
@@ -800,41 +773,26 @@ class RoomDetail extends Component {
         <div className={styles.inmain}>
           <div className={styles.inbody}>
             <div id="video-container" className={`${styles.videobox} ${'col-md-12 col-xs-12'}`}>
-              {this.state.isVoteStart && this.state.eventData.voteUserId !== this.state.myUserId
-                ? this.showVoteModal(this.state.eventData)
-                : null}
+              {this.state.isVoteStart ? this.showVoteModal(this.state.eventData) : null}
               {this.state.publisher !== undefined ? (
                 <div
                   className="stream-container col-md-4 col-xs-4"
-                  style={{
-                    cursor: 'pointer',
-                    width: '80%',
-                    minHeight: '150px',
-                    position: 'relative',
-                  }}
-                  title={this.state.myUserName}
                   // onClick={() => this.handleMainVideoStream(this.state.publisher)}
                 >
                   <UserVideoComponent streamManager={this.state.publisher} />
                 </div>
               ) : null}
               {this.state.subscribers.map((sub, i) => {
-                return (
-                  <div
-                    key={i}
-                    className="stream-container col-md-4 col-xs-4"
-                    style={{
-                      cursor: 'pointer',
-                      width: '80%',
-                      minHeight: '150px',
-                      position: 'relative',
-                    }}
-                    title={this.state.users[i].userNickname}
-                    // onClick={() => this.handleMainVideoStream(sub)}
-                  >
-                    <UserVideoComponent streamManager={sub} mainVideoStream={this.handleMainVideoStream} />
-                  </div>
-                );
+                if (i !== 0)
+                  return (
+                    <div
+                      key={i}
+                      className="stream-container col-md-4 col-xs-4"
+                      // onClick={() => this.handleMainVideoStream(sub)}
+                    >
+                      <UserVideoComponent streamManager={sub} mainVideoStream={this.handleMainVideoStream} />
+                    </div>
+                  );
               })}
             </div>
           </div>
@@ -868,45 +826,42 @@ class RoomDetail extends Component {
               <TabPanel value="2" sx={{ background: '#ffd4c3' }}>
                 <div className={`${styles.chatWrapper} ${styles.chatbox__active}`}>
                   <div className={styles.chatHeader}>
-                    <h2>참여자 목록</h2>
+                    <h2 style={{ marginBottom: '2%' }}>참여자 목록</h2>
                   </div>
                   <div className={styles.userListBox}>
-                    <ul>
-                      {this.state.users.map((user, index) => {
-                        return (
-                          <li>
-                            <Box>
-                              <Stack direction="row" spacing={3}>
-                                <div>{user.userNickname}</div>
-
-                                <Button
-                                  name="report"
-                                  value={user.userId}
-                                  variant="contained"
-                                  color="error"
-                                  size="small"
-                                  onClick={this.openModal}
-                                >
-                                  신고
-                                </Button>
-                                <Button
-                                  onClick={() =>
-                                    this.startVote({ userId: user.userId, userNickname: user.userNickname })
-                                  }
-                                  name="vote"
-                                  value={user.userId}
-                                  variant="contained"
-                                  color="error"
-                                  size="small"
-                                >
-                                  강퇴
-                                </Button>
-                              </Stack>
-                            </Box>
-                          </li>
-                        );
-                      })}
-                    </ul>
+                    {this.state.users.map((user, index) => {
+                      return (
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            width: '90%',
+                            margin: '2%',
+                          }}
+                        >
+                          <div style={{ textOverflow: 'ellipsis' }}>{user.userNickname}</div>
+                          <div style={{ display: 'flex' }}>
+                            <button
+                              name="report"
+                              value={user.userId}
+                              onClick={this.openModal}
+                              className={styles.listBtn}
+                            >
+                              신고
+                            </button>
+                            <button
+                              onClick={() => this.startVote({ userId: user.userId, userNickname: user.userNickname })}
+                              name="vote"
+                              value={user.userId}
+                              className={styles.listBtn}
+                              style={{ backgroundColor: '#FF8D89' }}
+                            >
+                              강퇴
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </TabPanel>
@@ -960,7 +915,7 @@ class RoomDetail extends Component {
           // console.log(response);
           if (error.response) {
             if (error.response.status === 409) {
-              resolve(localStorage.getItem('roomTitle'));
+              resolve(sessionId);
               console.log('이미 있는 세션입니다');
             } else if (
               window.confirm(
@@ -991,7 +946,6 @@ class RoomDetail extends Component {
           resolve(response.data.token);
           this.setState({
             token: response.data.token,
-            connectionId: response.data.connectionId,
           });
         })
         .catch((error) => reject(error));
