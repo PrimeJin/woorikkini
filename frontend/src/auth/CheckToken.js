@@ -28,18 +28,18 @@ export const CheckToken = (key) => {
         if (authenticated && new Date().getTime() < expireTime) {
           setIsAuth('인증 성공');
           console.log('인증 성공: 유효기간 확인');
-          // } else {
-          //   //Refresh Token을 활용해서 Access Token 재발급 요청
-          //   const response = await requestToken(refreshToken);
-
-          //   if (response.status / 100 === 2) {
-          //     const accessToken = response.json.access_token;
-          //     console.log(response);
-          //     dispatch(SET_TOKEN(accessToken));
-          //     setIsAuth('인증 성공');
-          //     console.log('인증 성공: 토큰 재발급');
-          //   }
         } else {
+          //Refresh Token을 활용해서 Access Token 재발급 요청
+          // const response = await requestToken(refreshToken);
+
+          // if (response.status / 100 === 2) {
+          //   const accessToken = response.json.access_token;
+          //   console.log(response);
+          //   dispatch(SET_TOKEN(accessToken));
+          //   setIsAuth('인증 성공');
+          //   console.log('인증 성공: 토큰 재발급');
+          // }
+          // } else {
           dispatch(DELETE_TOKEN());
           removeCookieToken();
           setIsAuth('인증 실패');

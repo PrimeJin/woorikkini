@@ -30,6 +30,8 @@ import { SET_USER } from './store/User';
 import { RESET_TOKEN } from './store/Auth';
 import './App.css';
 import { useEffect } from 'react';
+import PrivateRoute from './routes/PrivateRoute';
+import PublicRoute from './routes/PublicRoute';
 
 function App() {
   const dispatch = useDispatch();
@@ -54,29 +56,33 @@ function App() {
       </Helmet>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<MainPage />} />
-          <Route path="/mypage" element={<Mypage />} />
-          <Route path="/user/signup" element={<Signup />} />
-          <Route path="/user/login" element={<LoginPage />} />
-          <Route path="/user/logout" element={<LogoutPage />} />
-          <Route path="/user/modify" element={<ModifyPage />} />
-          <Route path="/user/findpw" element={<PwFind />} />
-          <Route path="/user/password" element={<PwChange />} />
-          <Route path="/user/delete" element={<DeletePage />} />
-          <Route path="/oauth/callback/kakao" element={<Kakao />} />
-          <Route path="/oauth/callback/naver" element={<Naver />} />
-          <Route path="/oauth/callback/google" element={<Google />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/admin/report" element={<AdminReport />} />
-          <Route path="/admin/stats" element={<AdminStats />} />
-          <Route path="/admin/allUsers" element={<AdminAllUsers />} />
-          <Route path="/admin/notice" element={<AdminNotice />} />
-          <Route path="/admin/notice/:noticeId" element={<AdminNoticeDetail />} />
-          <Route path="/admin/notice/create" element={<AdminNoticeCreate />} />
-          <Route path="/notice" element={<Notice />} />
-          <Route path="/notice/:noticeId" element={<NoticeDetail />} />
-          <Route path="/room" element={<Room />} />
-          <Route path="/room/:roomId" element={<RoomDetail />} />
+          <Route element={<PrivateRoute authentication={true} />}>
+            <Route path="/user/logout" element={<LogoutPage />} />
+            <Route path="/user/modify" element={<ModifyPage />} />
+            <Route path="/user/delete" element={<DeletePage />} />
+            <Route path="/mypage" element={<Mypage />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/report" element={<AdminReport />} />
+            <Route path="/admin/stats" element={<AdminStats />} />
+            <Route path="/admin/allUsers" element={<AdminAllUsers />} />
+            <Route path="/admin/notice" element={<AdminNotice />} />
+            <Route path="/admin/notice/:noticeId" element={<AdminNoticeDetail />} />
+            <Route path="/admin/notice/create" element={<AdminNoticeCreate />} />
+            <Route path="/notice" element={<Notice />} />
+            <Route path="/notice/:noticeId" element={<NoticeDetail />} />
+            <Route path="/room" element={<Room />} />
+            <Route path="/room/:roomId" element={<RoomDetail />} />
+          </Route>
+          <Route element={<PrivateRoute authentication={false} />}>
+            <Route path="/user/password" element={<PwChange />} />
+            <Route path="/user/findpw" element={<PwFind />} />
+            <Route path="/" element={<LoginPage />} />
+            <Route path="/user/signup" element={<Signup />} />
+            <Route path="/user/login" element={<LoginPage />} />
+            <Route path="/oauth/callback/kakao" element={<Kakao />} />
+            <Route path="/oauth/callback/naver" element={<Naver />} />
+            <Route path="/oauth/callback/google" element={<Google />} />
+          </Route>
           <Route path="/*" element={<ErrorPage />} />
         </Routes>
       </BrowserRouter>
