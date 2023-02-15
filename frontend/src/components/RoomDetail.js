@@ -5,130 +5,53 @@ import axios from 'axios';
 import UserVideoComponent from '../room/UserVideoComponent';
 import { OpenVidu } from 'openvidu-browser';
 
-// modal
-import ReportModal from '../room/components/ReportModal';
+  function getDetail() {
+    axios({
+      url: `https://i8a804.p.ssafy.io/api/room/exit/${roomId}`,
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        authorization: `Bearer ${accessToken}`,
+      },
+    }).then(() => {
+      if (mySession) mySession.disconnect();
+      this.OV = null; //Openvidu 객체 삭제
+      this.setState({
+        session: undefined,
+        subscribers: [],
+        mySessionId: 'SessionA',
+        myUserName: 'Participant' + Math.floor(Math.random() * 100),
+        mainStreamManager: undefined,
+        publisher: undefined,
+        localUser: undefined,
+      });
+    });
+    window.location.replace('/');
+  }
 
-//style
-import CenterLogo from '../styles/CenterLogo';
-import styles from './RoomDetail.module.css';
-import Messages from '../room/components/Messages';
-import TabContext from '@mui/lab/TabContext';
-import TabList from '@mui/lab/TabList';
-import Tab from '@mui/material/Tab';
-import TabPanel from '@mui/lab/TabPanel';
-import ChatIcon from '@mui/icons-material/Chat';
-import UserIcon from '@mui/icons-material/Person';
-import CancelIcon from '@mui/icons-material/Cancel';
-import Button from '@mui/material/Button';
-import Stack from '@mui/material/Stack';
-import Box from '@mui/material/Box';
-
-import Timer from '../room/components/Timer';
-
-const OPENVIDU_SERVER_URL = 'https://i8a804.p.ssafy.io:8443'; //도커에 올린 openvidu server
-const OPENVIDU_SERVER_SECRET = 'kkini'; //시크릿키값, 바꿔주면 좋음
-
-const EncodeBase64 = (data) => {
-  return Buffer.from(data).toString('base64');
-};
-
-//redux를 이용한 store에서 state와 reducer 가져오기
-//this.props.authData 같은 식으로 사용 가능
-const mapStateToProps = (state) => ({
-  currentUserId: state.user.id,
-  currentUserNickname: state.user.nickname,
-  accessToken: state.token.accessToken,
-
-  userData: state.user,
-});
-
-const mapDispatchToProps = (dispatch) => {};
-
-class RoomDetail extends Component {
-  //초기설정 생성자
-  constructor(props) {
-    super(props);
-
-    const roomId = localStorage.getItem('roomId');
-    const roomTitle = localStorage.getItem('roomTitle');
-    const roomToken = localStorage.getItem('roomToken');
-    const sessionId = localStorage.getItem('sessionId');
-    const userName = localStorage.getItem('userNickname');
-    const userId = localStorage.getItem('userId');
-
-    this.messagesEndRef = React.createRef(null);
-    //state
-    this.state = {
-      mySessionId: roomTitle,
-      myUserName: userName,
-      myUserId: userId,
-      roomId: roomId,
-      connections: [],
-      connectionId: undefined,
-      session: undefined, //현재 접속해있는 세션
-      localUser: undefined,
-      subscribers: [], //다른 사용자의 활성 웹캠 스트림
-      mainStreamManager: undefined, // 스트림 종합한 페이지의 메인 비디오
-      publisher: undefined, //로컬 웹캠 스트림
-      isEmpty: false, //세션이 비어있는지 아닌지
-      isHost: false, //
-      isChatOn: false, //채팅팝업창이 켜져있는지 아닌지
-      isListOn: false,
-      token: '', //accessToken
-      message: '', //메시지 단일입력
-      messages: [], //메시지 로그
-      messagesEnd: null,
-      users: [], //전체 참여자
-      value: '1', //1: 채팅창, 2:참여자 목록
-      reportModalOpen: false,
-      voteModalOpen: false,
-      banModalOpen: false,
-      reportedUserId: '',
-      eventData: {},
-
-      //투표 관련 state
-      isVoteStart: false, //투표가 시작했는지
-      voteUserId: '', //투표한 유저 id
-      voteUserNickname: '', //투표한 유저 닉네임
-      total: 0, //전체 투표수
-      agree: 0, //찬성 수
-      disagree: 0, //반대 수
-    };
-
-    //method
-    this.joinSession = this.joinSession.bind(this);
-    this.closeSession = this.closeSession.bind(this);
-    this.leaveSession = this.leaveSession.bind(this);
-    this.switchCamera = this.switchCamera.bind(this);
-    this.handleChangeSessionId = this.handleChangeSessionId.bind(this);
-    this.handleChangeUserName = this.handleChangeUserName.bind(this);
-
-    // modal 관련 함수들
-    this.openModal = this.openModal.bind(this);
-    this.closeModal = this.closeModal.bind(this);
-
-    //chat
-    this.handleChangeChatMessage = this.handleChangeChatMessage.bind(this);
-    this.sendMessageByClick = this.sendMessageByClick.bind(this);
-    this.sendMessageByEnter = this.sendMessageByEnter.bind(this);
-    this.chatToggle = this.chatToggle.bind(this);
-    this.scrollToBottom = this.scrollToBottom.bind(this);
-
-    this.handleMainVideoStream = this.handleMainVideoStream.bind(this);
-    this.onbeforeunload = this.onbeforeunload.bind(this);
-    // this.getUserList = this.getUserList.bind(this);
-    // this.userList = this.userList.bind(this);
-    this.listToggle = this.listToggle.bind(this);
-
-    this.handleChange = this.handleChange.bind(this);
-
-    //투표
-    this.startVote = this.startVote.bind(this);
-    this.showVoteModal = this.showVoteModal.bind(this);
-    this.voteComplete = this.voteComplete.bind(this);
-    this.agreeVote = this.agreeVote.bind(this);
-    this.disagreeVote = this.disagreeVote.bind(this);
-    this.userList = this.userList.bind(this);
+  //세션 닫기(세션의 모든 참가자 퇴장)
+  closeSession() {
+    //백엔드에 퇴장 요청 보내기
+    axios
+      .delete(`${OPENVIDU_SERVER_URL}/openvidu/api/sessions/${this.state.mySessionId}`, {
+        headers: {
+          Authorization: `Basic ${EncodeBase64(`OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`)}`,
+          'Content-Type': 'application/json',
+        },
+      })
+      .then((res) => {
+        // //모든 속성(프로퍼티) 초기화
+        this.OV = null; //Openvidu 객체 삭제
+        this.setState({
+          // session: undefined,
+          subscribers: [],
+          mySessionId: 'SessionA',
+          myUserName: 'Participant' + Math.floor(Math.random() * 100),
+          mainStreamManager: undefined,
+          publisher: undefined,
+        });
+        // window.location.reload();
+      });
   }
 
   //라이프 사이클
@@ -780,6 +703,17 @@ class RoomDetail extends Component {
     } catch (e) {
       console.error(e);
     }
+          await this.state.session.publish(newPublisher);
+          this.setState({
+            currentVideoDevice: newVideoDevice[0],
+            mainStreamManager: newPublisher,
+            publisher: newPublisher,
+          });
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   //채팅창 스크롤 자동으로 내려주는 기능
@@ -800,41 +734,26 @@ class RoomDetail extends Component {
         <div className={styles.inmain}>
           <div className={styles.inbody}>
             <div id="video-container" className={`${styles.videobox} ${'col-md-12 col-xs-12'}`}>
-              {this.state.isVoteStart && this.state.eventData.voteUserId !== this.state.myUserId
-                ? this.showVoteModal(this.state.eventData)
-                : null}
+              {this.state.isVoteStart ? this.showVoteModal(this.state.eventData) : null}
               {this.state.publisher !== undefined ? (
                 <div
                   className="stream-container col-md-4 col-xs-4"
-                  style={{
-                    cursor: 'pointer',
-                    width: '80%',
-                    minHeight: '150px',
-                    position: 'relative',
-                  }}
-                  title={this.state.myUserName}
                   // onClick={() => this.handleMainVideoStream(this.state.publisher)}
                 >
                   <UserVideoComponent streamManager={this.state.publisher} />
                 </div>
               ) : null}
               {this.state.subscribers.map((sub, i) => {
-                return (
-                  <div
-                    key={i}
-                    className="stream-container col-md-4 col-xs-4"
-                    style={{
-                      cursor: 'pointer',
-                      width: '80%',
-                      minHeight: '150px',
-                      position: 'relative',
-                    }}
-                    title={this.state.users[i].userNickname}
-                    // onClick={() => this.handleMainVideoStream(sub)}
-                  >
-                    <UserVideoComponent streamManager={sub} mainVideoStream={this.handleMainVideoStream} />
-                  </div>
-                );
+                if (i !== 0)
+                  return (
+                    <div
+                      key={i}
+                      className="stream-container col-md-4 col-xs-4"
+                      // onClick={() => this.handleMainVideoStream(sub)}
+                    >
+                      <UserVideoComponent streamManager={sub} mainVideoStream={this.handleMainVideoStream} />
+                    </div>
+                  );
               })}
             </div>
           </div>
@@ -868,45 +787,42 @@ class RoomDetail extends Component {
               <TabPanel value="2" sx={{ background: '#ffd4c3' }}>
                 <div className={`${styles.chatWrapper} ${styles.chatbox__active}`}>
                   <div className={styles.chatHeader}>
-                    <h2>참여자 목록</h2>
+                    <h2 style={{ marginBottom: '2%' }}>참여자 목록</h2>
                   </div>
                   <div className={styles.userListBox}>
-                    <ul>
-                      {this.state.users.map((user, index) => {
-                        return (
-                          <li>
-                            <Box>
-                              <Stack direction="row" spacing={3}>
-                                <div>{user.userNickname}</div>
-
-                                <Button
-                                  name="report"
-                                  value={user.userId}
-                                  variant="contained"
-                                  color="error"
-                                  size="small"
-                                  onClick={this.openModal}
-                                >
-                                  신고
-                                </Button>
-                                <Button
-                                  onClick={() =>
-                                    this.startVote({ userId: user.userId, userNickname: user.userNickname })
-                                  }
-                                  name="vote"
-                                  value={user.userId}
-                                  variant="contained"
-                                  color="error"
-                                  size="small"
-                                >
-                                  강퇴
-                                </Button>
-                              </Stack>
-                            </Box>
-                          </li>
-                        );
-                      })}
-                    </ul>
+                    {this.state.users.map((user, index) => {
+                      return (
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            width: '90%',
+                            margin: '2%',
+                          }}
+                        >
+                          <div style={{ textOverflow: 'ellipsis' }}>{user.userNickname}</div>
+                          <div style={{ display: 'flex' }}>
+                            <button
+                              name="report"
+                              value={user.userId}
+                              onClick={this.openModal}
+                              className={styles.listBtn}
+                            >
+                              신고
+                            </button>
+                            <button
+                              onClick={() => this.startVote({ userId: user.userId, userNickname: user.userNickname })}
+                              name="vote"
+                              value={user.userId}
+                              className={styles.listBtn}
+                              style={{ backgroundColor: '#FF8D89' }}
+                            >
+                              강퇴
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </TabPanel>
@@ -960,7 +876,7 @@ class RoomDetail extends Component {
           // console.log(response);
           if (error.response) {
             if (error.response.status === 409) {
-              resolve(localStorage.getItem('roomTitle'));
+              resolve(sessionId);
               console.log('이미 있는 세션입니다');
             } else if (
               window.confirm(
@@ -991,7 +907,6 @@ class RoomDetail extends Component {
           resolve(response.data.token);
           this.setState({
             token: response.data.token,
-            connectionId: response.data.connectionId,
           });
         })
         .catch((error) => reject(error));
