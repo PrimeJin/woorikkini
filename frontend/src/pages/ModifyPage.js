@@ -42,7 +42,7 @@ function ModifyPage() {
         'Content-type': 'application/json',
       },
     }).then((response) => {
-      if (response.data.messsage === 'success') {
+      if (response.data.message === 'success') {
         alert('사용 가능한 닉네임입니다.');
         console.log(response);
         setIsNickname(true);
@@ -137,7 +137,7 @@ function ModifyPage() {
         <CenterLogo />
       </div>
       <form className={styles.modifyform}>
-        <h2>회원정보 수정</h2>
+        <p className={styles.userInfoChange}>회원정보 수정</p>
         <div className={styles.nicknameForm}>
           <input type="text" id={styles.changeNickname} onChange={setUserNickname} placeholder="닉네임"></input>
           <button className={styles.checkButton} onClick={checkNickname}>
@@ -153,7 +153,7 @@ function ModifyPage() {
               placeholder="새 비밀번호"
             />
             {newPassword.length > 0 && (
-              <span className={`message ${isPassword ? 'success' : 'error'}`}>{passwordMsg}</span>
+              <div className={`${isPassword ? styles.messageSuccess : styles.messageError}`}>{passwordMsg}</div>
             )}
             <input
               type="password"
@@ -162,7 +162,9 @@ function ModifyPage() {
               placeholder="새 비밀번호 확인"
             />
             {confirmPasswordMsg.length > 0 && (
-              <span className={`message ${isConfirmPassword ? 'success' : 'error'}`}>{confirmPasswordMsg}</span>
+              <div className={`${isConfirmPassword ? styles.messageSuccess : styles.messageError}`}>
+                {confirmPasswordMsg}
+              </div>
             )}
           </div>
           <button className={styles.modifyButton} onClick={changeUserInfo}>
@@ -170,7 +172,15 @@ function ModifyPage() {
           </button>
         </div>
 
-        <Link to="/user/delete" style={{ color: 'gray', textDecoration: 'none', textAlign: 'left', marginLeft: '12%' }}>
+        <Link
+          to="/user/delete"
+          style={{
+            color: 'gray',
+            textDecoration: 'none',
+            textAlign: 'left',
+            marginLeft: '14%',
+          }}
+        >
           <small>회원 탈퇴</small>
         </Link>
       </form>

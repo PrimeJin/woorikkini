@@ -96,7 +96,12 @@ const Room = () => {
     fullCheck
       ? isPrivate
         ? setFiltered(
-            list.filter((room) => room.roomLimitUser > room.roomRecentUser && JSON.parse(room.roomPrivate) === false),
+            list.filter(
+              (room) =>
+                room.roomLimitUser > room.roomRecentUser &&
+                JSON.parse(room.roomPrivate) === false &&
+                room.roomRecentUser === 0,
+            ),
           )
         : setFiltered(list.filter((room) => room.roomLimitUser > room.roomRecentUser))
       : isPrivate
