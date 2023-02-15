@@ -63,16 +63,15 @@
   margin-bottom: 3%;
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Gugi&family=Nanum+Pen+Script&family=Noto+Sans+KR:wght@500&family=Single+Day&family=Yeon+Sung&display=swap');
 .preset1 {
+  font-family: 'Gugi', cursive;
   box-sizing: border-box;
   background-color: #fffdf7;
   border: 2px solid black;
   box-shadow: 0px 30px 80px rgba(0, 0, 0, 0.07), 0px 20px 30px rgba(0, 0, 0, 0.0503198),
     0px 15px 18px rgba(0, 0, 0, 0.0417275), 0px 8px 10px rgba(0, 0, 0, 0.035), 0px 5px 5px rgba(0, 0, 0, 0.0282725),
     0px 3px 2px rgba(0, 0, 0, 0.0196802);
-  /* box-shadow: 0px 100px 80px rgba(0, 0, 0, 0.07), 0px 41.7776px 33.4221px rgba(0, 0, 0, 0.0503198),
-    0px 22.3363px 17.869px rgba(0, 0, 0, 0.0417275), 0px 12.5216px 10.0172px rgba(0, 0, 0, 0.035),
-    0px 6.6501px 5.32008px rgba(0, 0, 0, 0.0282725), 0px 2.76726px 2.21381px rgba(0, 0, 0, 0.0196802); */
   border-radius: 10px;
   position: relative;
 }
@@ -84,8 +83,9 @@
     0px 10px 18px rgba(0, 0, 0, 0.0417275), 0px 8px 10px rgba(0, 0, 0, 0.035), 0px 5px 5px rgba(0, 0, 0, 0.0282725),
     0px 3px 2px rgba(0, 0, 0, 0.0196802);
   color: #fefaef;
-  font: HYGungSo-Bold;
   position: relative;
+  font-family: 'Nanum Pen Script', cursive;
+  font-size: 120%;
 }
 
 .preset3 {
@@ -96,6 +96,7 @@
     0px 10px 18px rgba(0, 0, 0, 0.0417275), 0px 8px 10px rgba(0, 0, 0, 0.035), 0px 5px 5px rgba(0, 0, 0, 0.0282725),
     0px 3px 2px rgba(0, 0, 0, 0.0196802);
   position: relative;
+  font-family: 'Yeon Sung', cursive;
 }
 
 .preset4 {
@@ -107,6 +108,7 @@
     0px 10px 18px rgba(0, 0, 0, 0.0417275), 0px 8px 10px rgba(0, 0, 0, 0.035), 0px 5px 5px rgba(0, 0, 0, 0.0282725),
     0px 3px 2px rgba(0, 0, 0, 0.0196802);
   position: relative;
+  font-family: 'Single Day', cursive;
 }
 
 .preset5 {
@@ -116,9 +118,10 @@
     0px 10px 18px rgba(0, 0, 0, 0.0417275), 0px 8px 10px rgba(0, 0, 0, 0.035), 0px 5px 5px rgba(0, 0, 0, 0.0282725),
     0px 3px 2px rgba(0, 0, 0, 0.0196802);
   border-radius: 20px;
-  font-family: Inria Sans;
   color: #b94e6b;
   position: relative;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 90%;
 }
 
 .roomCreateBtn {
@@ -202,7 +205,7 @@
   background: #d6ebfc;
   border-radius: 17px;
   border: none;
-  font-weight: 600;
+  font-weight: 800;
   font-size: 20px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   cursor: pointer;

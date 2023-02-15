@@ -43,11 +43,9 @@ function Notice() {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <PageLogo />
-        <h1 style={{ fontSize: '50px' }}>공지사항</h1>
-        <Navbar />
-      </div>
+      <PageLogo />
+      <Navbar />
+      <h1 style={{ fontSize: '50px' }}>공지사항</h1>
       <div
         style={{
           justifyContent: 'center',
@@ -56,7 +54,7 @@ function Notice() {
         }}
       >
         <div className={`${styles1.noticeTable} ${styles.notice}`}>
-          <table>
+          <table style={{ width: '100%' }}>
             <thead>
               <tr>
                 <th style={{ width: '15%' }}>번호</th>
