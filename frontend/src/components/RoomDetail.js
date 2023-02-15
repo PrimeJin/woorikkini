@@ -150,7 +150,7 @@ class RoomDetail extends Component {
 
     window.addEventListener('beforeunload', this.onbeforeunload);
     this.scrollToBottom();
-    this.joinSession();
+    if (this.state.session == undefined) this.joinSession();
 
     //방 리스트를 띄워야 합니다
   }
@@ -175,7 +175,7 @@ class RoomDetail extends Component {
     this.OV = new OpenVidu();
     this.OV.enableProdMode();
 
-    this.setState({ session: this.OV.initSession() }, () => {
+    this.setState({ session: this.OV.initSession(), connections: [], subscribers: [] }, () => {
       const roomId = this.state.roomId;
       // const roomTitle = this.state.roomTitle;
       const userId = this.state.myUserId;
@@ -188,7 +188,6 @@ class RoomDetail extends Component {
         methods: 'GET',
       }).then((res) => {
         //subscribe
-        console.log(res, '데이터ㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓㅓ');
         this.state.session.on('streamCreated', (event) => {
           const newSubscriber = this.state.session.subscribe(
             event.stream,
@@ -229,6 +228,7 @@ class RoomDetail extends Component {
           } else {
             // Disconnected from the session for other reason than a network drop
           }
+          this.deleteSubscriber(event.stream.streamManager);
         });
 
         //사용자가 화상회의를 떠나면 Session객체에서 소멸된 stream을 받아와
@@ -303,6 +303,7 @@ class RoomDetail extends Component {
                 ],
               });
             }
+            this.scrollToBottom();
           });
 
           //투표 시작 signal 받기
@@ -697,7 +698,7 @@ class RoomDetail extends Component {
 
     const roomId = localStorage.getItem('roomId');
     const accessToken = this.props.accessToken;
-    if (result.agree / result.total >= 0.5) {
+    if (result.agree / result.total > 0.5) {
       // 백엔드 및 openvidu 서버에 추방 요청을 보냄
       axios({
         url: `https://i8a804.p.ssafy.io/api/room/exit/${roomId}/${result.voteUserId}`,
@@ -756,7 +757,7 @@ class RoomDetail extends Component {
         localUser: undefined,
       });
     });
-    window.location.replace('/');
+    window.location.replace('/room');
   }
 
   //세션 닫기(세션의 모든 참가자 퇴장)
@@ -823,7 +824,7 @@ class RoomDetail extends Component {
     //호출될 때마다 messagesEndRef.current가 없을 수도 있으므로 체크해줘야 한다
     //안그러면 TypeError: Cannot read property 'scrollIntoView' of null가 표시될 수 있음
     if (this.messagesEndRef.current) {
-      this.messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      this.messagesEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }
   };
 
@@ -838,13 +839,13 @@ class RoomDetail extends Component {
               {this.state.isVoteStart && this.state.eventData.voteUserId !== this.state.myUserId
                 ? this.showVoteModal(this.state.eventData)
                 : null}
-              {this.state.publisher !== undefined ? (
+              {/* {this.state.publisher !== undefined ? (
                 <div
-                  className="stream-container col-md-4 col-xs-4"
+                  className=""
                   style={{
                     cursor: 'pointer',
                     width: '80%',
-                    minHeight: '150px',
+                    height: '50%',
                     position: 'relative',
                   }}
                   title={this.state.myUserName}
@@ -852,23 +853,27 @@ class RoomDetail extends Component {
                 >
                   <UserVideoComponent streamManager={this.state.publisher} />
                 </div>
-              ) : null}
+              ) : null} */}
               {this.state.subscribers.map((sub, i) => {
                 return (
-                  <div
-                    key={i}
-                    className="stream-container col-md-4 col-xs-4"
-                    style={{
-                      cursor: 'pointer',
-                      width: '80%',
-                      minHeight: '150px',
-                      position: 'relative',
-                    }}
+                  // <div
+                  //   key={i}
+                  //   className=""
+                  //   style={{
+                  //     cursor: 'pointer',
+                  //     width: '80%',
+                  //     height: 'auto',
+                  //     position: 'relative',
+                  //   }}
+                  //   title={this.state.users[i].userNickname}
+                  // onClick={() => this.handleMainVideoStream(sub)}
+                  // >
+                  <UserVideoComponent
+                    streamManager={sub}
+                    mainVideoStream={this.handleMainVideoStream}
                     title={this.state.users[i].userNickname}
-                    // onClick={() => this.handleMainVideoStream(sub)}
-                  >
-                    <UserVideoComponent streamManager={sub} mainVideoStream={this.handleMainVideoStream} />
-                  </div>
+                  />
+                  /* </div> */
                 );
               })}
             </div>
