@@ -23,9 +23,6 @@ import java.util.Map;
 @RequestMapping("/api/room")
 @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE})
 public class RoomController {
-    private static final String MESSAGE = "message";
-    private static final String RESULT = "result";
-
     private static final String SUCCESS = "success";
     private static final String FAIL = "fail";
     private RoomService roomService;
