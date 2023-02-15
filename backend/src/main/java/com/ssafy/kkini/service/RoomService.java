@@ -90,4 +90,7 @@ public class RoomService {
         return roomRepository.deleteByRoomId(roomId);
     }
 
+    public int updateRoom(int roomId, int roomRecentUser) {
+        return roomRepository.updateRoom(roomId, roomRecentUser);
+    }
 }
