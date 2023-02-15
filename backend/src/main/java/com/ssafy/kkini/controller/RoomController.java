@@ -23,6 +23,9 @@ import java.util.Map;
 @RequestMapping("/api/room")
 @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE})
 public class RoomController {
+    private static final String MESSAGE = "message";
+    private static final String RESULT = "result";
+
     private static final String SUCCESS = "success";
     private static final String FAIL = "fail";
     private RoomService roomService;
@@ -211,17 +214,17 @@ public class RoomController {
 
     @ApiOperation(value = "방 정보를 업데이트 시킨다.", notes = "방 정보를 업데이트 시킨다.", response = Map.class)
     @PatchMapping("/{roomId}")
-    public ResponseEntity<?> updateRoom(@ApiParam(value = "방 아이디", required = true)
+    public ResponseEntity<Map<String, Object>> updateRoom(@ApiParam(value = "방 아이디", required = true)
                                         @PathVariable String roomId, @RequestParam String roomRecentUser) {
         HttpStatus status = null;
         Map<String, Object> resultMap = new HashMap<>();
         int result = roomService.updateRoom(Integer.valueOf(roomId), Integer.parseInt(roomRecentUser));
         if (result == 0){
             status = HttpStatus.BAD_REQUEST;
-            resultMap.put("message", FAIL);
+            resultMap.put(MESSAGE, FAIL);
         } else {
             status = HttpStatus.OK;
-            resultMap.put("message", SUCCESS);
+            resultMap.put(MESSAGE, SUCCESS);
         }
         return new ResponseEntity<Map<String, Object>>(resultMap, status);
     }
