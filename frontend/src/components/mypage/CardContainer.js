@@ -144,13 +144,13 @@ const SwiperContainer = () => {
                           cardUpdate(data);
                           openModal();
                         }}
-                        style={{ width: 25, height: 25, margin: '1% 5%' }}
+                        style={{ width: 25, height: 25, margin: '1% 5%', cursor: 'pointer' }}
                       ></img>
                       <div style={{ fontWeight: '900', fontSize: 'small', lineHeight: 2.5 }}>{data.date}</div>
                       <img
                         src={'img/삭제 아이콘.png'}
                         onClick={() => cardDelete(data.id)}
-                        style={{ width: 25, height: 25, margin: '1% 5%' }}
+                        style={{ width: 25, height: 25, margin: '1% 5%', cursor: 'pointer' }}
                       ></img>
                     </div>
                     <div style={{ fontWeight: '900' }}>{data.title}</div>

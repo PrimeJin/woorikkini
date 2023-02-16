@@ -88,7 +88,7 @@ function Form() {
   const onPassword = (event) => {
     const pwCurrent = event.currentTarget.value;
     setPassword(pwCurrent);
-    const pwRegex = /^[a-zA-z0-9]{8,12}$/;
+    const pwRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,12}$/;
     if (!pwRegex.test(pwCurrent)) {
       setPwVisible(true);
     } else {
@@ -243,7 +243,11 @@ function Form() {
         placeholder="비밀번호"
         required
       />
-      {pwVisible ? <span className={styles.impossible}>* 8 ~ 12자의 비밀번호를 입력해야 합니다.</span> : <p></p>}
+      {pwVisible ? (
+        <span className={styles.impossible}>*영문, 숫자, 특수문자를 조합하여 8~12자로 입력해주세요</span>
+      ) : (
+        <p></p>
+      )}
       <input
         type="password"
         value={ConfirmPassword}

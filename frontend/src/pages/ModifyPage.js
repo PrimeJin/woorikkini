@@ -8,7 +8,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import CenterLogo from '../styles/CenterLogo';
 import axios from 'axios';
 import styles from '../styles/ModifyPage.module.css';
 
@@ -56,16 +55,16 @@ function ModifyPage() {
 
   //비밀번호 폼에 입력된 비밀번호 감지
   const onChangeNewPassword = useCallback((e) => {
-    const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,25}$/;
+    const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,12}$/;
     const passwordCurrent = e.target.value;
     setNewPassword(passwordCurrent);
 
     //주어진 문자열이 정규표현식을 만족하지 못하면
     if (!passwordRegex.test(passwordCurrent)) {
-      setPasswordMsg('숫자+영문자+특수문자 조합으로 8자리 이상 입력해주세요');
+      setPasswordMsg('영문, 숫자, 특수문자를 조합하여 8~12자로 입력해주세요');
       setIsPassword(false);
     } else {
-      setPasswordMsg('안전한 비밀번호입니다');
+      setPasswordMsg('안전한 비밀번호 입니다');
       setIsPassword(true);
     }
   }, []);
@@ -131,11 +130,13 @@ function ModifyPage() {
     }
   };
 
+  function goToMain() {
+    navigate('/');
+  }
+
   return (
     <div className={styles.modify}>
-      <div className={styles.logo_box}>
-        <CenterLogo />
-      </div>
+      <img className={styles.logo} src={`${process.env.PUBLIC_URL}/logo.png`} alt="이미지없음" onClick={goToMain} />
       <form className={styles.modifyform}>
         <p className={styles.userInfoChange}>회원정보 수정</p>
         <div className={styles.nicknameForm}>
