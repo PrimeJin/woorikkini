@@ -23,34 +23,42 @@ function ModifyPage() {
   const [isConfirmPassword, setIsConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
-  //가능하다면 처음 화면 렌더링할때 기존 유저의 닉네임을 띄워놓는것도
-  useEffect(() => {});
-
   //store에 저장되어있는 user State의 id(email)가져오기
   const nickname = useSelector((state) => state.user.nickname);
   const userId = useSelector((state) => state.user.id);
+
+  //가능하다면 처음 화면 렌더링할때 기존 유저의 닉네임을 띄워놓는것도
+  useEffect(() => {
+    setUserNickname(nickname);
+  });
+
   //닉네임 중복확인
   const checkNickname = (e) => {
     e.preventDefault();
-
-    console.log(nickname);
     axios({
       method: 'GET',
-      url: `https://i8a804.p.ssafy.io/api/user/userNickname=${nickname}`,
+      url: `https://i8a804.p.ssafy.io/api/user/${userNickname}`,
       headers: {
         'Content-type': 'application/json',
       },
-    }).then((response) => {
-      if (response.data.message === 'success') {
-        alert('사용 가능한 닉네임입니다.');
-        console.log(response);
-        setIsNickname(true);
-      } else {
+      data: {
+        userNickname: userNickname,
+      },
+    })
+      .then((response) => {
+        if (response.data.message === 'success') {
+          alert('사용 가능한 닉네임입니다.');
+          setIsNickname(true);
+        } else {
+          alert('사용 불가능한 닉네임입니다.');
+          setIsNickname(false);
+        }
+      })
+      .catch((err) => {
         alert('사용 불가능한 닉네임입니다.');
-        console.log(response);
         setIsNickname(false);
-      }
-    });
+        console.log('닉네임 중복 확인 에러', err);
+      });
   };
 
   //비밀번호 폼에 입력된 비밀번호 감지
@@ -86,63 +94,76 @@ function ModifyPage() {
     [newPassword],
   );
 
-  //회원정보 수정 요청
+  // 닉네임 변경
+  function changeNickname(e) {
+    e.preventDefault();
+    isNickname
+      ? axios({
+          url: `https://i8a804.p.ssafy.io/api/user/${userId}/nickname`,
+          method: 'PATCH',
+          headers: {
+            'Content-type': 'application/json',
+          },
+          data: {
+            userId: userId,
+            userNickname: userNickname,
+          },
+        })
+          .then((res) => {
+            res.data.message === 'success' && alert('닉네임 변경이 완료되었습니다');
+          })
+          .catch((err) => {
+            console.log('닉네임 변경 에러', err);
+          })
+      : alert('닉네임 중복확인을 해주세요');
+  }
+
+  //비밀번호 변경
   const changeUserInfo = (e) => {
     e.preventDefault();
-    const nickNameData = { userId: userId, userNickname: nickname };
-    const passwordData = { userId: userId, userPassword: newPassword };
-    if (!isNickname) {
-      alert('닉네임 중복확인을 해주세요');
-    } else if (!isPassword) {
-      alert('비밀번호를 확인해주세요');
-    } else {
-      axios({
-        url: `https://i8a804.p.ssafy.io/api/user/${userId}/nickname`,
-        method: 'PATCH',
-        headers: {
-          'Content-type': 'application/json',
-        },
-        data: nickNameData,
-      })
-        .then((response) => {
-          if (response.status === 202) {
-            axios({
-              url: `https://i8a804.p.ssafy.io/api/user/${userId}/password`,
-              method: 'PATCH',
-              headers: {
-                'Content-type': 'application/json',
-              },
-              data: passwordData,
-            })
-              .then((response) => {
-                if (response.status === 202) {
-                  window.confirm('정보가 수정되었습니다.');
-                }
-              })
-              .catch((err) => {
-                console.log('비밀번호 오류' + err);
-              });
-          }
+    isPassword && isConfirmPassword
+      ? axios({
+          url: `https://i8a804.p.ssafy.io/api/user/${userId}/password`,
+          method: 'PATCH',
+          headers: {
+            'Content-type': 'application/json',
+          },
+          data: {
+            userId: userId,
+            userPassword: newPassword,
+          },
         })
-        .catch((err) => {
-          console.log('닉네임 오류' + err);
-        });
-    }
+          .then((res) => {
+            res.data.message === 'success' && alert('비밀번호 변경이 완료되었습니다');
+          })
+          .catch((err) => {
+            console.log('비밀번호 변경 오류', err);
+          })
+      : alert('비밀번호를 확인해주세요');
   };
 
   function goToMain() {
-    navigate('/');
+    navigate('/room');
   }
 
   return (
     <div className={styles.modify}>
       <img className={styles.logo} src={`${process.env.PUBLIC_URL}/logo.png`} alt="이미지없음" onClick={goToMain} />
       <form className={styles.modifyform}>
-        <p className={styles.userInfoChange}>회원정보 수정</p>
+        <p className={styles.userInfoChange}>회원정보 변경</p>
         <div className={styles.nicknameForm}>
-          <input type="text" id={styles.changeNickname} onChange={setUserNickname} placeholder="닉네임"></input>
-          <button className={styles.checkButton} onClick={checkNickname}>
+          <input
+            value={userNickname}
+            type="text"
+            id={styles.changeNickname}
+            onChange={(e) => setUserNickname(e.target.value)}
+            placeholder="닉네임"
+          ></input>
+          <button className={styles.check} onClick={checkNickname}>
             중복확인
+          </button>
+          <button className={styles.checkButton} onClick={changeNickname}>
+            변경
           </button>
         </div>
         <div className={styles.passwordForm}>
@@ -169,7 +190,7 @@ function ModifyPage() {
             )}
           </div>
           <button className={styles.modifyButton} onClick={changeUserInfo}>
-            수정
+            변경
           </button>
         </div>
 

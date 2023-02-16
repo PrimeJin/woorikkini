@@ -7,7 +7,7 @@ import mainlogo from '../../assets/우리끼니로고.png';
 function Logo() {
   const navigate = useNavigate();
   const MainGo = () => {
-    navigate(`/`);
+    navigate('/');
   };
   return (
     <div className={styles.logo_top}>

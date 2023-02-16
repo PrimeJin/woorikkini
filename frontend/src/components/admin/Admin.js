@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
-import styles from "./Admin.module.css";
-import { Link } from "react-router-dom";
-import AdminSidebar from "./AdminSidebar";
-import axios from "axios";
-import { ResponsivePie } from "@nivo/pie";
+import React, { useState, useEffect } from 'react';
+import styles from './Admin.module.css';
+import { Link } from 'react-router-dom';
+import AdminSidebar from './AdminSidebar';
+import axios from 'axios';
+import { ResponsivePie } from '@nivo/pie';
 
 function Admin() {
   const [noticeList, setNoticeList] = useState([]);
@@ -18,44 +18,44 @@ function Admin() {
   function getList() {
     axios({
       url: `https://i8a804.p.ssafy.io/api/notice?page=0&limit=5`,
-      method: "GET",
+      method: 'GET',
     })
       .then((res) => {
         setNoticeList(res.data.noticeList.content);
       })
       .catch((err) => {
-        console.log(err, "대시보드 공지사항 에러");
+        console.log(err, '대시보드 공지사항 에러');
       });
 
     axios({
       url: `https://i8a804.p.ssafy.io/api/report`,
-      method: "GET",
+      method: 'GET',
     })
       .then((res) => {
         setReportList(res.data.reportList);
       })
       .catch((err) => {
-        console.log(err, "대시보드 신고내역 에러");
+        console.log(err, '대시보드 신고내역 에러');
       });
     axios({
       url: `https://i8a804.p.ssafy.io/api/user/`,
-      method: "GET",
+      method: 'GET',
     })
       .then((res) => {
         setUsersList(res.data.userList);
       })
       .catch((err) => {
-        console.log(err, "대시보드 회원조회 에러");
+        console.log(err, '대시보드 회원조회 에러');
       });
     axios({
       url: `https://i8a804.p.ssafy.io/api/stats`,
-      method: "GET",
+      method: 'GET',
     })
       .then((res) => {
         setStatsList(res.data);
       })
       .catch((err) => {
-        console.log(err, "대시보드 회원통계 에러");
+        console.log(err, '대시보드 회원통계 에러');
       });
   }
 
@@ -69,22 +69,22 @@ function Admin() {
       <AdminSidebar />
       <div
         style={{
-          marginLeft: "150px",
-          justifyContent: "center",
-          display: "flex",
-          flexFlow: "wrap row",
+          marginLeft: '150px',
+          justifyContent: 'center',
+          display: 'flex',
+          flexFlow: 'wrap row',
         }}
       >
-        <h1 style={{ width: "100%" }}>대시보드</h1>
+        <h1 style={{ width: '100%' }}>대시보드</h1>
         <div
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(2, 1fr)",
-            marginInline: "5%",
-            marginBlock: "1%",
-            height: "600px",
-            width: "100%",
-            gridGap: "5%",
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            marginInline: '5%',
+            marginBlock: '1%',
+            height: '600px',
+            width: '100%',
+            gridGap: '5%',
           }}
         >
           <Link to="notice" className={styles.dash}>
@@ -99,7 +99,7 @@ function Admin() {
           <Link to="allUsers" className={styles.dash}>
             <h4>회원조회</h4>
             {usersList.map((user, i) => (
-              <div key={i} style={{ justifyContent: "space-between" }}>
+              <div key={i} style={{ justifyContent: 'space-between' }}>
                 <span>{user.userName}</span>
                 <span>{user.userEmail}</span>
                 <span>{user.createdTime.slice(0, 10)}</span>
@@ -120,46 +120,45 @@ function Admin() {
             <div>
               <div
                 style={{
-                  width: "300px",
-                  height: "130px",
-                  flexFlow: "row wrap",
-                  justifyContent: "center",
+                  width: '300px',
+                  height: '130px',
+                  flexFlow: 'row wrap',
+                  justifyContent: 'center',
                   margin: 0,
                 }}
               >
-                <h5 style={{ width: "100%", marginTop: 0, marginBottom: 5 }}>
-                  연령 통계
-                </h5>
+                <h5 style={{ width: '100%', marginTop: 0, marginBottom: 5 }}>연령 통계</h5>
                 <ResponsivePie
                   data={statsList.ageStatsList}
                   sortByValue={true}
-                  colors={{ scheme: "paired" }}
+                  colors={{ scheme: 'nivo' }}
                   arcLabelsSkipAngle={1}
                   arcLabel={function (e) {
-                    return e.id + " (" + e.value + ")";
+                    return e.id + ' (' + e.value + ')';
                   }}
                   enableArcLinkLabels={false}
+                  arcLabelsTextColor="black"
                 />
               </div>
               <div
                 style={{
-                  width: "300px",
-                  height: "130px",
-                  flexFlow: "row wrap",
+                  width: '300px',
+                  height: '130px',
+                  flexFlow: 'row wrap',
                   margin: 0,
                 }}
               >
-                <h5 style={{ width: "100%", marginTop: 0, marginBottom: 5 }}>
-                  키워드 통계
-                </h5>
+                <h5 style={{ width: '100%', marginTop: 0, marginBottom: 5 }}>키워드 통계</h5>
                 <ResponsivePie
                   data={statsList.keywordStatsList}
                   sortByValue={true}
-                  colors={{ scheme: "accent" }}
+                  colors={{ scheme: 'paired' }}
                   arcLabel={function (e) {
-                    return e.id + " (" + e.value + ")";
+                    return e.id + ' (' + e.value + ')';
                   }}
                   enableArcLinkLabels={false}
+                  arcLabelsSkipAngle={1}
+                  arcLabelsTextColor="black"
                 />
               </div>
             </div>
