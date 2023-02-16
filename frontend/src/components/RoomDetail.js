@@ -241,7 +241,9 @@ class RoomDetail extends Component {
 
         this.state.session.on('exception', () => {});
 
-        this.getToken(res.data.result.roomTitle).then((token) => {
+        console.log('roomId');
+        console.log(String(this.state.roomId));
+        this.createToken(String(this.state.roomId)).then((token) => {
           this.state.session
             .connect(token, { userId: userId, userNickname: userNickname })
             .then(async () => {
@@ -999,6 +1001,7 @@ class RoomDetail extends Component {
               <div style={{ display: 'none' }}></div>
             )}
           </div>
+
           <div className={styles.sidebar}>
             {this.state.msgOpen ? (
               <div className={styles.chatdiv}>
@@ -1098,22 +1101,26 @@ class RoomDetail extends Component {
 
   //createSession 응답이 오면 createToken을 실행하게 해서
   //token이 undefined인채로 getToken을 실행하는 일을 막아요
-  async getToken() {
-    const sessionId = await this.createSession(this.state.mySessionId);
+  async getToken(id) {
+    const sessionId = await this.createSession(id);
     return await this.createToken(sessionId);
   }
 
   createSession(sessionId) {
     return new Promise((resolve, reject) => {
-      const data = JSON.stringify({ customSessionId: sessionId });
       axios
-        .post(`${OPENVIDU_SERVER_URL}/openvidu/api/sessions`, data, {
-          headers: {
-            Authorization: `Basic ${EncodeBase64(`OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`)}`,
-            'Content-Type': 'application/json',
+        .post(
+          `${OPENVIDU_SERVER_URL}/openvidu/api/sessions`,
+          { customSessionId: sessionId },
+          {
+            headers: {
+              Authorization: `Basic ${EncodeBase64(`OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`)}`,
+              'Content-Type': 'application/json',
+            },
           },
-        })
+        )
         .then((response) => {
+          console.log('createSession');
           resolve(response.data.id);
         })
         .catch((response) => {
@@ -1148,6 +1155,7 @@ class RoomDetail extends Component {
           },
         })
         .then((response) => {
+          console.log(response.data);
           resolve(response.data.token);
           this.setState({
             token: response.data.token,
