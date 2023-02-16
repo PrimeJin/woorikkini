@@ -26,7 +26,7 @@ const RoomCreate = (props) => {
   const [limit, setLimit] = useState(2);
   const [preset, setPreset] = useState('preset1');
 
-  const limitArr = [...new Array(7)].map((_, i) => i + 2);
+  const limitArr = [...new Array(8)].map((_, i) => i + 2);
 
   const [message, setMessage] = useState('');
 

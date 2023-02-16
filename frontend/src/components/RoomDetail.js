@@ -94,7 +94,7 @@ class RoomDetail extends Component {
       msgOpen: true,
 
       // 설정바
-      barOpen: true,
+      barOpen: false,
     };
 
     //method
@@ -116,9 +116,6 @@ class RoomDetail extends Component {
     this.clickMic = this.clickMic.bind(this);
     this.clickMsg = this.clickMsg.bind(this);
     this.settingBarOpen = this.settingBarOpen.bind(this);
-
-    // 화상 화면 구성하기 위해 참여자 비디오 목록 재구성하는 함수
-    this.allUsersVideo = this.allUsersVideo.bind(this);
 
     //chat
     this.handleChangeChatMessage = this.handleChangeChatMessage.bind(this);
@@ -255,7 +252,7 @@ class RoomDetail extends Component {
                   publishAudio: true,
                   publishVideo: true,
                   insertMode: 'APPEND',
-                  mirror: false, //좌우반전 옵션
+                  mirror: true, //좌우반전 옵션
                 });
                 this.state.session.publish(newPublisher);
 
@@ -404,10 +401,12 @@ class RoomDetail extends Component {
   }
 
   // 아이콘 클릭 시 변경되는 사항
-  clickVolume() {
+  clickVolume(e) {
+    e.preventDefault();
     // this.subscriber.subscribeToAudio(); // true to unmute the audio track, false to mute it
   }
-  clickVideo() {
+  clickVideo(e) {
+    e.preventDefault();
     this.setState({
       // publisher.stream.audioActiv
     });
@@ -415,31 +414,23 @@ class RoomDetail extends Component {
     //   publishVideo: !this.publishVideo, // true to enable the video track, false to disable it
     // });
   }
-  clickMic() {
+  clickMic(e) {
+    e.preventDefault();
     // this.publisher.publishAudio(!this.publishAudio); // true to unmute the audio track, false to mute it
   }
 
-  clickMsg() {
+  clickMsg(e) {
+    e.preventDefault();
     this.setState({
       msgOpen: !this.state.msgOpen,
     });
   }
 
-  settingBarOpen() {
+  settingBarOpen(e) {
+    e.preventDefault();
     this.setState({
       barOpen: !this.state.barOpen,
     });
-  }
-
-  // 방 참여자들의 영상 정보 (subscribers) 리스트를 변경하는 함수
-  allUsersVideo() {
-    if (this.state.subscribers.length >= 5) {
-      this.state.users =
-        this.state.users.splice(0, 4) + 'none' + this.state.users.splice(4, this.state.users.length + 1);
-      this.state.subscribers =
-        this.state.subscribers.splice(0, 4) + 'none' + this.state.subscribers.splice(4, this.state.users.length + 1);
-      console.log('>>>', this.state.users);
-    }
   }
 
   //메소드
@@ -466,7 +457,8 @@ class RoomDetail extends Component {
   }
 
   //클릭해서 채팅보내기
-  sendMessageByClick() {
+  sendMessageByClick(e) {
+    e.preventDefault();
     const newMessages = [...this.state.messages];
     newMessages.push({
       userName: this.state.myUserName,
@@ -869,86 +861,75 @@ class RoomDetail extends Component {
               ) : // </div>
               null}
               {this.state.subscribers.map((sub, i) => {
-                if (sub === 'none') {
-                  console.log(`카메라 ${sub}`);
-                  return <div style={{ width: '100%', height: '100%' }}></div>;
-                } else if (sub !== 3) {
-                  console.log(`카메라 ${sub}`);
-                  return (
-                    // <div
-                    //   key={i}
-                    //   className=""
-                    //   style={{
-                    //     cursor: 'pointer',
-                    //     width: '80%',
-                    //     height: 'auto',
-                    //     position: 'relative',
-                    //   }}
-                    //   title={this.state.users[i].userNickname}
-                    // onClick={() => this.handleMainVideoStream(sub)}
-                    // >
+                return (
+                  // <div
+                  //   key={i}
+                  //   className=""
+                  //   style={{
+                  //     cursor: 'pointer',
+                  //     width: '80%',
+                  //     height: 'auto',
+                  //     position: 'relative',
+                  //   }}
+                  //   title={this.state.users[i].userNickname}
+                  // onClick={() => this.handleMainVideoStream(sub)}
+                  // >
 
-                    <UserVideoComponent
-                      streamManager={sub}
-                      mainVideoStream={this.handleMainVideoStream}
-                      title={this.state.users[i].userNickname}
-                      style={{
-                        cursor: 'pointer',
-                        // width: '80%',
-                        // height: 'auto',
-                        // position: 'relative',
-                      }}
-                    />
-                    /* </div> */
-                  );
-                }
+                  <UserVideoComponent
+                    streamManager={sub}
+                    mainVideoStream={this.handleMainVideoStream}
+                    title={this.state.users[i].userNickname}
+                    style={{
+                      cursor: 'pointer',
+                      // width: '80%',
+                      // height: 'auto',
+                      // position: 'relative',
+                    }}
+                  />
+                  /* </div> */
+                );
               })}
             </div>
-            <div className={styles.roomTable}>
-              <div className={styles.tableComment}>함께 맛있는 식사하세요!</div>
-              <div onClick={this.settingBarOpen} className={styles.settingBarBtn}>
-                설정하기
-                <br />
-                <SettingsTwoToneIcon fontSize="large" />
-              </div>
-            </div>
             {this.state.barOpen ? (
-            <div className={styles.video_setting_bar} onChange={this.handleChange} aria-label="icon label tabs example">
-              <div className={styles.icons}>
-                <div className={styles.icon} onClick={this.clickVolume} name="audio">
-                  <VolumeUpTwoToneIcon fontSize="large" />
-                </div>
-                <div className={styles.icon} onClick={this.clickVideo}>
-                  <VideocamTwoToneIcon fontSize="large" />
-                </div>
-                <div className={styles.icon} onClick={this.clickMic}>
-                  <MicNoneTwoToneIcon fontSize="large" />
-                </div>
-                {this.state.msgOpen ? (
-                  <div className={styles.icon} style={{ cursor: 'default' }}>
-                    <QuestionAnswerTwoToneIcon fontSize="large" />
+              <div
+                className={styles.video_setting_bar}
+                onChange={this.handleChange}
+                aria-label="icon label tabs example"
+              >
+                <div className={styles.icons}>
+                  <div className={styles.icon} onClick={this.clickVolume} name="audio">
+                    <VolumeUpTwoToneIcon fontSize="large" />
                   </div>
-                ) : (
-                  <div className={styles.icon} onClick={this.clickMsg}>
-                    <QuestionAnswerTwoToneIcon fontSize="large" />
+                  <div className={styles.icon} onClick={this.clickVideo}>
+                    <VideocamTwoToneIcon fontSize="large" />
                   </div>
-                )}
+                  <div className={styles.icon} onClick={this.clickMic}>
+                    <MicNoneTwoToneIcon fontSize="large" />
+                  </div>
+                  {this.state.msgOpen ? (
+                    <div className={styles.icon} style={{ cursor: 'default' }}>
+                      <QuestionAnswerTwoToneIcon fontSize="large" />
+                    </div>
+                  ) : (
+                    <div className={styles.icon} onClick={this.clickMsg}>
+                      <QuestionAnswerTwoToneIcon fontSize="large" />
+                    </div>
+                  )}
 
-                {!this.state.msgOpen ? (
-                  <div className={styles.icon} style={{ cursor: 'default' }}>
-                    <PeopleAltTwoToneIcon fontSize="large" />
-                  </div>
-                ) : (
-                  <div className={styles.icon} onClick={this.clickMsg}>
-                    <PeopleAltTwoToneIcon fontSize="large" />
-                  </div>
-                )}
+                  {!this.state.msgOpen ? (
+                    <div className={styles.icon} style={{ cursor: 'default' }}>
+                      <PeopleAltTwoToneIcon fontSize="large" />
+                    </div>
+                  ) : (
+                    <div className={styles.icon} onClick={this.clickMsg}>
+                      <PeopleAltTwoToneIcon fontSize="large" />
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
             ) : (
               <div style={{ display: 'none' }}></div>
             )}
-          </div>
           </div>
           <div className={styles.sidebar}>
             {this.state.msgOpen ? (
@@ -983,11 +964,21 @@ class RoomDetail extends Component {
                 </div>
                 <div className={`${styles.userListBox} ${styles.scroll}`}>
                   {this.state.users.map((user, index) => {
-                    if (user === 'none') {
-                      console.log(`목록 ${user}`);
-                      return <div style={{ display: 'none' }}></div>;
-                    } else if (user !== 'none') {
-                      console.log(`목록 ${user}`);
+                    if (user.userNickname === this.state.myUserName) {
+                      return (
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            width: '90%',
+                            margin: '2%',
+                            alignItems: 'center',
+                          }}
+                        >
+                          <span style={{ textOverflow: 'ellipsis' }}>{user.userNickname}</span>
+                        </div>
+                      );
+                    } else {
                       return (
                         <div
                           style={{
@@ -1026,7 +1017,11 @@ class RoomDetail extends Component {
               </div>
             )}
             <div className={styles.outIcon}>
-              <div onClick={this.leaveSession}>
+              <div onClick={this.settingBarOpen} className={styles.settingBarBtn} style={{ cursor: 'pointer' }}>
+                <div style={{ fontSize: 'small', color: '#090936', fontWeight: '900' }}>설정하기</div>
+                <SettingsTwoToneIcon fontSize="large" style={{ marginTop: '10%', paddingTop: '5%' }} />
+              </div>
+              <div onClick={this.leaveSession} style={{ cursor: 'pointer' }}>
                 <div style={{ fontSize: 'small', color: '#090936', fontWeight: '900', margin: '10% 0' }}>방 나가기</div>
                 <img src={'img/방나가기아이콘.png'} style={{ width: '50px', height: '50px' }} />
               </div>

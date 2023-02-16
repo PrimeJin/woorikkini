@@ -150,7 +150,7 @@ function Form() {
   // 생년월일 입력
   const onBirth = (event) => {
     const inputBirth = event.currentTarget.value;
-    setBirth(inputBirth.split('-').join(''));
+    setBirth(inputBirth);
 
     // 현재 날짜 구하기
     // let today = new Date(new Date().toString().split('GMT')[0] + ' UTC').toISOString().slice(0, 10);

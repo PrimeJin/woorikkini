@@ -82,6 +82,9 @@ const LoginPage = () => {
 
           navigate('/user/login');
         }
+        if (response.status == 204) {
+          alert('활동이 정지된 회원입니다.');
+        }
       })
       .catch((err) => {
         console.log(err);
