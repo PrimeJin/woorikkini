@@ -40,6 +40,9 @@ function Notice() {
   function pageChange(e, page) {
     setPage(page);
   }
+  const GoManual = () => {
+    navigate('/usermanual');
+  };
 
   return (
     <div>
@@ -67,6 +70,20 @@ function Notice() {
             ))}
           </table>
           <Pagination className={styles.page} count={count} page={page} onChange={pageChange} />
+        </div>
+      </div>
+      <div style={{ margin: '1%', display: 'inline', position: 'fixed', bottom: 0, left: 0, cursor: 'pointer' }}>
+        <img onClick={GoManual} src={'img/매뉴얼_아이콘.png'} style={{ width: 75, height: 75 }}></img>
+        <div
+          onClick={GoManual}
+          style={{
+            fontWeight: 900,
+            textAlign: 'center',
+            width: 120,
+            color: '#endregion',
+          }}
+        >
+          사용자 가이드
         </div>
       </div>
     </div>
