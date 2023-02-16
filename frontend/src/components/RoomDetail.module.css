@@ -270,7 +270,7 @@
 .chatSendButton {
   width: 70px;
   height: 30px;
-
+  cursor: pointer;
   background: rgba(9, 9, 54, 0.85);
   border-radius: 15px;
   color: #e0e0e0;
