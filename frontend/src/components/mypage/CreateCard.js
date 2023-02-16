@@ -17,6 +17,10 @@ function CreateCard(props) {
   };
   const closeModal = () => {
     setModalOpen(false);
+    setFileData('');
+    setTitleData('');
+    setContentData('');
+    setPreviewData([]);
   };
 
   // 카드 내용 변수 설정
@@ -33,7 +37,6 @@ function CreateCard(props) {
     const file = event.target.files;
     setFileData(file);
     // 이미지 미리보기
-    console.log('미리보기', imgRef.current.files);
     const imgList = imgRef.current.files;
 
     let fileURLs = [];
@@ -105,7 +108,6 @@ function CreateCard(props) {
     axios
       .post('https://i8a804.p.ssafy.io/api/memory', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
       .then(() => {
-        console.log('성공!');
         setModalOpen(false);
         alert('새로운 추억이 등록되었습니다.');
         // formData 확인

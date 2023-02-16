@@ -21,6 +21,7 @@
   background: #d6ebfc;
   border-radius: 30px;
   padding: 5%;
+  white-space: nowrap;
 }
 
 .yourMsg {
@@ -46,4 +47,5 @@
   background: #d6ebfc;
   border-radius: 30px;
   padding: 5%;
+  white-space: nowrap;
 }

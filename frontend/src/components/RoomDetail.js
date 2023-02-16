@@ -20,6 +20,8 @@ import MicNoneTwoToneIcon from '@mui/icons-material/MicNoneTwoTone';
 import VolumeOffTwoToneIcon from '@mui/icons-material/VolumeOffTwoTone';
 import VideocamOffTwoToneIcon from '@mui/icons-material/VideocamOffTwoTone';
 import MicOffTwoToneIcon from '@mui/icons-material/MicOffTwoTone';
+import SettingsTwoToneIcon from '@mui/icons-material/SettingsTwoTone';
+
 
 import Timer from '../room/components/Timer';
 
@@ -76,7 +78,7 @@ class RoomDetail extends Component {
       message: '', //메시지 단일입력
       messages: [], //메시지 로그
       messagesEnd: null,
-      users: [], //전체 참여자
+      users: [{ userId: userId, userNickname: userName }], //전체 참여자
       reportModalOpen: false,
       voteModalOpen: false,
       banModalOpen: false,
@@ -97,6 +99,8 @@ class RoomDetail extends Component {
       myVideo: true,
       myAudio: true,
       othersAudio: true,
+      // 설정바
+      barOpen: true,
     };
 
     //method
@@ -117,6 +121,7 @@ class RoomDetail extends Component {
     this.clickVideo = this.clickVideo.bind(this);
     this.clickMic = this.clickMic.bind(this);
     this.clickMsg = this.clickMsg.bind(this);
+    this.settingBarOpen = this.settingBarOpen.bind(this);
 
     // 화상 화면 구성하기 위해 참여자 비디오 목록 재구성하는 함수
     this.allUsersVideo = this.allUsersVideo.bind(this);
@@ -302,6 +307,7 @@ class RoomDetail extends Component {
               total: result.total,
               agree: result.agree,
               disagree: result.disagree,
+              start: result.start,
             };
 
             this.setState({
@@ -341,7 +347,7 @@ class RoomDetail extends Component {
                 disagree: this.state.disagree,
               };
               //모두 투표했을 경우 투표 종료
-              if (data.total >= this.state.subscribers.length) {
+              if (data.total >= this.state.subscribers.length - 1) {
                 this.state.session.signal({
                   data: JSON.stringify(data),
                   to: [],
@@ -367,8 +373,12 @@ class RoomDetail extends Component {
           });
 
           this.state.session.on('signal:getout', (event) => {
-            alert('추방되었습니다!');
-            this.leaveSession();
+            const result = JSON.parse(event.data);
+            const userName = localStorage.getItem('userNickname');
+            if (result.voteUserNickname == userName) {
+              alert('추방되었습니다!');
+              this.leaveSession();
+            } else alert(`${result.voteUserNickname}님이 추방되었습니다`);
           });
         });
       });
@@ -450,20 +460,21 @@ class RoomDetail extends Component {
     });
   }
 
+  settingBarOpen() {
+    this.setState({
+      barOpen: !this.state.barOpen,
+    });
+  }
+
   // 방 참여자들의 영상 정보 (subscribers) 리스트를 변경하는 함수
   allUsersVideo() {
     if (this.state.subscribers.length >= 5) {
-      this.state.subscribers.splice(3, 0, 'none');
-      this.state.users.splice(3, 0, 'none');
+      this.state.users =
+        this.state.users.splice(0, 4) + 'none' + this.state.users.splice(4, this.state.users.length + 1);
+      this.state.subscribers =
+        this.state.subscribers.splice(0, 4) + 'none' + this.state.subscribers.splice(4, this.state.users.length + 1);
+      console.log('>>>', this.state.users);
     }
-    Array.from(this.state.subscribers).forEach((v) => {
-      console.log('@@', v);
-      console.log('@@@@', this.state.subscribers.indexOf(v));
-    });
-    Array.from(this.state.users).forEach((v) => {
-      console.log('##', v);
-      console.log('####', this.state.users.indexOf(v));
-    });
   }
 
   //메소드
@@ -602,6 +613,7 @@ class RoomDetail extends Component {
   startVote(voteWho) {
     const userId = voteWho.userId;
     const userNickname = voteWho.userNickname;
+    const myName = localStorage.getItem('userNickname');
     this.setState({
       isVoteStart: false,
       voteUserId: userId,
@@ -617,6 +629,7 @@ class RoomDetail extends Component {
       total: 0,
       agree: 0,
       disagree: 0,
+      start: myName,
     };
     setTimeout(() => {
       console.log('투표 시작: ');
@@ -714,6 +727,7 @@ class RoomDetail extends Component {
     console.log('전체 : ' + result.total);
     console.log('누구 : ' + result.voteUserNickname);
 
+    const myName = localStorage.getItem('userNickname');
     this.setState({
       isVoteStart: false,
       voteUserId: '',
@@ -726,30 +740,25 @@ class RoomDetail extends Component {
     const roomId = localStorage.getItem('roomId');
     const accessToken = localStorage.getItem('accessToken');
     if (result.agree / result.total > 0.5) {
-      // 백엔드 및 openvidu 서버에 추방 요청을 보냄
-      axios({
-        url: `https://i8a804.p.ssafy.io/api/room/exit/${roomId}/${result.voteUserId}`,
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-          authorization: `Bearer ${accessToken}`,
-        },
-      })
-        .then((res) => {
-          if (res.status == 200 || 202) {
-            alert(`${result.voteUserNickname}님이 추방되었습니다`);
-            this.state.connections.map((connection) => {
-              const connectionUser = JSON.parse(connection.data);
-              if (connectionUser.userId == result.voteUserId && connectionUser.userNickname == result.voteUserNickname)
-                this.state.session.signal({
-                  data: result.voteUserNickname,
-                  to: [connection],
-                  type: 'getout',
-                });
-            });
-          }
+      if (this.state.eventData.start === myName) {
+        // 백엔드 및 openvidu 서버에 추방 요청을 보냄
+        axios({
+          url: `https://i8a804.p.ssafy.io/api/room/exit/${roomId}/${result.voteUserId}`,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+            authorization: `Bearer ${accessToken}`,
+          },
         })
-        .catch((err) => console.log(err));
+          .then((res) => {
+            this.state.session.signal({
+              data: JSON.stringify({ voteUserNickname: result.voteUserNickname }),
+              to: [],
+              type: 'getout',
+            });
+          })
+          .catch((err) => console.log(err));
+      }
     } else {
       alert(`추방 투표가 부결되었습니다`);
     }
@@ -864,7 +873,7 @@ class RoomDetail extends Component {
         <div className={styles.inmain}>
           <div className={styles.inbody}>
             <div id="video-container" className={`${styles.videobox} ${'col-md-12 col-xs-12'}`}>
-              {this.allUsersVideo()}
+              {/* {this.allUsersVideo()} */}
 
               {this.state.isVoteStart && this.state.eventData.voteUserId !== this.state.myUserId
                 ? this.showVoteModal(this.state.eventData)
@@ -932,7 +941,13 @@ class RoomDetail extends Component {
             </div>
             <div className={styles.roomTable}>
               <div className={styles.tableComment}>함께 맛있는 식사하세요!</div>
+              <div onClick={this.settingBarOpen} className={styles.settingBarBtn}>
+                설정하기
+                <br />
+                <SettingsTwoToneIcon fontSize="large" />
+              </div>
             </div>
+            {this.state.barOpen ? (
             <div className={styles.video_setting_bar} onChange={this.handleChange} aria-label="icon label tabs example">
               <div className={styles.icons}>
                 <div className={styles.icon} onClick={this.clickVolume} name="audio">
@@ -977,6 +992,10 @@ class RoomDetail extends Component {
                 )}
               </div>
             </div>
+            ) : (
+              <div style={{ display: 'none' }}></div>
+            )}
+          </div>
           </div>
           <div className={styles.sidebar}>
             {this.state.msgOpen ? (
