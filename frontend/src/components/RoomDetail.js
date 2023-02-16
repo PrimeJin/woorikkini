@@ -917,39 +917,30 @@ class RoomDetail extends Component {
               ) : // </div>
               null}
               {this.state.subscribers.map((sub, i) => {
-                if (sub === 'none') {
-                  // console.log(`카메라 ${sub}`);
-                  return <div style={{ width: '100%', height: '100%' }}></div>;
-                } else if (sub !== 3) {
-                  // console.log(`카메라 ${sub}`);
-                  return (
-                    // <div
-                    //   key={i}
-                    //   className=""
-                    //   style={{
-                    //     cursor: 'pointer',
-                    //     width: '80%',
-                    //     height: 'auto',
-                    //     position: 'relative',
-                    //   }}
-                    //   title={this.state.users[i].userNickname}
-                    // onClick={() => this.handleMainVideoStream(sub)}
-                    // >
+                return (
+                  // <div
+                  //   key={i}
+                  //   className=""
+                  //   style={{
+                  //     cursor: 'pointer',
+                  //     width: '80%',
+                  //     height: 'auto',
+                  //     position: 'relative',
+                  //   }}
+                  //   title={this.state.users[i].userNickname}
+                  // onClick={() => this.handleMainVideoStream(sub)}
+                  // >
 
-                    <UserVideoComponent
-                      streamManager={sub}
-                      mainVideoStream={this.handleMainVideoStream}
-                      title={this.state.subscribers[i].stream.connection.data.userNickname}
-                      style={{
-                        cursor: 'pointer',
-                        // width: '80%',
-                        // height: 'auto',
-                        // position: 'relative',
-                      }}
-                    />
-                    /* </div> */
-                  );
-                }
+                  <UserVideoComponent
+                    streamManager={sub}
+                    mainVideoStream={this.handleMainVideoStream}
+                    title={this.state.users[i].userNickname}
+                    style={{
+                      cursor: 'pointer',
+                    }}
+                  />
+                  /* </div> */
+                );
               })}
             </div>
             <div className={styles.roomTable}>
