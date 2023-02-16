@@ -159,7 +159,14 @@ class RoomDetail extends Component {
     this.leaveSession();
   }
 
-  //submit버튼을 클릭하면 방(세션)에 참여
+  sendRecentUser() {
+    const roomId = this.state.roomId;
+    const recentUser = this.state.users.length;
+    axios({
+      url: `https://i8a804.p.ssafy.io/api/room/${roomId}?roomRecentUser=${recentUser}`,
+      methods: 'PATCH',
+    });
+  }
 
   //session에 자신의 stream을 publish(게시).
   //session을 subscribe(구독)함으로써 session에 publish된 stream들을 불러오는 것이 가능함
@@ -180,6 +187,7 @@ class RoomDetail extends Component {
         url: `https://i8a804.p.ssafy.io/api/room/${roomId}`,
         methods: 'GET',
       }).then((res) => {
+        this.sendRecentUser();
         //subscribe
         this.state.session.on('streamCreated', (event) => {
           const newSubscriber = this.state.session.subscribe(
@@ -681,7 +689,7 @@ class RoomDetail extends Component {
     });
 
     const roomId = localStorage.getItem('roomId');
-    const accessToken = this.props.accessToken;
+    const accessToken = localStorage.getItem('accessToken');
     if (result.agree / result.total > 0.5) {
       // 백엔드 및 openvidu 서버에 추방 요청을 보냄
       axios({
@@ -721,6 +729,7 @@ class RoomDetail extends Component {
     const accessToken = this.props.accessToken;
     const roomId = localStorage.getItem('roomId');
 
+    this.sendRecentUser();
     axios({
       url: `https://i8a804.p.ssafy.io/api/room/exit/${roomId}`,
       method: 'DELETE',

@@ -26,6 +26,7 @@ const Naver = () => {
   dispatch(SET_USER({ id: id, nickname: nickname }));
   localStorage.setItem('userId', id);
   localStorage.setItem('userNickname', nickname);
+  localStorage.setItem('accessToken', accessToken);
   setRefreshToken(refreshToken);
   //store에 Access Token 저장하도록 Action Dispatch
   //참고: /store/Auth.js

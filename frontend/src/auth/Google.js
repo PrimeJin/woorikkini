@@ -33,6 +33,7 @@ const Google = () => {
 
   localStorage.setItem('userId', id);
   localStorage.setItem('userNickname', nickname);
+  localStorage.setItem('accessToken', accessToken);
 
   setRefreshToken(refreshToken);
   //store에 Access Token 저장하도록 Action Dispatch
