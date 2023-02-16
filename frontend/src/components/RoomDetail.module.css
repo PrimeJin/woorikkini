@@ -49,7 +49,8 @@
 
 .videobox {
   display: inline-grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
   /* grid-auto-rows: minmax(10%, auto); */
   /* grid-auto-flow: dense; */
   /* place-content: space-between center; */
@@ -62,6 +63,33 @@
     0px 6.6501px 5.32008px rgba(0, 0, 0, 0.0282725), 0px 2.76726px 2.21381px rgba(0, 0, 0, 0.0196802);
   border-radius: 50px;
   position: relative;
+  gap: 15px 18px;
+  padding: 3%;
+
+  align-content: space-evenly;
+  grid-template-areas:
+    '   A      B      C   '
+    '   D    table    E   '
+    '   F      G      H   ';
+}
+
+.roomTable {
+  width: 30%;
+  height: 30%;
+  background-color: #d5b385;
+  border: none;
+  border-radius: 50px;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  flex-flow: column;
+}
+
+.tableComment {
+  font-family: 'NanumSquareRound';
+  font-weight: 700;
+  font-size: X-large;
 }
 
 .video_setting_bar {
