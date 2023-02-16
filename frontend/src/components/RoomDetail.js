@@ -141,14 +141,14 @@ class RoomDetail extends Component {
     this.voteComplete = this.voteComplete.bind(this);
     this.agreeVote = this.agreeVote.bind(this);
     this.disagreeVote = this.disagreeVote.bind(this);
+
+    this.sendRecentUser = this.sendRecentUser.bind(this);
   }
 
   //라이프 사이클
 
   //컴포넌트 마운트 직후
   componentDidMount() {
-    // const openViduLayoutOptions = {};
-
     window.addEventListener('beforeunload', this.onbeforeunload);
     this.scrollToBottom();
     if (this.state.session == undefined) this.joinSession();
@@ -166,7 +166,14 @@ class RoomDetail extends Component {
     this.leaveSession();
   }
 
-  //submit버튼을 클릭하면 방(세션)에 참여
+  sendRecentUser() {
+    const roomId = this.state.roomId;
+    const recentUser = this.state.subscribers.length;
+    axios({
+      url: `https://i8a804.p.ssafy.io/api/room/${roomId}?roomRecentUser=${recentUser}`,
+      methods: 'PATCH',
+    });
+  }
 
   //session에 자신의 stream을 publish(게시).
   //session을 subscribe(구독)함으로써 session에 publish된 stream들을 불러오는 것이 가능함
@@ -178,7 +185,6 @@ class RoomDetail extends Component {
 
     this.setState({ session: this.OV.initSession(), connections: [], subscribers: [] }, () => {
       const roomId = this.state.roomId;
-      // const roomTitle = this.state.roomTitle;
       const userId = this.state.myUserId;
       const userNickname = this.state.myUserName;
       // OpenVidu 환경에서 토큰 발급받기
@@ -189,22 +195,10 @@ class RoomDetail extends Component {
       }).then((res) => {
         //subscribe
         this.state.session.on('streamCreated', (event) => {
-          const newSubscriber = this.state.session.subscribe(
-            event.stream,
-            undefined,
-            // console.log(JSON.parse(event.stream.connection.data)),
-            // JSON.parse(event.stream.connection.data).clientData,
-          );
+          const newSubscriber = this.state.session.subscribe(event.stream, undefined);
 
           const newSubscribers = this.state.subscribers;
           newSubscribers.push(newSubscriber);
-
-          console.log('subscriber');
-          console.log(newSubscribers);
-          // const newConnection = event.stream.connection;
-          // const newConnections = this.state.connections;
-          // newConnections.push(newConnection);
-          // console.log(newConnections);
 
           const newUser = JSON.parse(event.stream.connection.data);
           const newUsers = this.state.users;
@@ -219,6 +213,7 @@ class RoomDetail extends Component {
             users: users,
             subscribers: subscribers,
           });
+          this.sendRecentUser();
         });
 
         //사용자가 화상회의를 떠나면 Session객체에서 소멸된 stream을 받아와
@@ -226,9 +221,12 @@ class RoomDetail extends Component {
         this.state.session.on('streamDestroyed', (event) => {
           event.preventDefault();
           this.deleteSubscriber(event.stream.streamManager);
+          this.sendRecentUser();
         });
 
-        this.state.session.on('exception', () => {});
+        this.state.session.on('exception', () => {
+          this.sendRecentUser();
+        });
 
         this.getToken(res.data.result.roomTitle).then((token) => {
           this.state.session
@@ -360,8 +358,10 @@ class RoomDetail extends Component {
           });
 
           this.state.session.on('signal:getout', (event) => {
-            alert('추방되었습니다!');
-            this.leaveSession();
+            if (event.data.result.voteUserNickname === this.state.myUserName) {
+              alert('추방되었습니다!');
+              this.leaveSession();
+            }
           });
         });
       });
@@ -515,7 +515,6 @@ class RoomDetail extends Component {
 
   deleteSubscriber(streamManager) {
     const remoteUsers = this.state.subscribers;
-    // const subscribers = this.state.subscribers;
     const users = this.state.users;
     const userStream = remoteUsers.filter((user) => user === streamManager)[0];
     const index = remoteUsers.indexOf(userStream, 0);
@@ -686,14 +685,10 @@ class RoomDetail extends Component {
         .then((res) => {
           if (res.status == 200 || 202) {
             alert(`${result.voteUserNickname}님이 추방되었습니다`);
-            this.state.connections.map((connection) => {
-              const connectionUser = JSON.parse(connection.data);
-              if (connectionUser.userId == result.voteUserId && connectionUser.userNickname == result.voteUserNickname)
-                this.state.session.signal({
-                  data: result.voteUserNickname,
-                  to: [connection],
-                  type: 'getout',
-                });
+            this.state.session.signal({
+              data: result.voteUserNickname,
+              to: [],
+              type: 'getout',
             });
           }
         })
@@ -701,9 +696,6 @@ class RoomDetail extends Component {
     } else {
       alert(`추방 투표가 부결되었습니다`);
     }
-
-    //백엔드에 결과 전송 후 퇴장처리
-    // window.location.
   }
 
   //방 퇴장(혼자만, 세션은 그대로 있어야함)
@@ -814,7 +806,7 @@ class RoomDetail extends Component {
               {this.state.isVoteStart && this.state.eventData.voteUserId !== this.state.myUserId
                 ? this.showVoteModal(this.state.eventData)
                 : null}
-              {/* {this.state.publisher !== undefined ? (
+              {this.state.publisher !== undefined ? (
                 <div
                   className=""
                   style={{
@@ -828,7 +820,7 @@ class RoomDetail extends Component {
                 >
                   <UserVideoComponent streamManager={this.state.publisher} />
                 </div>
-              ) : null} */}
+              ) : null}
               {this.state.subscribers.map((sub, i) => {
                 return (
                   // <div
