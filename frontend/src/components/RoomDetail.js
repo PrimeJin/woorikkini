@@ -296,6 +296,7 @@ class RoomDetail extends Component {
               total: result.total,
               agree: result.agree,
               disagree: result.disagree,
+              start: result.start,
             };
 
             this.setState({
@@ -361,7 +362,9 @@ class RoomDetail extends Component {
           });
 
           this.state.session.on('signal:getout', (event) => {
-            if (event.data.result.voteUserNickname === this.state.myUserName) {
+            const result = JSON.parse(event.data);
+            const userName = localStorage.getItem('userNickname');
+            if (result.voteUserNickname == userName) {
               alert('추방되었습니다!');
               this.leaveSession();
             } else alert(`${result.voteUserNickname}님이 추방되었습니다`);
@@ -569,6 +572,7 @@ class RoomDetail extends Component {
   startVote(voteWho) {
     const userId = voteWho.userId;
     const userNickname = voteWho.userNickname;
+    const myName = localStorage.getItem('userNickname');
     this.setState({
       isVoteStart: false,
       voteUserId: userId,
@@ -584,6 +588,7 @@ class RoomDetail extends Component {
       total: 0,
       agree: 0,
       disagree: 0,
+      start: myName,
     };
     setTimeout(() => {
       console.log('투표 시작: ');
@@ -681,6 +686,7 @@ class RoomDetail extends Component {
     console.log('전체 : ' + result.total);
     console.log('누구 : ' + result.voteUserNickname);
 
+    const myName = localStorage.getItem('userNickname');
     this.setState({
       isVoteStart: false,
       voteUserId: '',
@@ -693,25 +699,25 @@ class RoomDetail extends Component {
     const roomId = localStorage.getItem('roomId');
     const accessToken = localStorage.getItem('accessToken');
     if (result.agree / result.total > 0.5) {
-      // 백엔드 및 openvidu 서버에 추방 요청을 보냄
-      axios({
-        url: `https://i8a804.p.ssafy.io/api/room/exit/${roomId}/${result.voteUserId}`,
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-          authorization: `Bearer ${accessToken}`,
-        },
-      })
-        .then((res) => {
-          if (res.status == 200 || 202) {
+      if (this.state.eventData.start === myName) {
+        // 백엔드 및 openvidu 서버에 추방 요청을 보냄
+        axios({
+          url: `https://i8a804.p.ssafy.io/api/room/exit/${roomId}/${result.voteUserId}`,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+            authorization: `Bearer ${accessToken}`,
+          },
+        })
+          .then((res) => {
             this.state.session.signal({
-              data: result.voteUserNickname,
+              data: JSON.stringify({ voteUserNickname: result.voteUserNickname }),
               to: [],
               type: 'getout',
             });
-          }
-        })
-        .catch((err) => console.log(err));
+          })
+          .catch((err) => console.log(err));
+      }
     } else {
       alert(`추방 투표가 부결되었습니다`);
     }
