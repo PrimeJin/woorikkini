@@ -30,7 +30,7 @@ const Google = () => {
   console.log('refresh_Token: ' + refreshToken);
 
   dispatch(SET_USER({ id: id, nickname: nickname }));
-
+  localStorage.clear();
   localStorage.setItem('userId', id);
   localStorage.setItem('userNickname', nickname);
   localStorage.setItem('accessToken', accessToken);
@@ -41,7 +41,7 @@ const Google = () => {
   dispatch(SET_TOKEN(accessToken));
 
   useEffect(() => {
-    navigate('/');
+    navigate('/room');
   });
   //인가코드를 받아오면 백엔드로 넘기기
   // React.useEffect(() => {
