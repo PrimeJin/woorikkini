@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import styles from './Pw.module.css';
 import axios from 'axios';
-import CenterLogo from '../styles/CenterLogo';
+import { useNavigate } from 'react-router-dom';
+
 const PwFind = () => {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
@@ -23,7 +24,6 @@ const PwFind = () => {
       setErrMsg('');
     }
   };
-  // };
 
   const getInfo = () => {
     axios({
@@ -31,24 +31,25 @@ const PwFind = () => {
       method: 'GET',
     })
       .then((res) => {
-        console.log(res);
         alert('해당 이메일로 비밀번호 변경 페이지의 링크를 보냈습니다.');
       })
       .catch((err) => {
-        alert('해당 하는 회원이 없습니다. 확인 후 다시 입력해주세요');
-        if (err.response.data.message !== 'fail') {
+        if (err.response && err.response.data.message !== 'fail') {
           // message가 fail로 온 게 아니라 다른 문제가 있을 때
           console.log(err, 'getInfo에러');
         }
+        alert('해당 하는 회원이 없습니다. 확인 후 다시 입력해주세요');
       });
   };
 
+  const navigate = useNavigate;
+  function goToMain() {
+    navigate('/');
+  }
+
   return (
     <div className={styles.change}>
-      {/* <img className="logo" src="logo.png" alt="이미지없음" /> */}
-      <div className={styles.logo}>
-        <CenterLogo />
-      </div>
+      <img className={styles.logo} src={`${process.env.PUBLIC_URL}/logo.png`} alt="이미지없음" onClick={goToMain} />
       <div className={styles.all}>
         <form className={styles.pwForm}>
           <p className={styles.pwChange}>비밀번호 찾기</p>
@@ -65,6 +66,7 @@ const PwFind = () => {
             value={name}
             onChange={inputName}
             style={{ marginTop: '10%' }}
+            onKeyDown={(e) => e.key === 'Enter' && getInfo()}
           />
           <br />
           <input type="button" value="확인" className={styles.check} onClick={getInfo} style={{ cursor: 'pointer' }} />

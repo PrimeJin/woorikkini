@@ -23,8 +23,7 @@ const RoomList = (props) => {
   const userId = localStorage.getItem('userId');
 
   function modalChange() {
-    // recent === limit ? alert('이미 가득찬 방입니다') : modal ? setModal(false) : setModal(true);
-    setModal(true);
+    recent === limit ? alert('이미 가득찬 방입니다') : modal ? setModal(false) : setModal(true);
   }
 
   //방 입장 요청
