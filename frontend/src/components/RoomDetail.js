@@ -168,7 +168,7 @@ class RoomDetail extends Component {
 
   sendRecentUser() {
     const roomId = this.state.roomId;
-    const recentUser = this.state.subscribers.length;
+    const recentUser = this.state.users.length;
     axios({
       url: `https://i8a804.p.ssafy.io/api/room/${roomId}?roomRecentUser=${recentUser}`,
       methods: 'PATCH',
@@ -193,6 +193,7 @@ class RoomDetail extends Component {
         url: `https://i8a804.p.ssafy.io/api/room/${roomId}`,
         methods: 'GET',
       }).then((res) => {
+        this.sendRecentUser();
         //subscribe
         this.state.session.on('streamCreated', (event) => {
           const newSubscriber = this.state.session.subscribe(event.stream, undefined);
@@ -213,7 +214,6 @@ class RoomDetail extends Component {
             users: users,
             subscribers: subscribers,
           });
-          this.sendRecentUser();
         });
 
         //사용자가 화상회의를 떠나면 Session객체에서 소멸된 stream을 받아와
@@ -221,7 +221,6 @@ class RoomDetail extends Component {
         this.state.session.on('streamDestroyed', (event) => {
           event.preventDefault();
           this.deleteSubscriber(event.stream.streamManager);
-          this.sendRecentUser();
         });
 
         this.state.session.on('exception', () => {
@@ -671,7 +670,7 @@ class RoomDetail extends Component {
     });
 
     const roomId = localStorage.getItem('roomId');
-    const accessToken = this.props.accessToken;
+    const accessToken = localStorage.getItem('accessToken');
     if (result.agree / result.total > 0.5) {
       // 백엔드 및 openvidu 서버에 추방 요청을 보냄
       axios({
@@ -704,6 +703,7 @@ class RoomDetail extends Component {
     const accessToken = this.props.accessToken;
     const roomId = localStorage.getItem('roomId');
 
+    this.sendRecentUser();
     axios({
       url: `https://i8a804.p.ssafy.io/api/room/exit/${roomId}`,
       method: 'DELETE',
