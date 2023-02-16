@@ -27,38 +27,32 @@ function ModifyPage() {
   const nickname = useSelector((state) => state.user.nickname);
   const userId = useSelector((state) => state.user.id);
 
-  //가능하다면 처음 화면 렌더링할때 기존 유저의 닉네임을 띄워놓는것도
-  useEffect(() => {
-    setUserNickname(nickname);
-  });
-
   //닉네임 중복확인
   const checkNickname = (e) => {
     e.preventDefault();
-    axios({
-      method: 'GET',
-      url: `https://i8a804.p.ssafy.io/api/user/${userNickname}`,
-      headers: {
-        'Content-type': 'application/json',
-      },
-      data: {
-        userNickname: userNickname,
-      },
-    })
-      .then((response) => {
-        if (response.data.message === 'success') {
-          alert('사용 가능한 닉네임입니다.');
-          setIsNickname(true);
-        } else {
-          alert('사용 불가능한 닉네임입니다.');
-          setIsNickname(false);
-        }
-      })
-      .catch((err) => {
-        alert('사용 불가능한 닉네임입니다.');
-        setIsNickname(false);
-        console.log('닉네임 중복 확인 에러', err);
-      });
+    userNickname
+      ? axios({
+          method: 'GET',
+          url: `https://i8a804.p.ssafy.io/api/user/${userNickname}`,
+          headers: {
+            'Content-type': 'application/json',
+          },
+          data: {
+            userNickname: userNickname,
+          },
+        })
+          .then((response) => {
+            if (response.data.message === 'success') {
+              alert('사용 가능한 닉네임입니다.');
+              setIsNickname(true);
+            }
+          })
+          .catch((err) => {
+            alert('사용 불가능한 닉네임입니다.');
+            setIsNickname(false);
+            console.log('닉네임 중복 확인 에러', err);
+          })
+      : alert('변경할 닉네임을 입력해주세요');
   };
 
   //비밀번호 폼에 입력된 비밀번호 감지
@@ -111,6 +105,7 @@ function ModifyPage() {
         })
           .then((res) => {
             res.data.message === 'success' && alert('닉네임 변경이 완료되었습니다');
+            window.location.reload();
           })
           .catch((err) => {
             console.log('닉네임 변경 에러', err);
@@ -157,7 +152,7 @@ function ModifyPage() {
             type="text"
             id={styles.changeNickname}
             onChange={(e) => setUserNickname(e.target.value)}
-            placeholder="닉네임"
+            placeholder={nickname}
           ></input>
           <button className={styles.check} onClick={checkNickname}>
             중복확인
