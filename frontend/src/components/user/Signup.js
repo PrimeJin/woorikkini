@@ -278,10 +278,10 @@ function Form() {
       <p></p>
       <input
         type="date"
-        value={Birth}
+        value={Date}
         // 최대 선택 날짜는 오늘까지
         max={new Date(new Date().toString().split('GMT')[0] + ' UTC').toISOString().slice(0, 10)}
-        onChange={onBirth}
+        onChange={onDate}
         className={styles.date_input}
         data-placeholder="생년월일"
         required
