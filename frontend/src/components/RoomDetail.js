@@ -22,7 +22,6 @@ import VideocamOffTwoToneIcon from '@mui/icons-material/VideocamOffTwoTone';
 import MicOffTwoToneIcon from '@mui/icons-material/MicOffTwoTone';
 import SettingsTwoToneIcon from '@mui/icons-material/SettingsTwoTone';
 
-
 import Timer from '../room/components/Timer';
 
 const OPENVIDU_SERVER_URL = 'https://i8a804.p.ssafy.io:8443'; //도커에 올린 openvidu server
@@ -242,7 +241,9 @@ class RoomDetail extends Component {
 
         this.state.session.on('exception', () => {});
 
-        this.getToken(res.data.result.roomTitle).then((token) => {
+        console.log('roomId');
+        console.log(String(this.state.roomId));
+        this.createToken(String(this.state.roomId)).then((token) => {
           this.state.session
             .connect(token, { userId: userId, userNickname: userNickname })
             .then(async () => {
@@ -948,55 +949,59 @@ class RoomDetail extends Component {
               </div>
             </div>
             {this.state.barOpen ? (
-            <div className={styles.video_setting_bar} onChange={this.handleChange} aria-label="icon label tabs example">
-              <div className={styles.icons}>
-                <div className={styles.icon} onClick={this.clickVolume} name="audio">
-                  {this.state.othersAudio ? (
-                    <VolumeUpTwoToneIcon fontSize="large" />
-                  ) : (
-                    <VolumeOffTwoToneIcon fontSize="large" />
-                  )}
-                </div>
-                <div className={styles.icon} onClick={this.clickVideo}>
-                  {this.state.myVideo ? (
-                    <VideocamTwoToneIcon fontSize="large" />
-                  ) : (
-                    <VideocamOffTwoToneIcon fontSize="large" />
-                  )}
-                </div>
-                <div className={styles.icon} onClick={this.clickMic}>
-                  {this.state.myAudio ? (
-                    <MicNoneTwoToneIcon fontSize="large" />
-                  ) : (
-                    <MicOffTwoToneIcon fontSize="large" />
-                  )}
-                </div>
-                {this.state.msgOpen ? (
-                  <div className={styles.icon} style={{ cursor: 'default' }}>
-                    <QuestionAnswerTwoToneIcon fontSize="large" />
+              <div
+                className={styles.video_setting_bar}
+                onChange={this.handleChange}
+                aria-label="icon label tabs example"
+              >
+                <div className={styles.icons}>
+                  <div className={styles.icon} onClick={this.clickVolume} name="audio">
+                    {this.state.othersAudio ? (
+                      <VolumeUpTwoToneIcon fontSize="large" />
+                    ) : (
+                      <VolumeOffTwoToneIcon fontSize="large" />
+                    )}
                   </div>
-                ) : (
-                  <div className={styles.icon} onClick={this.clickMsg}>
-                    <QuestionAnswerTwoToneIcon fontSize="large" />
+                  <div className={styles.icon} onClick={this.clickVideo}>
+                    {this.state.myVideo ? (
+                      <VideocamTwoToneIcon fontSize="large" />
+                    ) : (
+                      <VideocamOffTwoToneIcon fontSize="large" />
+                    )}
                   </div>
-                )}
+                  <div className={styles.icon} onClick={this.clickMic}>
+                    {this.state.myAudio ? (
+                      <MicNoneTwoToneIcon fontSize="large" />
+                    ) : (
+                      <MicOffTwoToneIcon fontSize="large" />
+                    )}
+                  </div>
+                  {this.state.msgOpen ? (
+                    <div className={styles.icon} style={{ cursor: 'default' }}>
+                      <QuestionAnswerTwoToneIcon fontSize="large" />
+                    </div>
+                  ) : (
+                    <div className={styles.icon} onClick={this.clickMsg}>
+                      <QuestionAnswerTwoToneIcon fontSize="large" />
+                    </div>
+                  )}
 
-                {!this.state.msgOpen ? (
-                  <div className={styles.icon} style={{ cursor: 'default' }}>
-                    <PeopleAltTwoToneIcon fontSize="large" />
-                  </div>
-                ) : (
-                  <div className={styles.icon} onClick={this.clickMsg}>
-                    <PeopleAltTwoToneIcon fontSize="large" />
-                  </div>
-                )}
+                  {!this.state.msgOpen ? (
+                    <div className={styles.icon} style={{ cursor: 'default' }}>
+                      <PeopleAltTwoToneIcon fontSize="large" />
+                    </div>
+                  ) : (
+                    <div className={styles.icon} onClick={this.clickMsg}>
+                      <PeopleAltTwoToneIcon fontSize="large" />
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
             ) : (
               <div style={{ display: 'none' }}></div>
             )}
           </div>
-          </div>
+
           <div className={styles.sidebar}>
             {this.state.msgOpen ? (
               <div className={styles.chatdiv}>
@@ -1096,22 +1101,26 @@ class RoomDetail extends Component {
 
   //createSession 응답이 오면 createToken을 실행하게 해서
   //token이 undefined인채로 getToken을 실행하는 일을 막아요
-  async getToken() {
-    const sessionId = await this.createSession(this.state.mySessionId);
+  async getToken(id) {
+    const sessionId = await this.createSession(id);
     return await this.createToken(sessionId);
   }
 
   createSession(sessionId) {
     return new Promise((resolve, reject) => {
-      const data = JSON.stringify({ customSessionId: sessionId });
       axios
-        .post(`${OPENVIDU_SERVER_URL}/openvidu/api/sessions`, data, {
-          headers: {
-            Authorization: `Basic ${EncodeBase64(`OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`)}`,
-            'Content-Type': 'application/json',
+        .post(
+          `${OPENVIDU_SERVER_URL}/openvidu/api/sessions`,
+          { customSessionId: sessionId },
+          {
+            headers: {
+              Authorization: `Basic ${EncodeBase64(`OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`)}`,
+              'Content-Type': 'application/json',
+            },
           },
-        })
+        )
         .then((response) => {
+          console.log('createSession');
           resolve(response.data.id);
         })
         .catch((response) => {
@@ -1146,6 +1155,7 @@ class RoomDetail extends Component {
           },
         })
         .then((response) => {
+          console.log(response.data);
           resolve(response.data.token);
           this.setState({
             token: response.data.token,
