@@ -57,8 +57,6 @@ const RoomCreate = (props) => {
           },
         })
         .then((response) => {
-          console.log('createSession');
-          console.log(response);
           resolve(response.data.id);
         })
         .catch((response) => {
@@ -94,9 +92,6 @@ const RoomCreate = (props) => {
         })
         .then((response) => {
           resolve(response.data);
-          // this.setState({
-          //   token: response.data.token,
-          // });
         })
         .catch((error) => reject(error));
     });
@@ -115,9 +110,6 @@ const RoomCreate = (props) => {
   function goToRoom() {
     let index = [];
     keywords.map((keyword, idx) => index.push(Number(keyword.id)));
-
-    const OV = new OpenVidu();
-    const mySession = OV.initSession();
 
     getToken(title).then((data) => {
       const roomToken = data.token;
