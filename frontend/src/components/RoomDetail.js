@@ -22,7 +22,6 @@ import VideocamOffTwoToneIcon from '@mui/icons-material/VideocamOffTwoTone';
 import MicOffTwoToneIcon from '@mui/icons-material/MicOffTwoTone';
 import SettingsTwoToneIcon from '@mui/icons-material/SettingsTwoTone';
 
-
 import Timer from '../room/components/Timer';
 
 const OPENVIDU_SERVER_URL = 'https://i8a804.p.ssafy.io:8443'; //도커에 올린 openvidu server
@@ -948,54 +947,57 @@ class RoomDetail extends Component {
               </div>
             </div>
             {this.state.barOpen ? (
-            <div className={styles.video_setting_bar} onChange={this.handleChange} aria-label="icon label tabs example">
-              <div className={styles.icons}>
-                <div className={styles.icon} onClick={this.clickVolume} name="audio">
-                  {this.state.othersAudio ? (
-                    <VolumeUpTwoToneIcon fontSize="large" />
-                  ) : (
-                    <VolumeOffTwoToneIcon fontSize="large" />
-                  )}
-                </div>
-                <div className={styles.icon} onClick={this.clickVideo}>
-                  {this.state.myVideo ? (
-                    <VideocamTwoToneIcon fontSize="large" />
-                  ) : (
-                    <VideocamOffTwoToneIcon fontSize="large" />
-                  )}
-                </div>
-                <div className={styles.icon} onClick={this.clickMic}>
-                  {this.state.myAudio ? (
-                    <MicNoneTwoToneIcon fontSize="large" />
-                  ) : (
-                    <MicOffTwoToneIcon fontSize="large" />
-                  )}
-                </div>
-                {this.state.msgOpen ? (
-                  <div className={styles.icon} style={{ cursor: 'default' }}>
-                    <QuestionAnswerTwoToneIcon fontSize="large" />
+              <div
+                className={styles.video_setting_bar}
+                onChange={this.handleChange}
+                aria-label="icon label tabs example"
+              >
+                <div className={styles.icons}>
+                  <div className={styles.icon} onClick={this.clickVolume} name="audio">
+                    {this.state.othersAudio ? (
+                      <VolumeUpTwoToneIcon fontSize="large" />
+                    ) : (
+                      <VolumeOffTwoToneIcon fontSize="large" />
+                    )}
                   </div>
-                ) : (
-                  <div className={styles.icon} onClick={this.clickMsg}>
-                    <QuestionAnswerTwoToneIcon fontSize="large" />
+                  <div className={styles.icon} onClick={this.clickVideo}>
+                    {this.state.myVideo ? (
+                      <VideocamTwoToneIcon fontSize="large" />
+                    ) : (
+                      <VideocamOffTwoToneIcon fontSize="large" />
+                    )}
                   </div>
-                )}
+                  <div className={styles.icon} onClick={this.clickMic}>
+                    {this.state.myAudio ? (
+                      <MicNoneTwoToneIcon fontSize="large" />
+                    ) : (
+                      <MicOffTwoToneIcon fontSize="large" />
+                    )}
+                  </div>
+                  {this.state.msgOpen ? (
+                    <div className={styles.icon} style={{ cursor: 'default' }}>
+                      <QuestionAnswerTwoToneIcon fontSize="large" />
+                    </div>
+                  ) : (
+                    <div className={styles.icon} onClick={this.clickMsg}>
+                      <QuestionAnswerTwoToneIcon fontSize="large" />
+                    </div>
+                  )}
 
-                {!this.state.msgOpen ? (
-                  <div className={styles.icon} style={{ cursor: 'default' }}>
-                    <PeopleAltTwoToneIcon fontSize="large" />
-                  </div>
-                ) : (
-                  <div className={styles.icon} onClick={this.clickMsg}>
-                    <PeopleAltTwoToneIcon fontSize="large" />
-                  </div>
-                )}
+                  {!this.state.msgOpen ? (
+                    <div className={styles.icon} style={{ cursor: 'default' }}>
+                      <PeopleAltTwoToneIcon fontSize="large" />
+                    </div>
+                  ) : (
+                    <div className={styles.icon} onClick={this.clickMsg}>
+                      <PeopleAltTwoToneIcon fontSize="large" />
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
             ) : (
               <div style={{ display: 'none' }}></div>
             )}
-          </div>
           </div>
           <div className={styles.sidebar}>
             {this.state.msgOpen ? (
