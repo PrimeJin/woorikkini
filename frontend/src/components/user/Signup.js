@@ -194,7 +194,8 @@ function Form() {
         .then((res) => {
           console.log(res);
           alert('가입되었습니다.');
-          navigate('/');
+          navigate('/usermanual');
+          // navigate('/');
         })
         .catch((err) => {
           console.log(err);

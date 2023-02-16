@@ -32,6 +32,7 @@ import './App.css';
 import { useEffect } from 'react';
 import PrivateRoute from './routes/PrivateRoute';
 import PublicRoute from './routes/PublicRoute';
+import UserManual from './components/user/UserManual';
 
 function App() {
   const dispatch = useDispatch();
@@ -184,6 +185,7 @@ function App() {
           <Route path="/oauth/callback/kakao" element={<Kakao />} />
           <Route path="/oauth/callback/naver" element={<Naver />} />
           <Route path="/oauth/callback/google" element={<Google />} />
+          <Route path="/usermanual" element={<UserManual />} />
         </Routes>
       </BrowserRouter>
     </div>
