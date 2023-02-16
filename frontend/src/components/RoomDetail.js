@@ -99,7 +99,7 @@ class RoomDetail extends Component {
       myAudio: true,
       othersAudio: true,
       // 설정바
-      barOpen: false,
+      barOpen: true,
     };
 
     //method
@@ -121,6 +121,9 @@ class RoomDetail extends Component {
     this.clickMic = this.clickMic.bind(this);
     this.clickMsg = this.clickMsg.bind(this);
     this.settingBarOpen = this.settingBarOpen.bind(this);
+
+    // 화상 화면 구성하기 위해 참여자 비디오 목록 재구성하는 함수
+    this.allUsersVideo = this.allUsersVideo.bind(this);
 
     //chat
     this.handleChangeChatMessage = this.handleChangeChatMessage.bind(this);
@@ -206,31 +209,30 @@ class RoomDetail extends Component {
           );
 
           const newSubscribers = this.state.subscribers;
+          newSubscribers.push(newSubscriber);
 
-          if (
-            newSubscribers.filter((sub) => sub.userId === JSON.parse(newSubscriber.stream.connection.data).userId) ===
-            []
-          )
-            newSubscribers.push(newSubscriber);
+          // if (
+          //   newSubscribers.filter((sub) => sub.userId === JSON.parse(newSubscriber.stream.connection.data).userId) ===
+          //   []
+          // )
 
           const newUser = JSON.parse(newSubscriber.stream.connection.data);
           const newUsers = this.state.users;
-          // newUsers.push(newUser);
-          if (newUsers.filter((user) => user.userId === newUser.userId) === []) newUsers.push(newUser);
+          newUsers.push(newUser);
+          // if (newUsers.filter((user) => user.userId === newUser.userId) === []) newUsers.push(newUser);
 
           //중복 제거
-          // const usersSet = new Set(newUsers);
-          // const subscribersSet = new Set(newSubscribers);
-          // const users = [...usersSet];
-          // const subscribers = [...subscribersSet];
+
+          const users = [...new Set(newUsers)];
+          const subscribers = [...new Set(newSubscribers)];
 
           console.log('user');
           console.log(newUsers);
           console.log('subscriber');
           console.log(newSubscribers);
           this.setState({
-            users: newUsers,
-            subscribers: newSubscribers,
+            users: users,
+            subscribers: subscribers,
           });
         });
 
@@ -265,7 +267,7 @@ class RoomDetail extends Component {
                   publishAudio: true,
                   publishVideo: true,
                   insertMode: 'APPEND',
-                  mirror: true, //좌우반전 옵션
+                  mirror: false, //좌우반전 옵션
                 });
                 this.state.session.publish(newPublisher);
 
@@ -414,8 +416,7 @@ class RoomDetail extends Component {
   }
 
   // 아이콘 클릭 시 변경되는 사항
-  clickVolume(e) {
-    e.preventDefault();
+  clickVolume() {
     this.state.subscribers.forEach((subscriber) => {
       if (this.state.othersAudio) {
         subscriber.subscribeToAudio(false);
@@ -430,8 +431,7 @@ class RoomDetail extends Component {
       }
     });
   }
-  clickVideo(e) {
-    e.preventDefault();
+  clickVideo() {
     const publisher = this.state.publisher;
     if (this.state.myVideo) {
       publisher.publishVideo(false);
@@ -445,8 +445,7 @@ class RoomDetail extends Component {
       });
     }
   }
-  clickMic(e) {
-    e.preventDefault();
+  clickMic() {
     const publisher = this.state.publisher;
     if (this.state.myAudio) {
       publisher.publishAudio(false);
@@ -461,18 +460,27 @@ class RoomDetail extends Component {
     }
   }
 
-  clickMsg(e) {
-    e.preventDefault();
+  clickMsg() {
     this.setState({
       msgOpen: !this.state.msgOpen,
     });
   }
 
-  settingBarOpen(e) {
-    e.preventDefault();
+  settingBarOpen() {
     this.setState({
       barOpen: !this.state.barOpen,
     });
+  }
+
+  // 방 참여자들의 영상 정보 (subscribers) 리스트를 변경하는 함수
+  allUsersVideo() {
+    if (this.state.subscribers.length >= 5) {
+      this.state.users =
+        this.state.users.splice(0, 4) + 'none' + this.state.users.splice(4, this.state.users.length + 1);
+      this.state.subscribers =
+        this.state.subscribers.splice(0, 4) + 'none' + this.state.subscribers.splice(4, this.state.users.length + 1);
+      console.log('>>>', this.state.users);
+    }
   }
 
   //메소드
@@ -499,8 +507,7 @@ class RoomDetail extends Component {
   }
 
   //클릭해서 채팅보내기
-  sendMessageByClick(e) {
-    e.preventDefault();
+  sendMessageByClick() {
     const newMessages = [...this.state.messages];
     newMessages.push({
       userName: this.state.myUserName,
@@ -910,34 +917,48 @@ class RoomDetail extends Component {
               ) : // </div>
               null}
               {this.state.subscribers.map((sub, i) => {
-                return (
-                  // <div
-                  //   key={i}
-                  //   className=""
-                  //   style={{
-                  //     cursor: 'pointer',
-                  //     width: '80%',
-                  //     height: 'auto',
-                  //     position: 'relative',
-                  //   }}
-                  //   title={this.state.users[i].userNickname}
-                  // onClick={() => this.handleMainVideoStream(sub)}
-                  // >
+                if (sub === 'none') {
+                  // console.log(`카메라 ${sub}`);
+                  return <div style={{ width: '100%', height: '100%' }}></div>;
+                } else if (sub !== 3) {
+                  // console.log(`카메라 ${sub}`);
+                  return (
+                    // <div
+                    //   key={i}
+                    //   className=""
+                    //   style={{
+                    //     cursor: 'pointer',
+                    //     width: '80%',
+                    //     height: 'auto',
+                    //     position: 'relative',
+                    //   }}
+                    //   title={this.state.users[i].userNickname}
+                    // onClick={() => this.handleMainVideoStream(sub)}
+                    // >
 
-                  <UserVideoComponent
-                    streamManager={sub}
-                    mainVideoStream={this.handleMainVideoStream}
-                    title={this.state.users[i].userNickname}
-                    style={{
-                      cursor: 'pointer',
-                      // width: '80%',
-                      // height: 'auto',
-                      // position: 'relative',
-                    }}
-                  />
-                  /* </div> */
-                );
+                    <UserVideoComponent
+                      streamManager={sub}
+                      mainVideoStream={this.handleMainVideoStream}
+                      title={this.state.subscribers[i].stream.connection.data.userNickname}
+                      style={{
+                        cursor: 'pointer',
+                        // width: '80%',
+                        // height: 'auto',
+                        // position: 'relative',
+                      }}
+                    />
+                    /* </div> */
+                  );
+                }
               })}
+            </div>
+            <div className={styles.roomTable}>
+              <div className={styles.tableComment}>함께 맛있는 식사하세요!</div>
+              <div onClick={this.settingBarOpen} className={styles.settingBarBtn}>
+                설정하기
+                <br />
+                <SettingsTwoToneIcon fontSize="large" />
+              </div>
             </div>
             {this.state.barOpen ? (
               <div
@@ -1025,22 +1046,13 @@ class RoomDetail extends Component {
                   <h2 style={{ marginBottom: '2%' }}>참여자 목록</h2>
                 </div>
                 <div className={`${styles.userListBox} ${styles.scroll}`}>
-                  {this.state.users.map((user, index) => {
-                    if (user.userNickname === this.state.myUserName) {
-                      return (
-                        <div
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            width: '90%',
-                            margin: '2%',
-                            alignItems: 'center',
-                          }}
-                        >
-                          <span style={{ textOverflow: 'ellipsis' }}>{user.userNickname}</span>
-                        </div>
-                      );
-                    } else {
+                  {this.state.users.map((user) => {
+                    // const user = JSON.parse(sub.stream.connection.data);
+                    if (user === 'none') {
+                      // console.log(`목록 ${user}`);
+                      return <div style={{ display: 'none' }}></div>;
+                    } else if (user !== 'none') {
+                      // console.log(`목록 ${user}`);
                       return (
                         <div
                           style={{
@@ -1079,10 +1091,6 @@ class RoomDetail extends Component {
               </div>
             )}
             <div className={styles.outIcon}>
-              <div onClick={this.settingBarOpen} className={styles.settingBarBtn} style={{ cursor: 'pointer' }}>
-                <div style={{ fontSize: 'small', color: '#090936', fontWeight: '900' }}>설정하기</div>
-                <SettingsTwoToneIcon fontSize="large" style={{ marginTop: '10%', paddingTop: '5%' }} />
-              </div>
               <div onClick={this.leaveSession} style={{ cursor: 'pointer' }}>
                 <div style={{ fontSize: 'small', color: '#090936', fontWeight: '900', margin: '10% 0' }}>방 나가기</div>
                 <img src={'img/방나가기아이콘.png'} style={{ width: '50px', height: '50px' }} />
