@@ -335,7 +335,7 @@ class RoomDetail extends Component {
                 disagree: this.state.disagree,
               };
               //모두 투표했을 경우 투표 종료
-              if (data.total >= this.state.subscribers.length) {
+              if (data.total >= this.state.subscribers.length - 1) {
                 this.state.session.signal({
                   data: JSON.stringify(data),
                   to: [],
@@ -361,8 +361,10 @@ class RoomDetail extends Component {
           });
 
           this.state.session.on('signal:getout', (event) => {
-            alert('추방되었습니다!');
-            this.leaveSession();
+            if (event.data.result.voteUserNickname === this.state.myUserName) {
+              alert('추방되었습니다!');
+              this.leaveSession();
+            } else alert(`${result.voteUserNickname}님이 추방되었습니다`);
           });
         });
       });
@@ -702,15 +704,10 @@ class RoomDetail extends Component {
       })
         .then((res) => {
           if (res.status == 200 || 202) {
-            alert(`${result.voteUserNickname}님이 추방되었습니다`);
-            this.state.connections.map((connection) => {
-              const connectionUser = JSON.parse(connection.data);
-              if (connectionUser.userId == result.voteUserId && connectionUser.userNickname == result.voteUserNickname)
-                this.state.session.signal({
-                  data: result.voteUserNickname,
-                  to: [connection],
-                  type: 'getout',
-                });
+            this.state.session.signal({
+              data: result.voteUserNickname,
+              to: [],
+              type: 'getout',
             });
           }
         })
@@ -829,7 +826,7 @@ class RoomDetail extends Component {
         <div className={styles.inmain}>
           <div className={styles.inbody}>
             <div id="video-container" className={`${styles.videobox} ${'col-md-12 col-xs-12'}`}>
-              {this.allUsersVideo()}
+              {/* {this.allUsersVideo()} */}
 
               {this.state.isVoteStart && this.state.eventData.voteUserId !== this.state.myUserId
                 ? this.showVoteModal(this.state.eventData)
