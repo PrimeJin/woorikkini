@@ -42,9 +42,9 @@ const PwFind = () => {
       });
   };
 
-  const navigate = useNavigate;
+  const navigate = useNavigate();
   function goToMain() {
-    navigate('/');
+    navigate('/user/login');
   }
 
   return (

@@ -17,7 +17,11 @@ import VolumeUpTwoToneIcon from '@mui/icons-material/VolumeUpTwoTone';
 import VideocamTwoToneIcon from '@mui/icons-material/VideocamTwoTone';
 import PeopleAltTwoToneIcon from '@mui/icons-material/PeopleAltTwoTone';
 import MicNoneTwoToneIcon from '@mui/icons-material/MicNoneTwoTone';
+import VolumeOffTwoToneIcon from '@mui/icons-material/VolumeOffTwoTone';
+import VideocamOffTwoToneIcon from '@mui/icons-material/VideocamOffTwoTone';
+import MicOffTwoToneIcon from '@mui/icons-material/MicOffTwoTone';
 import SettingsTwoToneIcon from '@mui/icons-material/SettingsTwoTone';
+
 
 import Timer from '../room/components/Timer';
 
@@ -92,7 +96,9 @@ class RoomDetail extends Component {
 
       // 사이드바
       msgOpen: true,
-
+      myVideo: true,
+      myAudio: true,
+      othersAudio: true,
       // 설정바
       barOpen: true,
     };
@@ -405,18 +411,47 @@ class RoomDetail extends Component {
 
   // 아이콘 클릭 시 변경되는 사항
   clickVolume() {
-    // this.subscriber.subscribeToAudio(); // true to unmute the audio track, false to mute it
+    this.state.subscribers.forEach((subscriber) => {
+      if (this.state.othersAudio) {
+        subscriber.subscribeToAudio(false);
+        this.setState({
+          othersAudio: false,
+        });
+      } else {
+        subscriber.subscribeToAudio(true);
+        this.setState({
+          othersAudio: true,
+        });
+      }
+    });
   }
   clickVideo() {
-    this.setState({
-      // publisher.stream.audioActiv
-    });
-    // this.setState({
-    //   publishVideo: !this.publishVideo, // true to enable the video track, false to disable it
-    // });
+    const publisher = this.state.publisher;
+    if (this.state.myVideo) {
+      publisher.publishVideo(false);
+      this.setState({
+        myVideo: false,
+      });
+    } else {
+      publisher.publishVideo(true);
+      this.setState({
+        myVideo: true,
+      });
+    }
   }
   clickMic() {
-    // this.publisher.publishAudio(!this.publishAudio); // true to unmute the audio track, false to mute it
+    const publisher = this.state.publisher;
+    if (this.state.myAudio) {
+      publisher.publishAudio(false);
+      this.setState({
+        myAudio: false,
+      });
+    } else {
+      publisher.publishAudio(true);
+      this.setState({
+        myAudio: true,
+      });
+    }
   }
 
   clickMsg() {
@@ -916,13 +951,25 @@ class RoomDetail extends Component {
             <div className={styles.video_setting_bar} onChange={this.handleChange} aria-label="icon label tabs example">
               <div className={styles.icons}>
                 <div className={styles.icon} onClick={this.clickVolume} name="audio">
-                  <VolumeUpTwoToneIcon fontSize="large" />
+                  {this.state.othersAudio ? (
+                    <VolumeUpTwoToneIcon fontSize="large" />
+                  ) : (
+                    <VolumeOffTwoToneIcon fontSize="large" />
+                  )}
                 </div>
                 <div className={styles.icon} onClick={this.clickVideo}>
-                  <VideocamTwoToneIcon fontSize="large" />
+                  {this.state.myVideo ? (
+                    <VideocamTwoToneIcon fontSize="large" />
+                  ) : (
+                    <VideocamOffTwoToneIcon fontSize="large" />
+                  )}
                 </div>
                 <div className={styles.icon} onClick={this.clickMic}>
-                  <MicNoneTwoToneIcon fontSize="large" />
+                  {this.state.myAudio ? (
+                    <MicNoneTwoToneIcon fontSize="large" />
+                  ) : (
+                    <MicOffTwoToneIcon fontSize="large" />
+                  )}
                 </div>
                 {this.state.msgOpen ? (
                   <div className={styles.icon} style={{ cursor: 'default' }}>
@@ -1026,7 +1073,7 @@ class RoomDetail extends Component {
               </div>
             )}
             <div className={styles.outIcon}>
-              <div onClick={this.leaveSession}>
+              <div onClick={this.leaveSession} style={{ cursor: 'pointer' }}>
                 <div style={{ fontSize: 'small', color: '#090936', fontWeight: '900', margin: '10% 0' }}>방 나가기</div>
                 <img src={'img/방나가기아이콘.png'} style={{ width: '50px', height: '50px' }} />
               </div>

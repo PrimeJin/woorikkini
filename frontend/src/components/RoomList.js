@@ -94,6 +94,7 @@ const RoomList = (props) => {
                   type="password"
                   value={inputPassword}
                   onChange={(e) => setInputPassword(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && goDetail()}
                 />
               </div>
             )}
