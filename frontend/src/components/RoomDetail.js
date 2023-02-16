@@ -176,6 +176,7 @@ class RoomDetail extends Component {
       url: `https://i8a804.p.ssafy.io/api/room/${roomId}?roomRecentUser=${recentUser}`,
       methods: 'PATCH',
     });
+    console.log('현재 인원: ', recentUser);
   }
 
   //session에 자신의 stream을 publish(게시).
@@ -197,9 +198,9 @@ class RoomDetail extends Component {
         url: `https://i8a804.p.ssafy.io/api/room/${roomId}`,
         methods: 'GET',
       }).then((res) => {
-        this.sendRecentUser();
         //subscribe
         this.state.session.on('streamCreated', (event) => {
+          this.sendRecentUser();
           const newSubscriber = this.state.session.subscribe(
             event.stream,
             undefined,
@@ -208,27 +209,31 @@ class RoomDetail extends Component {
           );
 
           const newSubscribers = this.state.subscribers;
-          newSubscribers.push(newSubscriber);
 
-          console.log('subscriber');
-          console.log(newSubscribers);
-          // const newConnection = event.stream.connection;
-          // const newConnections = this.state.connections;
-          // newConnections.push(newConnection);
-          // console.log(newConnections);
+          if (
+            newSubscribers.filter((sub) => sub.userId === JSON.parse(newSubscriber.stream.connection.data).userId) ===
+            []
+          )
+            newSubscribers.push(newSubscriber);
 
-          const newUser = JSON.parse(event.stream.connection.data);
+          const newUser = JSON.parse(newSubscriber.stream.connection.data);
           const newUsers = this.state.users;
-          newUsers.push(newUser);
+          // newUsers.push(newUser);
+          if (newUsers.filter((user) => user.userId === newUser.userId) === []) newUsers.push(newUser);
 
           //중복 제거
-          const usersSet = new Set(newUsers);
-          const subscribersSet = new Set(newSubscribers);
-          const users = [...usersSet];
-          const subscribers = [...subscribersSet];
+          // const usersSet = new Set(newUsers);
+          // const subscribersSet = new Set(newSubscribers);
+          // const users = [...usersSet];
+          // const subscribers = [...subscribersSet];
+
+          console.log('user');
+          console.log(newUsers);
+          console.log('subscriber');
+          console.log(newSubscribers);
           this.setState({
-            users: users,
-            subscribers: subscribers,
+            users: newUsers,
+            subscribers: newSubscribers,
           });
         });
 
@@ -237,6 +242,7 @@ class RoomDetail extends Component {
         this.state.session.on('streamDestroyed', (event) => {
           event.preventDefault();
           this.deleteSubscriber(event.stream.streamManager);
+          this.sendRecentUser();
         });
 
         this.state.session.on('exception', () => {});
@@ -348,7 +354,7 @@ class RoomDetail extends Component {
                 disagree: this.state.disagree,
               };
               //모두 투표했을 경우 투표 종료
-              if (data.total >= this.state.subscribers.length - 1) {
+              if (data.total >= this.state.subscribers.length) {
                 this.state.session.signal({
                   data: JSON.stringify(data),
                   to: [],
@@ -579,13 +585,20 @@ class RoomDetail extends Component {
 
   deleteSubscriber(streamManager) {
     const remoteUsers = this.state.subscribers;
-    // const subscribers = this.state.subscribers;
     const users = this.state.users;
-    const userStream = remoteUsers.filter((user) => user === streamManager)[0];
-    const index = remoteUsers.indexOf(userStream, 0);
-    if (index > -1) {
+    const subStream = remoteUsers.filter((user) => user === streamManager)[0];
+    const index = remoteUsers.indexOf(subStream, 0);
+
+    const userStream = this.state.users.filter(
+      (user) => user.userId === JSON.parse(subStream.stream.connection.data).userId,
+    );
+    const uindex = users.indexOf(userStream, 0);
+
+    console.log('subscriber 삭제');
+    console.log(index, uindex);
+    if (index > -1 && uindex > -1) {
       remoteUsers.splice(index, 1);
-      users.splice(index, 1);
+      users.splice(uindex, 1);
       this.setState({
         subscribers: remoteUsers,
         users: users,
@@ -906,10 +919,10 @@ class RoomDetail extends Component {
               null}
               {this.state.subscribers.map((sub, i) => {
                 if (sub === 'none') {
-                  console.log(`카메라 ${sub}`);
+                  // console.log(`카메라 ${sub}`);
                   return <div style={{ width: '100%', height: '100%' }}></div>;
                 } else if (sub !== 3) {
-                  console.log(`카메라 ${sub}`);
+                  // console.log(`카메라 ${sub}`);
                   return (
                     // <div
                     //   key={i}
@@ -927,7 +940,7 @@ class RoomDetail extends Component {
                     <UserVideoComponent
                       streamManager={sub}
                       mainVideoStream={this.handleMainVideoStream}
-                      title={this.state.users[i].userNickname}
+                      title={this.state.subscribers[i].stream.connection.data.userNickname}
                       style={{
                         cursor: 'pointer',
                         // width: '80%',
@@ -1034,12 +1047,13 @@ class RoomDetail extends Component {
                   <h2 style={{ marginBottom: '2%' }}>참여자 목록</h2>
                 </div>
                 <div className={`${styles.userListBox} ${styles.scroll}`}>
-                  {this.state.users.map((user, index) => {
+                  {this.state.subscribers.map((sub) => {
+                    const user = JSON.parse(sub.stream.connection.data);
                     if (user === 'none') {
-                      console.log(`목록 ${user}`);
+                      // console.log(`목록 ${user}`);
                       return <div style={{ display: 'none' }}></div>;
                     } else if (user !== 'none') {
-                      console.log(`목록 ${user}`);
+                      // console.log(`목록 ${user}`);
                       return (
                         <div
                           style={{
