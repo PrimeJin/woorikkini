@@ -105,7 +105,8 @@ function ModifyPage() {
         })
           .then((res) => {
             res.data.message === 'success' && alert('닉네임 변경이 완료되었습니다');
-            window.location.reload();
+            localStorage.removeItem('userNickname');
+            localStorage.setItem('userNickname', userNickname);
           })
           .catch((err) => {
             console.log('닉네임 변경 에러', err);
