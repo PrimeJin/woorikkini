@@ -17,6 +17,9 @@ import VolumeUpTwoToneIcon from '@mui/icons-material/VolumeUpTwoTone';
 import VideocamTwoToneIcon from '@mui/icons-material/VideocamTwoTone';
 import PeopleAltTwoToneIcon from '@mui/icons-material/PeopleAltTwoTone';
 import MicNoneTwoToneIcon from '@mui/icons-material/MicNoneTwoTone';
+import VolumeOffTwoToneIcon from '@mui/icons-material/VolumeOffTwoTone';
+import VideocamOffTwoToneIcon from '@mui/icons-material/VideocamOffTwoTone';
+import MicOffTwoToneIcon from '@mui/icons-material/MicOffTwoTone';
 import SettingsTwoToneIcon from '@mui/icons-material/SettingsTwoTone';
 
 import Timer from '../room/components/Timer';
@@ -92,7 +95,9 @@ class RoomDetail extends Component {
 
       // 사이드바
       msgOpen: true,
-
+      myVideo: true,
+      myAudio: true,
+      othersAudio: true,
       // 설정바
       barOpen: false,
     };
@@ -168,6 +173,7 @@ class RoomDetail extends Component {
       url: `https://i8a804.p.ssafy.io/api/room/${roomId}?roomRecentUser=${recentUser}`,
       methods: 'PATCH',
     });
+    console.log('현재 인원: ', recentUser);
   }
 
   //session에 자신의 stream을 publish(게시).
@@ -189,9 +195,9 @@ class RoomDetail extends Component {
         url: `https://i8a804.p.ssafy.io/api/room/${roomId}`,
         methods: 'GET',
       }).then((res) => {
-        this.sendRecentUser();
         //subscribe
         this.state.session.on('streamCreated', (event) => {
+          this.sendRecentUser();
           const newSubscriber = this.state.session.subscribe(
             event.stream,
             undefined,
@@ -200,27 +206,31 @@ class RoomDetail extends Component {
           );
 
           const newSubscribers = this.state.subscribers;
-          newSubscribers.push(newSubscriber);
 
-          console.log('subscriber');
-          console.log(newSubscribers);
-          // const newConnection = event.stream.connection;
-          // const newConnections = this.state.connections;
-          // newConnections.push(newConnection);
-          // console.log(newConnections);
+          if (
+            newSubscribers.filter((sub) => sub.userId === JSON.parse(newSubscriber.stream.connection.data).userId) ===
+            []
+          )
+            newSubscribers.push(newSubscriber);
 
-          const newUser = JSON.parse(event.stream.connection.data);
+          const newUser = JSON.parse(newSubscriber.stream.connection.data);
           const newUsers = this.state.users;
-          newUsers.push(newUser);
+          // newUsers.push(newUser);
+          if (newUsers.filter((user) => user.userId === newUser.userId) === []) newUsers.push(newUser);
 
           //중복 제거
-          const usersSet = new Set(newUsers);
-          const subscribersSet = new Set(newSubscribers);
-          const users = [...usersSet];
-          const subscribers = [...subscribersSet];
+          // const usersSet = new Set(newUsers);
+          // const subscribersSet = new Set(newSubscribers);
+          // const users = [...usersSet];
+          // const subscribers = [...subscribersSet];
+
+          console.log('user');
+          console.log(newUsers);
+          console.log('subscriber');
+          console.log(newSubscribers);
           this.setState({
-            users: users,
-            subscribers: subscribers,
+            users: newUsers,
+            subscribers: newSubscribers,
           });
         });
 
@@ -229,11 +239,14 @@ class RoomDetail extends Component {
         this.state.session.on('streamDestroyed', (event) => {
           event.preventDefault();
           this.deleteSubscriber(event.stream.streamManager);
+          this.sendRecentUser();
         });
 
         this.state.session.on('exception', () => {});
 
-        this.getToken(res.data.result.roomTitle).then((token) => {
+        console.log('roomId');
+        console.log(String(this.state.roomId));
+        this.createToken(String(this.state.roomId)).then((token) => {
           this.state.session
             .connect(token, { userId: userId, userNickname: userNickname })
             .then(async () => {
@@ -338,7 +351,7 @@ class RoomDetail extends Component {
                 disagree: this.state.disagree,
               };
               //모두 투표했을 경우 투표 종료
-              if (data.total >= this.state.subscribers.length - 1) {
+              if (data.total >= this.state.subscribers.length) {
                 this.state.session.signal({
                   data: JSON.stringify(data),
                   to: [],
@@ -403,20 +416,49 @@ class RoomDetail extends Component {
   // 아이콘 클릭 시 변경되는 사항
   clickVolume(e) {
     e.preventDefault();
-    // this.subscriber.subscribeToAudio(); // true to unmute the audio track, false to mute it
+    this.state.subscribers.forEach((subscriber) => {
+      if (this.state.othersAudio) {
+        subscriber.subscribeToAudio(false);
+        this.setState({
+          othersAudio: false,
+        });
+      } else {
+        subscriber.subscribeToAudio(true);
+        this.setState({
+          othersAudio: true,
+        });
+      }
+    });
   }
   clickVideo(e) {
     e.preventDefault();
-    this.setState({
-      // publisher.stream.audioActiv
-    });
-    // this.setState({
-    //   publishVideo: !this.publishVideo, // true to enable the video track, false to disable it
-    // });
+    const publisher = this.state.publisher;
+    if (this.state.myVideo) {
+      publisher.publishVideo(false);
+      this.setState({
+        myVideo: false,
+      });
+    } else {
+      publisher.publishVideo(true);
+      this.setState({
+        myVideo: true,
+      });
+    }
   }
   clickMic(e) {
     e.preventDefault();
-    // this.publisher.publishAudio(!this.publishAudio); // true to unmute the audio track, false to mute it
+    const publisher = this.state.publisher;
+    if (this.state.myAudio) {
+      publisher.publishAudio(false);
+      this.setState({
+        myAudio: false,
+      });
+    } else {
+      publisher.publishAudio(true);
+      this.setState({
+        myAudio: true,
+      });
+    }
   }
 
   clickMsg(e) {
@@ -535,13 +577,20 @@ class RoomDetail extends Component {
 
   deleteSubscriber(streamManager) {
     const remoteUsers = this.state.subscribers;
-    // const subscribers = this.state.subscribers;
     const users = this.state.users;
-    const userStream = remoteUsers.filter((user) => user === streamManager)[0];
-    const index = remoteUsers.indexOf(userStream, 0);
-    if (index > -1) {
+    const subStream = remoteUsers.filter((user) => user === streamManager)[0];
+    const index = remoteUsers.indexOf(subStream, 0);
+
+    const userStream = this.state.users.filter(
+      (user) => user.userId === JSON.parse(subStream.stream.connection.data).userId,
+    );
+    const uindex = users.indexOf(userStream, 0);
+
+    console.log('subscriber 삭제');
+    console.log(index, uindex);
+    if (index > -1 && uindex > -1) {
       remoteUsers.splice(index, 1);
-      users.splice(index, 1);
+      users.splice(uindex, 1);
       this.setState({
         subscribers: remoteUsers,
         users: users,
@@ -898,13 +947,25 @@ class RoomDetail extends Component {
               >
                 <div className={styles.icons}>
                   <div className={styles.icon} onClick={this.clickVolume} name="audio">
-                    <VolumeUpTwoToneIcon fontSize="large" />
+                    {this.state.othersAudio ? (
+                      <VolumeUpTwoToneIcon fontSize="large" />
+                    ) : (
+                      <VolumeOffTwoToneIcon fontSize="large" />
+                    )}
                   </div>
                   <div className={styles.icon} onClick={this.clickVideo}>
-                    <VideocamTwoToneIcon fontSize="large" />
+                    {this.state.myVideo ? (
+                      <VideocamTwoToneIcon fontSize="large" />
+                    ) : (
+                      <VideocamOffTwoToneIcon fontSize="large" />
+                    )}
                   </div>
                   <div className={styles.icon} onClick={this.clickMic}>
-                    <MicNoneTwoToneIcon fontSize="large" />
+                    {this.state.myAudio ? (
+                      <MicNoneTwoToneIcon fontSize="large" />
+                    ) : (
+                      <MicOffTwoToneIcon fontSize="large" />
+                    )}
                   </div>
                   {this.state.msgOpen ? (
                     <div className={styles.icon} style={{ cursor: 'default' }}>
@@ -931,6 +992,7 @@ class RoomDetail extends Component {
               <div style={{ display: 'none' }}></div>
             )}
           </div>
+
           <div className={styles.sidebar}>
             {this.state.msgOpen ? (
               <div className={styles.chatdiv}>
@@ -1044,22 +1106,26 @@ class RoomDetail extends Component {
 
   //createSession 응답이 오면 createToken을 실행하게 해서
   //token이 undefined인채로 getToken을 실행하는 일을 막아요
-  async getToken() {
-    const sessionId = await this.createSession(this.state.mySessionId);
+  async getToken(id) {
+    const sessionId = await this.createSession(id);
     return await this.createToken(sessionId);
   }
 
   createSession(sessionId) {
     return new Promise((resolve, reject) => {
-      const data = JSON.stringify({ customSessionId: sessionId });
       axios
-        .post(`${OPENVIDU_SERVER_URL}/openvidu/api/sessions`, data, {
-          headers: {
-            Authorization: `Basic ${EncodeBase64(`OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`)}`,
-            'Content-Type': 'application/json',
+        .post(
+          `${OPENVIDU_SERVER_URL}/openvidu/api/sessions`,
+          { customSessionId: sessionId },
+          {
+            headers: {
+              Authorization: `Basic ${EncodeBase64(`OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`)}`,
+              'Content-Type': 'application/json',
+            },
           },
-        })
+        )
         .then((response) => {
+          console.log('createSession');
           resolve(response.data.id);
         })
         .catch((response) => {
@@ -1094,6 +1160,7 @@ class RoomDetail extends Component {
           },
         })
         .then((response) => {
+          console.log(response.data);
           resolve(response.data.token);
           this.setState({
             token: response.data.token,

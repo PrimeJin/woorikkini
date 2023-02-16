@@ -1,10 +1,10 @@
 .delete {
-  text-align: center;
-  font-family: 'NanumSquareRound';
   /* 가로로 가운데 정렬 */
   display: flex;
   justify-content: center;
   background: #fffdfa;
+  height: 100vh;
+  align-items: center;
 }
 
 .deleteUser {
@@ -41,6 +41,7 @@
   background: #d6ebfc;
   border-radius: 17px;
   margin-right: 2%;
+  cursor: pointer;
 }
 
 .cancleButton {
@@ -52,4 +53,5 @@
   border: none;
   background: #ff8d89;
   border-radius: 17px;
+  cursor: pointer;
 }

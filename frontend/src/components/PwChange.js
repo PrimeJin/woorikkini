@@ -140,7 +140,7 @@ const PwChange = () => {
   }
 
   function goToMain() {
-    navigate('/');
+    navigate('/user/login');
   }
 
   return (
