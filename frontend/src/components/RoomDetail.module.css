@@ -49,12 +49,8 @@
 
 .videobox {
   display: inline-grid;
-  grid-template-columns: repeat(3, 320px);
-  grid-template-rows: repeat(3, 200px);
-  /* grid-auto-rows: minmax(10%, auto); */
-  /* grid-auto-flow: dense; */
-  /* place-content: space-between center; */
-  /* flex-flow: ; */
+  grid-template-columns: repeat(3, 330px);
+  grid-template-rows: repeat(2, 300px);
   width: 1000px;
   height: 600px;
   background: #fefaef;
@@ -63,39 +59,16 @@
     0px 6.6501px 5.32008px rgba(0, 0, 0, 0.0282725), 0px 2.76726px 2.21381px rgba(0, 0, 0, 0.0196802);
   border-radius: 50px;
   position: relative;
-  gap: 10px 10px;
+  gap: 5px 8px;
   padding: 3%;
 
   /* align-content: space-evenly; */
 }
 
-.roomTable {
-  width: 330px;
-  height: 200px;
-  background-color: #d5b385;
-  border: none;
-  border-radius: 50px;
-  position: absolute;
-  display: flex;
-  /* justify-content: center; */
-  text-align: center;
-  flex-flow: column;
-  align-content: space-evenly;
-}
-
-.tableComment {
-  font-family: 'NanumSquareRound';
-  font-weight: 700;
-  font-size: X-large;
-  top: 25%;
-  right: 13%;
-  position: absolute;
-}
-
 .settingBarBtn {
-  right: 40%;
-  bottom: 10%;
-  position: absolute;
+  right: 7.5%;
+  bottom: 3.5%;
+  position: fixed;
 }
 
 .video_setting_bar {
@@ -110,11 +83,8 @@
     0px 22.3363px 17.869px rgba(0, 0, 0, 0.0417275), 0px 12.5216px 10.0172px rgba(0, 0, 0, 0.035),
     0px 6.6501px 5.32008px rgba(0, 0, 0, 0.0282725), 0px 2.76726px 2.21381px rgba(0, 0, 0, 0.0196802);
   border-radius: 40px;
-  /* text-align: center; */
   display: flex;
-  /* justify-content: center; */
   align-items: center;
-  /* flex-flow: column; */
 }
 .icons {
   justify-content: space-between;
@@ -138,10 +108,6 @@
   box-shadow: 0px 100px 80px rgba(0, 0, 0, 0.07), 0px 41.7776px 33.4221px rgba(0, 0, 0, 0.0503198),
     0px 22.3363px 17.869px rgba(0, 0, 0, 0.0417275), 0px 12.5216px 10.0172px rgba(0, 0, 0, 0.035),
     0px 6.6501px 5.32008px rgba(0, 0, 0, 0.0282725), 0px 2.76726px 2.21381px rgba(0, 0, 0, 0.0196802);
-  /* box-shadow: 0px 100px 80px rgba(0, 0, 0, 0.07), 0px 41.7776px 33.4221px rgba(0, 0, 0, 0.0503198),
-    0px 22.3363px 17.869px rgba(0, 0, 0, 0.0417275), 0px 12.5216px 10.0172px rgba(0, 0, 0, 0.035), 0px 6.6501px
-      5.32008px rgba(0, 0, 0, 0.0282725),
-    0px 2.76726px 2.21381px rgba(0, 0, 0, 0.0196802); */
   border-radius: 50px 0px 0px 50px;
   display: flex;
   flex-direction: column;
@@ -159,10 +125,6 @@
   position: absolute;
   display: flex;
   flex-direction: column;
-  /* z-index: -123456; */
-  /* opacity: 0;
-  transition: all 0.5s ease-in-out; */
-  /* ChatWrapper */
 
   background: #fefaef;
   box-shadow: 0px 100px 80px rgba(0, 0, 0, 0.07), 0px 41.7776px 33.4221px rgba(0, 0, 0, 0.0503198),
@@ -171,8 +133,6 @@
 }
 
 .chatHeader {
-  /* display: flex;
-  justify-content: center; */
   text-align: center;
   color: #090936;
   margin-top: 5%;
@@ -278,6 +238,8 @@
   position: fixed;
   right: 3%;
   bottom: 2%;
+  display: flex;
+  align-items: center;
 }
 
 /* FOOTER */
@@ -344,12 +306,6 @@
 }
 
 /* CONTENT ISOPEN */
-/* .chatbox__active {
-  min-height: 60vh;
-  transform: translateY(-40px);
-  z-index: 123456;
-  opacity: 1;
-} */
 
 .form_group {
   background: '#ffd4c3';
@@ -403,7 +359,6 @@
 .modal > section > main {
   padding: 5px;
   margin-top: 5%;
-  /* align-items: center; */
   display: flex;
   font-weight: 100;
   justify-content: center;

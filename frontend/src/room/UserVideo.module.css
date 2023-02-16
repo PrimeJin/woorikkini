@@ -1,8 +1,7 @@
 /* 비디오 개별 화면*/
 video {
-  width: 95%;
-  height: 100%;
-  float: left;
+  width: 100%;
+  /* float: left; */
   cursor: pointer;
 }
 
