@@ -7,7 +7,7 @@ video {
 }
 
 /* 비디오 전체*/
-.streamcomponent {
+/* .streamcomponent {
   display: flex;
   grid: 0%;
 }
@@ -20,4 +20,4 @@ video {
   color: #777777;
   font-weight: bold;
   border-bottom-right-radius: 4px;
-}
+} */

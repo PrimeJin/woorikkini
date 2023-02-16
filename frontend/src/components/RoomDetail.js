@@ -17,6 +17,7 @@ import VolumeUpTwoToneIcon from '@mui/icons-material/VolumeUpTwoTone';
 import VideocamTwoToneIcon from '@mui/icons-material/VideocamTwoTone';
 import PeopleAltTwoToneIcon from '@mui/icons-material/PeopleAltTwoTone';
 import MicNoneTwoToneIcon from '@mui/icons-material/MicNoneTwoTone';
+import SettingsTwoToneIcon from '@mui/icons-material/SettingsTwoTone';
 
 import Timer from '../room/components/Timer';
 
@@ -91,6 +92,9 @@ class RoomDetail extends Component {
 
       // 사이드바
       msgOpen: true,
+
+      // 설정바
+      barOpen: true,
     };
 
     //method
@@ -111,6 +115,7 @@ class RoomDetail extends Component {
     this.clickVideo = this.clickVideo.bind(this);
     this.clickMic = this.clickMic.bind(this);
     this.clickMsg = this.clickMsg.bind(this);
+    this.settingBarOpen = this.settingBarOpen.bind(this);
 
     // 화상 화면 구성하기 위해 참여자 비디오 목록 재구성하는 함수
     this.allUsersVideo = this.allUsersVideo.bind(this);
@@ -420,20 +425,21 @@ class RoomDetail extends Component {
     });
   }
 
+  settingBarOpen() {
+    this.setState({
+      barOpen: !this.state.barOpen,
+    });
+  }
+
   // 방 참여자들의 영상 정보 (subscribers) 리스트를 변경하는 함수
   allUsersVideo() {
     if (this.state.subscribers.length >= 5) {
-      this.state.subscribers.splice(3, 0, 'none');
-      this.state.users.splice(3, 0, 'none');
+      this.state.users =
+        this.state.users.splice(0, 4) + 'none' + this.state.users.splice(4, this.state.users.length + 1);
+      this.state.subscribers =
+        this.state.subscribers.splice(0, 4) + 'none' + this.state.subscribers.splice(4, this.state.users.length + 1);
+      console.log('>>>', this.state.users);
     }
-    Array.from(this.state.subscribers).forEach((v) => {
-      console.log('@@', v);
-      console.log('@@@@', this.state.subscribers.indexOf(v));
-    });
-    Array.from(this.state.users).forEach((v) => {
-      console.log('##', v);
-      console.log('####', this.state.users.indexOf(v));
-    });
   }
 
   //메소드
@@ -900,7 +906,13 @@ class RoomDetail extends Component {
             </div>
             <div className={styles.roomTable}>
               <div className={styles.tableComment}>함께 맛있는 식사하세요!</div>
+              <div onClick={this.settingBarOpen} className={styles.settingBarBtn}>
+                설정하기
+                <br />
+                <SettingsTwoToneIcon fontSize="large" />
+              </div>
             </div>
+            {this.state.barOpen ? (
             <div className={styles.video_setting_bar} onChange={this.handleChange} aria-label="icon label tabs example">
               <div className={styles.icons}>
                 <div className={styles.icon} onClick={this.clickVolume} name="audio">
@@ -933,6 +945,10 @@ class RoomDetail extends Component {
                 )}
               </div>
             </div>
+            ) : (
+              <div style={{ display: 'none' }}></div>
+            )}
+          </div>
           </div>
           <div className={styles.sidebar}>
             {this.state.msgOpen ? (
