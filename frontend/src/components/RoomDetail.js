@@ -874,7 +874,6 @@ class RoomDetail extends Component {
                   //   title={this.state.users[i].userNickname}
                   // onClick={() => this.handleMainVideoStream(sub)}
                   // >
-
                   <UserVideoComponent
                     streamManager={sub}
                     mainVideoStream={this.handleMainVideoStream}
