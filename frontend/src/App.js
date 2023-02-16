@@ -184,7 +184,6 @@ function App() {
           <Route path="/oauth/callback/kakao" element={<Kakao />} />
           <Route path="/oauth/callback/naver" element={<Naver />} />
           <Route path="/oauth/callback/google" element={<Google />} />
-          <Route path="/*" element={<ErrorPage />} />
         </Routes>
       </BrowserRouter>
     </div>

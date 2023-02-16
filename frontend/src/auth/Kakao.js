@@ -25,6 +25,7 @@ const Kakao = () => {
   console.log('access_Token: ' + accessToken);
   console.log('refresh_Token: ' + refreshToken);
   dispatch(SET_USER({ id: id, nickname: nickname }));
+  localStorage.clear();
   localStorage.setItem('userId', id);
   localStorage.setItem('userNickname', nickname);
   localStorage.setItem('accessToken', accessToken);
@@ -34,7 +35,7 @@ const Kakao = () => {
   dispatch(SET_TOKEN(accessToken));
 
   useEffect(() => {
-    navigate('/');
+    navigate('/room');
   });
 };
 
