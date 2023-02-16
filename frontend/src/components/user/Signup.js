@@ -18,7 +18,7 @@ function Form() {
   const [nickVisible, setNickVisible] = useState(false);
   const [possible, setPossible] = useState(false);
   const [impossible, setImpossible] = useState(false);
-  const [Date, setDate] = useState('');
+  const [Day, setDay] = useState('');
   const [Gender, setGender] = useState('');
 
   // 이메일 입력
@@ -148,9 +148,9 @@ function Form() {
     }
   };
   // 생년월일 입력
-  const onDate = (event) => {
-    const inputDate = event.currentTarget.value;
-    setDate(inputDate);
+  const onDay = (event) => {
+    const inputDay = event.currentTarget.value;
+    setDay(inputDay);
 
     // 현재 날짜 구하기
     // let today = new Date(new Date().toString().split('GMT')[0] + ' UTC').toISOString().slice(0, 10);
@@ -170,13 +170,13 @@ function Form() {
   const navigate = useNavigate();
   const onSubmit = (event) => {
     console.log('닉네임 중복 확인 ->', possible);
-    if (Email == '' || Password == '' || Name == '' || Nickname == '' || Date == '' || Gender == '') {
+    if (Email == '' || Password == '' || Name == '' || Nickname == '' || Day == '' || Gender == '') {
       alert('빈 칸을 입력해주세요.');
     } else if (emailCheck == false || codeCheck == false || possible == false) {
       alert('인증을 진행해주세요.');
     } else {
       event.preventDefault();
-      const Birth = Date.split('-').join('');
+      const Birth = Day.split('-').join('');
       const userData = {
         userEmail: Email,
         userPassword: Password,
@@ -278,10 +278,10 @@ function Form() {
       <p></p>
       <input
         type="date"
-        value={Date}
+        value={Day}
         // 최대 선택 날짜는 오늘까지
         max={new Date(new Date().toString().split('GMT')[0] + ' UTC').toISOString().slice(0, 10)}
-        onChange={onDate}
+        onChange={onDay}
         className={styles.date_input}
         data-placeholder="생년월일"
         required
