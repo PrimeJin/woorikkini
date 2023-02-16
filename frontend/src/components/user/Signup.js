@@ -18,7 +18,7 @@ function Form() {
   const [nickVisible, setNickVisible] = useState(false);
   const [possible, setPossible] = useState(false);
   const [impossible, setImpossible] = useState(false);
-  const [Birth, setBirth] = useState('');
+  const [Date, setDate] = useState('');
   const [Gender, setGender] = useState('');
 
   // 이메일 입력
@@ -148,9 +148,9 @@ function Form() {
     }
   };
   // 생년월일 입력
-  const onBirth = (event) => {
-    const inputBirth = event.currentTarget.value;
-    setBirth(inputBirth);
+  const onDate = (event) => {
+    const inputDate = event.currentTarget.value;
+    setDate(inputDate);
 
     // 현재 날짜 구하기
     // let today = new Date(new Date().toString().split('GMT')[0] + ' UTC').toISOString().slice(0, 10);
@@ -176,7 +176,7 @@ function Form() {
       alert('인증을 진행해주세요.');
     } else {
       event.preventDefault();
-      const Birth = Birth.split('-').join('');
+      const Birth = Date.split('-').join('');
       const userData = {
         userEmail: Email,
         userPassword: Password,

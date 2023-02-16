@@ -942,14 +942,6 @@ class RoomDetail extends Component {
                 );
               })}
             </div>
-            <div className={styles.roomTable}>
-              <div className={styles.tableComment}>함께 맛있는 식사하세요!</div>
-              <div onClick={this.settingBarOpen} className={styles.settingBarBtn}>
-                설정하기
-                <br />
-                <SettingsTwoToneIcon fontSize="large" />
-              </div>
-            </div>
             {this.state.barOpen ? (
               <div
                 className={styles.video_setting_bar}
@@ -1036,13 +1028,22 @@ class RoomDetail extends Component {
                   <h2 style={{ marginBottom: '2%' }}>참여자 목록</h2>
                 </div>
                 <div className={`${styles.userListBox} ${styles.scroll}`}>
-                  {this.state.users.map((user) => {
-                    // const user = JSON.parse(sub.stream.connection.data);
-                    if (user === 'none') {
-                      // console.log(`목록 ${user}`);
-                      return <div style={{ display: 'none' }}></div>;
-                    } else if (user !== 'none') {
-                      // console.log(`목록 ${user}`);
+                  {this.state.users.map((user, index) => {
+                    if (user.userNickname === this.state.myUserName) {
+                      return (
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            width: '90%',
+                            margin: '2%',
+                            alignItems: 'center',
+                          }}
+                        >
+                          <span style={{ textOverflow: 'ellipsis' }}>{user.userNickname}</span>
+                        </div>
+                      );
+                    } else {
                       return (
                         <div
                           style={{
@@ -1081,6 +1082,10 @@ class RoomDetail extends Component {
               </div>
             )}
             <div className={styles.outIcon}>
+              <div onClick={this.settingBarOpen} className={styles.settingBarBtn} style={{ cursor: 'pointer' }}>
+                <div style={{ fontSize: 'small', color: '#090936', fontWeight: '900' }}>설정하기</div>
+                <SettingsTwoToneIcon fontSize="large" style={{ marginTop: '10%', paddingTop: '5%' }} />
+              </div>
               <div onClick={this.leaveSession} style={{ cursor: 'pointer' }}>
                 <div style={{ fontSize: 'small', color: '#090936', fontWeight: '900', margin: '10% 0' }}>방 나가기</div>
                 <img src={'img/방나가기아이콘.png'} style={{ width: '50px', height: '50px' }} />
