@@ -881,9 +881,6 @@ class RoomDetail extends Component {
                     title={this.state.users[i].userNickname}
                     style={{
                       cursor: 'pointer',
-                      // width: '80%',
-                      // height: 'auto',
-                      // position: 'relative',
                     }}
                   />
                   /* </div> */
