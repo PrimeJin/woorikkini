@@ -73,7 +73,7 @@ class RoomDetail extends Component {
       message: '', //메시지 단일입력
       messages: [], //메시지 로그
       messagesEnd: null,
-      users: [], //전체 참여자
+      users: [{ userId: userId, userNickname: userName }], //전체 참여자
       reportModalOpen: false,
       voteModalOpen: false,
       banModalOpen: false,
