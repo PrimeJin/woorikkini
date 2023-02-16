@@ -150,12 +150,7 @@ const LoginPage = () => {
                 id={styles.userPassword}
                 type="password"
                 placeholder="비밀번호를 입력하세요"
-                {...register('userPassword', {
-                  minLength: {
-                    value: 4,
-                    message: '4자리 이상 비밀번호를 사용해주세요.',
-                  },
-                })}
+                {...register('userPassword', {})}
               />
               {errors.password && <small role="alert">{errors.password.message}</small>}
             </div>

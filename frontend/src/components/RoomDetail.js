@@ -9,19 +9,9 @@ import { OpenVidu } from 'openvidu-browser';
 import ReportModal from '../room/components/ReportModal';
 
 //style
-import CenterLogo from '../styles/CenterLogo';
 import styles from './RoomDetail.module.css';
 import Messages from '../room/components/Messages';
-import TabContext from '@mui/lab/TabContext';
-import TabList from '@mui/lab/TabList';
-import Tab from '@mui/material/Tab';
-import TabPanel from '@mui/lab/TabPanel';
-import ChatIcon from '@mui/icons-material/Chat';
-import UserIcon from '@mui/icons-material/Person';
-import CancelIcon from '@mui/icons-material/Cancel';
 import Button from '@mui/material/Button';
-import Stack from '@mui/material/Stack';
-import Box from '@mui/material/Box';
 import QuestionAnswerTwoToneIcon from '@mui/icons-material/QuestionAnswerTwoTone';
 import VolumeUpTwoToneIcon from '@mui/icons-material/VolumeUpTwoTone';
 import VideocamTwoToneIcon from '@mui/icons-material/VideocamTwoTone';
@@ -84,12 +74,12 @@ class RoomDetail extends Component {
       messages: [], //메시지 로그
       messagesEnd: null,
       users: [], //전체 참여자
-      value: '1', //1: 채팅창, 2:참여자 목록
       reportModalOpen: false,
       voteModalOpen: false,
       banModalOpen: false,
       reportedUserId: '',
       eventData: {},
+      allUsers: [],
 
       //투표 관련 state
       isVoteStart: false, //투표가 시작했는지
@@ -121,6 +111,9 @@ class RoomDetail extends Component {
     this.clickVideo = this.clickVideo.bind(this);
     this.clickMic = this.clickMic.bind(this);
     this.clickMsg = this.clickMsg.bind(this);
+
+    // 화상 화면 구성하기 위해 참여자 비디오 목록 재구성하는 함수
+    this.allUsersVideo = this.allUsersVideo.bind(this);
 
     //chat
     this.handleChangeChatMessage = this.handleChangeChatMessage.bind(this);
@@ -166,7 +159,14 @@ class RoomDetail extends Component {
     this.leaveSession();
   }
 
-  //submit버튼을 클릭하면 방(세션)에 참여
+  sendRecentUser() {
+    const roomId = this.state.roomId;
+    const recentUser = this.state.users.length;
+    axios({
+      url: `https://i8a804.p.ssafy.io/api/room/${roomId}?roomRecentUser=${recentUser}`,
+      methods: 'PATCH',
+    });
+  }
 
   //session에 자신의 stream을 publish(게시).
   //session을 subscribe(구독)함으로써 session에 publish된 stream들을 불러오는 것이 가능함
@@ -187,6 +187,7 @@ class RoomDetail extends Component {
         url: `https://i8a804.p.ssafy.io/api/room/${roomId}`,
         methods: 'GET',
       }).then((res) => {
+        this.sendRecentUser();
         //subscribe
         this.state.session.on('streamCreated', (event) => {
           const newSubscriber = this.state.session.subscribe(
@@ -249,7 +250,7 @@ class RoomDetail extends Component {
                   publishAudio: true,
                   publishVideo: true,
                   insertMode: 'APPEND',
-                  mirror: true, //좌우반전 옵션
+                  mirror: false, //좌우반전 옵션
                 });
                 this.state.session.publish(newPublisher);
 
@@ -408,9 +409,25 @@ class RoomDetail extends Component {
     // this.publisher.publishAudio(!this.publishAudio); // true to unmute the audio track, false to mute it
   }
 
-  clickMsg(e) {
+  clickMsg() {
     this.setState({
       msgOpen: !this.state.msgOpen,
+    });
+  }
+
+  // 방 참여자들의 영상 정보 (subscribers) 리스트를 변경하는 함수
+  allUsersVideo() {
+    if (this.state.subscribers.length >= 5) {
+      this.state.subscribers.splice(3, 0, 'none');
+      this.state.users.splice(3, 0, 'none');
+    }
+    Array.from(this.state.subscribers).forEach((v) => {
+      console.log('@@', v);
+      console.log('@@@@', this.state.subscribers.indexOf(v));
+    });
+    Array.from(this.state.users).forEach((v) => {
+      console.log('##', v);
+      console.log('####', this.state.users.indexOf(v));
     });
   }
 
@@ -672,7 +689,7 @@ class RoomDetail extends Component {
     });
 
     const roomId = localStorage.getItem('roomId');
-    const accessToken = this.props.accessToken;
+    const accessToken = localStorage.getItem('accessToken');
     if (result.agree / result.total > 0.5) {
       // 백엔드 및 openvidu 서버에 추방 요청을 보냄
       axios({
@@ -712,6 +729,7 @@ class RoomDetail extends Component {
     const accessToken = this.props.accessToken;
     const roomId = localStorage.getItem('roomId');
 
+    this.sendRecentUser();
     axios({
       url: `https://i8a804.p.ssafy.io/api/room/exit/${roomId}`,
       method: 'DELETE',
@@ -811,46 +829,74 @@ class RoomDetail extends Component {
         <div className={styles.inmain}>
           <div className={styles.inbody}>
             <div id="video-container" className={`${styles.videobox} ${'col-md-12 col-xs-12'}`}>
+              {this.allUsersVideo()}
+
               {this.state.isVoteStart && this.state.eventData.voteUserId !== this.state.myUserId
                 ? this.showVoteModal(this.state.eventData)
                 : null}
-              {/* {this.state.publisher !== undefined ? (
-                <div
-                  className=""
+              {this.state.publisher !== undefined ? (
+                // <div
+                //   className=""
+                //   style={{
+                //     cursor: 'pointer',
+                //     width: '90%',
+                //     height: '100%',
+                //     position: 'relative',
+                //     display: 'flex',
+                //     justifyContent: 'center',
+                // flowFlex: 'column',
+                // alignItems: 'center',
+                //   }}
+                //   title={this.state.myUserName}
+                //   // onClick={() => this.handleMainVideoStream(this.state.publisher)}
+                // >
+                <UserVideoComponent
+                  streamManager={this.state.publisher}
                   style={{
                     cursor: 'pointer',
-                    width: '80%',
-                    height: '50%',
-                    position: 'relative',
                   }}
                   title={this.state.myUserName}
-                  // onClick={() => this.handleMainVideoStream(this.state.publisher)}
-                >
-                  <UserVideoComponent streamManager={this.state.publisher} />
-                </div>
-              ) : null} */}
+                />
+              ) : // </div>
+              null}
               {this.state.subscribers.map((sub, i) => {
-                return (
-                  // <div
-                  //   key={i}
-                  //   className=""
-                  //   style={{
-                  //     cursor: 'pointer',
-                  //     width: '80%',
-                  //     height: 'auto',
-                  //     position: 'relative',
-                  //   }}
-                  //   title={this.state.users[i].userNickname}
-                  // onClick={() => this.handleMainVideoStream(sub)}
-                  // >
-                  <UserVideoComponent
-                    streamManager={sub}
-                    mainVideoStream={this.handleMainVideoStream}
-                    title={this.state.users[i].userNickname}
-                  />
-                  /* </div> */
-                );
+                if (sub === 'none') {
+                  console.log(`카메라 ${sub}`);
+                  return <div style={{ width: '100%', height: '100%' }}></div>;
+                } else if (sub !== 3) {
+                  console.log(`카메라 ${sub}`);
+                  return (
+                    // <div
+                    //   key={i}
+                    //   className=""
+                    //   style={{
+                    //     cursor: 'pointer',
+                    //     width: '80%',
+                    //     height: 'auto',
+                    //     position: 'relative',
+                    //   }}
+                    //   title={this.state.users[i].userNickname}
+                    // onClick={() => this.handleMainVideoStream(sub)}
+                    // >
+
+                    <UserVideoComponent
+                      streamManager={sub}
+                      mainVideoStream={this.handleMainVideoStream}
+                      title={this.state.users[i].userNickname}
+                      style={{
+                        cursor: 'pointer',
+                        // width: '80%',
+                        // height: 'auto',
+                        // position: 'relative',
+                      }}
+                    />
+                    /* </div> */
+                  );
+                }
               })}
+            </div>
+            <div className={styles.roomTable}>
+              <div className={styles.tableComment}>함께 맛있는 식사하세요!</div>
             </div>
             <div className={styles.video_setting_bar} onChange={this.handleChange} aria-label="icon label tabs example">
               <div className={styles.icons}>
@@ -918,44 +964,48 @@ class RoomDetail extends Component {
                 </div>
                 <div className={`${styles.userListBox} ${styles.scroll}`}>
                   {this.state.users.map((user, index) => {
-                    return (
-                      <div
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          width: '90%',
-                          margin: '2%',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <span style={{ textOverflow: 'ellipsis' }}>{user.userNickname}</span>
-                        <div style={{ display: 'flex' }}>
-                          <button name="report" value={user.userId} onClick={this.openModal} className={styles.listBtn}>
-                            신고
-                          </button>
-                          <button
-                            onClick={() => this.startVote({ userId: user.userId, userNickname: user.userNickname })}
-                            name="vote"
-                            value={user.userId}
-                            className={styles.listBtn}
-                            style={{ backgroundColor: '#FF8D89' }}
-                          >
-                            강퇴
-                          </button>
+                    if (user === 'none') {
+                      console.log(`목록 ${user}`);
+                      return <div style={{ display: 'none' }}></div>;
+                    } else if (user !== 'none') {
+                      console.log(`목록 ${user}`);
+                      return (
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            width: '90%',
+                            margin: '2%',
+                            alignItems: 'center',
+                          }}
+                        >
+                          <span style={{ textOverflow: 'ellipsis' }}>{user.userNickname}</span>
+                          <div style={{ display: 'flex' }}>
+                            <button
+                              name="report"
+                              value={user.userId}
+                              onClick={this.openModal}
+                              className={styles.listBtn}
+                            >
+                              신고
+                            </button>
+                            <button
+                              onClick={() => this.startVote({ userId: user.userId, userNickname: user.userNickname })}
+                              name="vote"
+                              value={user.userId}
+                              className={styles.listBtn}
+                              style={{ backgroundColor: '#FF8D89' }}
+                            >
+                              강퇴
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    );
+                      );
+                    }
                   })}
                 </div>
               </div>
             )}
-            {/* </TabPanel> */}
-            {/* <TabList onChange={this.handleChange} aria-label="icon label tabs example" sx={{ background: '#ffd4c3' }}> */}
-            {/* <Tab icon={<ChatIcon />} label="채팅" value="1" sx={{ background: '#ffd4c3' }} />
-                <Tab icon={<UserIcon />} label="참여자목록" value="2" sx={{ background: '#ffd4c3' }} />
-                <Tab icon={<CancelIcon />} label="퇴장" onClick={this.leaveSession} sx={{ background: '#ffd4c3' }} /> */}
-            {/* </TabList>
-            </TabContext> */}
             <div className={styles.outIcon}>
               <div onClick={this.leaveSession}>
                 <div style={{ fontSize: 'small', color: '#090936', fontWeight: '900', margin: '10% 0' }}>방 나가기</div>
