@@ -806,7 +806,7 @@ class RoomDetail extends Component {
               {this.state.isVoteStart && this.state.eventData.voteUserId !== this.state.myUserId
                 ? this.showVoteModal(this.state.eventData)
                 : null}
-              {this.state.publisher !== undefined ? (
+              {/* {this.state.publisher !== undefined ? (
                 <div
                   className=""
                   style={{
@@ -820,7 +820,7 @@ class RoomDetail extends Component {
                 >
                   <UserVideoComponent streamManager={this.state.publisher} />
                 </div>
-              ) : null}
+              ) : null} */}
               {this.state.subscribers.map((sub, i) => {
                 return (
                   // <div
