@@ -6,11 +6,11 @@ import { Link } from 'react-router-dom';
 
 const KakaoButton = () => {
   return (
-    <Link to="https://i8a804.p.ssafy.io/api/oauth2/authorize/kakao?redirect_uri=https://i8a804.p.ssafy.io/oauth/callback/kakao">
+    <a href="https://i8a804.p.ssafy.io/api/oauth2/authorize/kakao?redirect_uri=https://i8a804.p.ssafy.io/oauth/callback/kakao">
       <div className="kakao-button">
         <img src={'img/카카오로그인버튼.png'} height="100%" alt="" />
       </div>
-    </Link>
+    </a>
   );
 };
 
