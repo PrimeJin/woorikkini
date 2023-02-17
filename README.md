@@ -28,6 +28,18 @@
 - 비밀번호 찾기
 - 마이페이지 (추억저장)
 
+**회원가입 (이메일 인증)**
+
+![이메일 인증](https://user-images.githubusercontent.com/110287222/219529252-26a62540-0ed0-4f2f-9b13-3f94363400d2.gif)
+
+**비밀번호 찾기**
+
+![비밀번호 찾기](https://user-images.githubusercontent.com/110287222/219529267-1398af57-a6f9-4f71-bb6a-cb8e5a20f2cb.gif)
+
+**마이페이지 (추억 저장)**
+![추억등록](https://user-images.githubusercontent.com/110287222/219523698-a3e45608-907c-4c1d-9051-c58175ce8aae.gif)
+
+
 ### 화상 채팅방 
 - 오픈방, 비밀방 개설
 - 방 키워드, 프리셋 설정
@@ -35,10 +47,29 @@
 - 강퇴 투표
 - 신고
 
+**방 개설**
+
+![방만들기_gif_버전](https://user-images.githubusercontent.com/110287222/219524414-3cb32421-1cec-4cf3-817d-00e617857b0d.gif)
+
+**강퇴 투표**
+
+![강퇴](https://user-images.githubusercontent.com/110287222/219523928-e7192cc0-4b72-4541-8d25-0b6077d0b775.gif)
+
+**신고**
+
+![신고](https://user-images.githubusercontent.com/110287222/219531685-d53130c3-e198-4d27-a6e2-a5294eec405d.gif)
+
 ### 관리자
 - 공지사항
 - 회원 및 신고 관리
 - 통계 (연령, 성별, 키워드)
+
+**회원 조회**
+![관리자회원조회정지](https://user-images.githubusercontent.com/110287222/219524613-3cccdcde-edec-449f-9403-da72267b914b.gif)
+
+**통계**
+![통계리얼](https://user-images.githubusercontent.com/110287222/219524068-cf1d9a0d-8719-4bf5-bc29-47d342afbf85.gif)
+
 
 ## 💻 개발 환경
 ### 공통
@@ -170,6 +201,132 @@ sudo docker build -t {도커 이미지 이름} .
 6. 도커 컨테이너 생성
 ```bash
 sudo docker run -p {외부에서 연결할 포트번호}:8040 --name {도커 컨테이너 이름} -d -v {EC2 서버 폴더 경로}:{생성할 도커 컨테이너의 폴더 경로} {도커 이미지 이름}
+```
+
+### nginx.conf 파일
+
+```
+server {
+    listen 80;
+    location / {
+        root    /app/build;
+        index   index.html;
+        try_files $uri $uri/ /index.html;
+    }
+}
+
+```
+
+### nginx 설정
+
+1. **nginx 설치**
+
+```
+sudo apt-get install nginx
+
+```
+
+2. **/etc/nginx/sites-available로 이동후 default 파일 수정 또는 새로운 이름의 파일 생성**
+
+```
+server {
+        # 프론트 연결
+        location /{
+                proxy_pass <http://localhost>:{프론트 포트 번호};
+        }
+
+        # 백엔드 연결
+        location /api {
+                proxy_pass <http://localhost>:{백엔드 포트 번호}/api;
+        }
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/[도메인 주소]/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/[도메인 주소]/privkey.pem; # managed by Certbot
+    # include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    # ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+}
+
+server {
+    # 도메인 이름을 입력
+    if ($host = [도메인 주소]) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+        listen 80;
+        server_name [도메인 주소];
+    return 404; # managed by Certbot
+}
+
+```
+
+3. nginx 실행
+
+```
+sudo service nginx start
+
+```
+
+---
+
+### OpenVidu 배포
+
+1. root 권한 얻기
+
+```
+sudo su
+
+```
+
+2. openvidu 설치 위치인 /opt로 이동
+
+```
+cd /opt
+
+```
+
+3. openvidu 설치
+
+```
+curl <https://s3-eu-west-1.amazonaws.com/aws.openvidu.io/install_openvidu_latest.sh> | bash
+
+```
+
+4. openvidu 폴더로 이동
+
+```
+cd /opt/openvidu
+
+```
+
+5. openvidu 설정 변경
+
+```
+$ nano .env
+
+# OpenVidu configuration
+DOMAIN_OR_PUBLIC_IP={도메인 주소}
+
+OPENVIDU_SECRET={비밀키}
+
+# Certificate type
+CERTIFICATE_TYPE=letsencrypt
+
+# 인증서 타입이 letsencrypt일 경우 이메일 설정
+LETSENCRYPT_EMAIL={이메일 주소 ex) ssafy@ssafy.com}
+
+# HTTP port
+HTTP_PORT={연결할 포트 번호}
+
+# HTTPS port
+HTTPS_PORT={연결할 포트 번호}
+
+```
+
+### OpenVidu 실행
+
+```
+./openvidu start
+
 ```
 <br/>
 
