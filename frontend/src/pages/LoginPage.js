@@ -24,6 +24,7 @@ import axios from '../../node_modules/axios/index';
 // import Logo from '../components/user/UserPagesLogo';
 import mainlogo from '../assets/우리끼니로고.png';
 import { useState } from 'react';
+import { useEffect } from 'react';
 
 const LoginPage = () => {
   //React Hooks
@@ -64,18 +65,29 @@ const LoginPage = () => {
           //참고: /store/Auth.js
           dispatch(SET_TOKEN(response.data.accessToken));
           dispatch(SET_USER({ id: response.data.userId, nickname: response.data.userNickname }));
+          localStorage.setItem('accessToken', response.data.accessToken);
           localStorage.setItem('userId', response.data.userId);
           localStorage.setItem('userNickname', response.data.userNickname);
-          //화면 이동(메인)
-          navigate('/');
+
+          // 관리자인지 일반 사용자인지 구분
+          if (response.data.userRole === 'ROLE_USER') {
+            // 방 목록 페이지로 이동(메인)
+            navigate('/room');
+          } else if (response.data.userRole === 'ROLE_ADMIN') {
+            // 관리자 페이지로 이동
+            navigate('/admin');
+          }
         } else {
-          window.confirm('로그인 에러');
+          window.confirm('로그인에 실패했습니다. 다시 시도해주세요.');
 
           navigate('/user/login');
         }
+        if (response.status === 204) {
+          alert('활동이 정지된 회원입니다.');
+        }
       })
       .catch((err) => {
-        console.log(err);
+        window.confirm('로그인에 실패했습니다. 다시 시도해주세요.');
       });
 
     //input폼 비워주는 코드
@@ -97,12 +109,20 @@ const LoginPage = () => {
     setLogoClick(!logoClick);
   };
 
+  useEffect(() => {
+    if (!logoClick)
+      setTimeout(() => {
+        onLogoClick();
+      }, 2000);
+  });
+
   return (
     <div className={styles.login}>
       <div className={logoClick ? styles.sentence_pause : styles.sentence}>
         <span>식</span>
         <span>구</span>
         <span>가</span>
+        <span>&nbsp;</span>
         <span>필</span>
         <span>요</span>
         <span>해</span>
@@ -133,12 +153,7 @@ const LoginPage = () => {
                 id={styles.userPassword}
                 type="password"
                 placeholder="비밀번호를 입력하세요"
-                {...register('userPassword', {
-                  minLength: {
-                    value: 4,
-                    message: '4자리 이상 비밀번호를 사용해주세요.',
-                  },
-                })}
+                {...register('userPassword', {})}
               />
               {errors.password && <small role="alert">{errors.password.message}</small>}
             </div>

@@ -24,6 +24,7 @@ const RoomList = (props) => {
 
   function modalChange() {
     recent === limit ? alert('이미 가득찬 방입니다') : modal ? setModal(false) : setModal(true);
+    // setModal(true);
   }
 
   //방 입장 요청
@@ -39,6 +40,7 @@ const RoomList = (props) => {
       },
     })
       .then((res) => {
+        console.log(res);
         localStorage.setItem('roomToken', res.data.sessionId); //토큰 받아오기
         navigate(`${roomId}`);
       })
@@ -92,6 +94,7 @@ const RoomList = (props) => {
                   type="password"
                   value={inputPassword}
                   onChange={(e) => setInputPassword(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && goDetail()}
                 />
               </div>
             )}

@@ -58,27 +58,27 @@ const ReportUser = (props) => {
             <main>
               <div className={styles.input_set}>
                 <div>
-                  <input type="radio" value="first" name="reason" onClick={onReason} />
+                  <input type="radio" value="욕설 및 비방" name="reason" onClick={onReason} />
                   욕설 및 비방
                 </div>
                 <br />
                 <div>
-                  <input type="radio" value="second" name="reason" onClick={onReason} />
+                  <input type="radio" value="상업성 스팸 및 홍보" name="reason" onClick={onReason} />
                   상업성 스팸 및 홍보
                 </div>
                 <br />
                 <div>
-                  <input type="radio" value="third" name="reason" onClick={onReason} />
+                  <input type="radio" value="성희롱" name="reason" onClick={onReason} />
                   성희롱
                 </div>
                 <br />
                 <div>
-                  <input type="radio" value="fourth" name="reason" onClick={onReason} />
+                  <input type="radio" value="불쾌한 표현" name="reason" onClick={onReason} />
                   불쾌한 표현
                 </div>
                 <br />
                 <div>
-                  <input type="radio" value="fifth" name="reason" onClick={onReason} />
+                  <input type="radio" value="기타" name="reason" onClick={onReason} />
                   기타
                 </div>
                 <br />

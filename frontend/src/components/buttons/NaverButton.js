@@ -6,11 +6,11 @@ import './Button.css';
 
 const NaverButton = () => {
   return (
-    <Link to="http://i8a804.p.ssafy.io:8040/oauth2/authorize/naver?redirect_uri=http://localhost:3000/oauth/callback/naver">
+    <a href="https://i8a804.p.ssafy.io/api/oauth2/authorize/naver?redirect_uri=https://i8a804.p.ssafy.io/oauth/callback/naver">
       <div className="naver-button">
         <img src={'img/네이버로그인버튼.png'} height="100%" alt="" />
       </div>
-    </Link>
+    </a>
   );
 };
 

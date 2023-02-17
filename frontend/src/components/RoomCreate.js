@@ -26,7 +26,7 @@ const RoomCreate = (props) => {
   const [limit, setLimit] = useState(2);
   const [preset, setPreset] = useState('preset1');
 
-  const limitArr = [...new Array(9)].map((_, i) => i + 2);
+  const limitArr = [...new Array(8)].map((_, i) => i + 2);
 
   const [message, setMessage] = useState('');
 
@@ -41,24 +41,27 @@ const RoomCreate = (props) => {
     }
   }, [title, isPrivate, content]);
 
-  async function getToken() {
-    const sessionId = await createSession(title);
+  async function getToken(id) {
+    const sessionId = await createSession(id);
     return await createToken(sessionId);
   }
 
   function createSession(sessionId) {
     return new Promise((resolve, reject) => {
-      let data = JSON.stringify({ customSessionId: sessionId });
       axios
-        .post(`${OPENVIDU_SERVER_URL}/openvidu/api/sessions`, data, {
-          headers: {
-            Authorization: `Basic ${EncodeBase64(`OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`)}`,
-            'Content-Type': 'application/json',
+        .post(
+          `${OPENVIDU_SERVER_URL}/openvidu/api/sessions`,
+          { customSessionId: sessionId },
+          {
+            headers: {
+              Authorization: `Basic ${EncodeBase64(`OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`)}`,
+              'Content-Type': 'application/json',
+            },
           },
-        })
+        )
         .then((response) => {
-          console.log('createSession');
-          console.log(response);
+          console.log('sessionCreated');
+          console.log(response.data);
           resolve(response.data.id);
         })
         .catch((response) => {
@@ -66,17 +69,18 @@ const RoomCreate = (props) => {
           // console.log('세션을 못만듬');
           // console.log(response);
           if (error.response) {
-            if (error.response.status === 409) {
-              resolve(sessionId);
-              console.log('이미 있는 세션입니다');
-            } else if (
-              window.confirm(
-                `OpenVidu 서버와 연결되지 않았습니다. 인증서 오류 일 수도 있습니다. "${OPENVIDU_SERVER_URL}"\n\n 확인해주세요.` +
-                  `만약 인증 문제를 찾을 수 없다면, OpenVidu 서버가 열려 있는지 확인해주세요`,
-              )
-            ) {
-              window.location.assign(`${OPENVIDU_SERVER_URL}/accept-certificate`);
-            }
+            // if (error.response.status === 409) {
+            //   resolve(sessionId);
+            //   console.log('이미 있는 세션입니다');
+            // } else if (
+            //   window.confirm(
+            //     `OpenVidu 서버와 연결되지 않았습니다. 인증서 오류 일 수도 있습니다. "${OPENVIDU_SERVER_URL}"\n\n 확인해주세요.` +
+            //       `만약 인증 문제를 찾을 수 없다면, OpenVidu 서버가 열려 있는지 확인해주세요`,
+            //   )
+            // ) {
+            //   window.location.assign(`${OPENVIDU_SERVER_URL}/accept-certificate`);
+            // }
+            console.log(error.response);
           }
         });
     });
@@ -93,10 +97,9 @@ const RoomCreate = (props) => {
           },
         })
         .then((response) => {
+          console.log('tokenCreated');
+          console.log(response.data);
           resolve(response.data);
-          // this.setState({
-          //   token: response.data.token,
-          // });
         })
         .catch((error) => reject(error));
     });
@@ -116,40 +119,31 @@ const RoomCreate = (props) => {
     let index = [];
     keywords.map((keyword, idx) => index.push(Number(keyword.id)));
 
-    const OV = new OpenVidu();
-    const mySession = OV.initSession();
+    message
+      ? alert(message)
+      : axios({
+          url: 'https://i8a804.p.ssafy.io/api/room', //방 생성 요청
+          method: 'POST',
+          data: {
+            roomTitle: title,
+            roomContent: content,
+            roomPrivate: isPrivate,
+            roomPassword: password,
+            roomLimitUser: Number(limit),
+            roomKeywordList: index,
+            roomPreset: preset,
+          },
+        })
+          .then((res) => {
+            localStorage.setItem('roomId', res.data.result.roomId);
+            localStorage.setItem('roomTitle', title);
+            getToken(String(res.data.result.roomId)).then(() => navigate(`${res.data.result.roomId}`));
 
-    getToken(title).then((data) => {
-      const roomToken = data.token;
-      const sessionId = data.id;
-      localStorage.setItem('roomToken', roomToken);
-      localStorage.setItem('sessionId', sessionId);
-
-      message
-        ? alert(message)
-        : axios({
-            url: 'https://i8a804.p.ssafy.io/api/room', //방 생성 요청
-            method: 'POST',
-            data: {
-              roomTitle: title,
-              roomContent: content,
-              roomPrivate: isPrivate,
-              roomPassword: password,
-              roomLimitUser: Number(limit),
-              roomKeywordList: index,
-              roomPreset: preset,
-              sessionId: roomToken,
-            },
+            //
           })
-            .then((res) => {
-              localStorage.setItem('roomId', res.data.result.roomId);
-              localStorage.setItem('roomTitle', title);
-              navigate(`${res.data.result.roomId}`);
-            })
-            .catch((err) => {
-              console.log('방 생성 정보 보내기 에러', err);
-            });
-    });
+          .catch((err) => {
+            console.log('방 생성 정보 보내기 에러', err);
+          });
   }
 
   function plusKeyword(e) {
@@ -346,7 +340,7 @@ const RoomCreate = (props) => {
             <option value="preset5">프리셋 5</option>
           </select>
         </div>
-        <div style={{ margin: '7%' }} className={styles[preset]}>
+        <div style={{ margin: '3%' }} className={styles[preset]}>
           {title ? <h3 style={{ marginInline: '3%' }}>{title}</h3> : <h3>방 제목</h3>}
           {!keywords[0] ? (
             <div># 키워드</div>

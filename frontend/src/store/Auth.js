@@ -26,6 +26,12 @@ export const tokenSlice = createSlice({
       state.accessToken = action.payload;
       state.expireTime = new Date().getTime() + TOKEN_TIME_OUT;
     },
+
+    RESET_TOKEN: (state, action) => {
+      state.authenticated = true;
+      state.accessToken = action.payload.accessToken;
+      state.expireTime = state.expireTime;
+    },
     //토큰 삭제 액션
     DELETE_TOKEN: (state) => {
       state.authenticated = false;
@@ -35,6 +41,6 @@ export const tokenSlice = createSlice({
   },
 });
 
-export const { SET_TOKEN, DELETE_TOKEN } = tokenSlice.actions;
+export const { SET_TOKEN, RESET_TOKEN, DELETE_TOKEN } = tokenSlice.actions;
 
 export default tokenSlice.reducer;

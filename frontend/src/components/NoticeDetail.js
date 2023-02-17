@@ -45,11 +45,9 @@ const NoticeDetail = () => {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <PageLogo />
-        <h1 style={{ fontSize: '50px' }}>공지사항</h1>
-        <Navbar />
-      </div>
+      <PageLogo />
+      <Navbar />
+      <h1 style={{ fontSize: '50px' }}>공지사항</h1>
       <div
         style={{
           display: 'flex',

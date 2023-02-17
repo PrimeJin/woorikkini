@@ -1,0 +1,51 @@
+.myMsg {
+  font-family: 'NanumSquareRound';
+  text-align: right;
+}
+
+.myNick {
+  color: #090936;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-right: 2%;
+  padding-right: 2%;
+}
+
+.myContext {
+  font-family: 'NanumSquareRound';
+  font-size: 1rem;
+  width: auto;
+  overflow: hidden;
+  height: 30px;
+  margin: 0 2% 10% 30%;
+  background: #d6ebfc;
+  border-radius: 30px;
+  padding: 5%;
+  white-space: nowrap;
+}
+
+.yourMsg {
+  font-family: 'NanumSquareRound';
+  text-align: left;
+}
+
+.yourNick {
+  color: #090936;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-left: 2%;
+  padding-left: 2%;
+}
+
+.yourContext {
+  font-family: 'NanumSquareRound';
+  font-size: 1rem;
+  width: auto;
+  overflow: hidden;
+  height: 30px;
+  margin: 0 30% 10% 2%;
+  background: #d6ebfc;
+  border-radius: 30px;
+  padding: 5%;
+  white-space: nowrap;
+}

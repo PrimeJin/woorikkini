@@ -12,4 +12,5 @@
   height: 110px;
   justify-content: center;
   display: flex;
+  cursor: pointer;
 }
