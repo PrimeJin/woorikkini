@@ -78,16 +78,16 @@ const LoginPage = () => {
             navigate('/admin');
           }
         } else {
-          window.confirm('로그인 에러');
+          window.confirm('로그인에 실패했습니다. 다시 시도해주세요.');
 
           navigate('/user/login');
         }
-        if (response.status == 204) {
+        if (response.status === 204) {
           alert('활동이 정지된 회원입니다.');
         }
       })
       .catch((err) => {
-        console.log(err);
+        window.confirm('로그인에 실패했습니다. 다시 시도해주세요.');
       });
 
     //input폼 비워주는 코드

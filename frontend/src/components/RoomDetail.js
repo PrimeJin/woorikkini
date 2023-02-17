@@ -176,7 +176,6 @@ class RoomDetail extends Component {
       url: `https://i8a804.p.ssafy.io/api/room/${roomId}?roomRecentUser=${recentUser}`,
       methods: 'PATCH',
     });
-    console.log('현재 인원: ', recentUser);
   }
 
   //session에 자신의 stream을 publish(게시).
@@ -201,12 +200,7 @@ class RoomDetail extends Component {
         //subscribe
         this.state.session.on('streamCreated', (event) => {
           this.sendRecentUser();
-          const newSubscriber = this.state.session.subscribe(
-            event.stream,
-            undefined,
-            // console.log(JSON.parse(event.stream.connection.data)),
-            // JSON.parse(event.stream.connection.data).clientData,
-          );
+          const newSubscriber = this.state.session.subscribe(event.stream, undefined);
 
           const newSubscribers = this.state.subscribers;
           newSubscribers.push(newSubscriber);
@@ -226,10 +220,6 @@ class RoomDetail extends Component {
           const users = [...new Set(newUsers)];
           const subscribers = [...new Set(newSubscribers)];
 
-          console.log('user');
-          console.log(newUsers);
-          console.log('subscriber');
-          console.log(newSubscribers);
           this.setState({
             users: users,
             subscribers: subscribers,
@@ -244,10 +234,10 @@ class RoomDetail extends Component {
           this.sendRecentUser();
         });
 
-        this.state.session.on('exception', () => {});
+        this.state.session.on('exception', () => {
+          this.sendRecentUser();
+        });
 
-        console.log('roomId');
-        console.log(String(this.state.roomId));
         this.createToken(String(this.state.roomId)).then((token) => {
           this.state.session
             .connect(token, { userId: userId, userNickname: userNickname })
@@ -303,7 +293,6 @@ class RoomDetail extends Component {
           this.state.session.on('signal:voteStart', (event) => {
             //event.data에 누구를 추방할지에 대한 정보
             //각 사용자에게 투표 모달창을 띄움
-            console.log('voteStart 신호 수신');
             const result = JSON.parse(event.data);
 
             const data = {
@@ -329,9 +318,6 @@ class RoomDetail extends Component {
 
           //누군가가 투표버튼을 누르면 모든 사용자에게 event 송신
           this.state.session.on('signal:sendVote', (event) => {
-            // console.log('누군가 투표함');
-            // console.log(JSON.parse(event.data));
-            // this.setVoteUser(JSON.parse(event.data)); //store의 voteresult값을 1 늘려줌(store/vote.js 참고)
             const result = JSON.parse(event.data);
             console.log(result);
             this.setState({
@@ -353,35 +339,16 @@ class RoomDetail extends Component {
                 disagree: this.state.disagree,
               };
               //모두 투표했을 경우 투표 종료
-              if (data.total >= this.state.subscribers.length) {
-                this.state.session.signal({
-                  data: JSON.stringify(data),
-                  to: [],
-                  type: 'endVote',
-                });
+              if (data.total >= this.state.users.length - 1) {
+                this.voteComplete(data);
               }
             }, 1000);
-          });
-
-          this.state.session.on('signal:endVote', (event) => {
-            console.log('투표 종료');
-            const result = JSON.parse(event.data);
-            console.log(result);
-            this.setState({
-              voteUserId: result.voteUserId,
-              voteUserNickname: result.voteUserNickname,
-              total: result.total,
-              agree: result.total,
-              disagree: result.disagree,
-            });
-
-            this.voteComplete(result);
           });
 
           this.state.session.on('signal:getout', (event) => {
             const result = JSON.parse(event.data);
             const userName = localStorage.getItem('userNickname');
-            if (result.voteUserNickname == userName) {
+            if (result.voteUserNickname === userName) {
               alert('추방되었습니다!');
               this.leaveSession();
             } else alert(`${result.voteUserNickname}님이 추방되었습니다`);
@@ -755,6 +722,11 @@ class RoomDetail extends Component {
     if (result.agree / result.total > 0.5) {
       if (this.state.eventData.start === myName) {
         // 백엔드 및 openvidu 서버에 추방 요청을 보냄
+        this.state.session.signal({
+          data: JSON.stringify({ voteUserNickname: result.voteUserNickname }),
+          to: [],
+          type: 'getout',
+        });
         axios({
           url: `https://i8a804.p.ssafy.io/api/room/exit/${roomId}/${result.voteUserId}`,
           method: 'POST',
@@ -763,14 +735,8 @@ class RoomDetail extends Component {
             authorization: `Bearer ${accessToken}`,
           },
         })
-          .then((res) => {
-            this.state.session.signal({
-              data: JSON.stringify({ voteUserNickname: result.voteUserNickname }),
-              to: [],
-              type: 'getout',
-            });
-          })
-          .catch((err) => console.log(err));
+          .then(() => {})
+          .catch((err) => alert('연결에 실패했습니다. 다시 시도해주세요'));
       }
     } else {
       alert(`추방 투표가 부결되었습니다`);
@@ -886,27 +852,10 @@ class RoomDetail extends Component {
         <div className={styles.inmain}>
           <div className={styles.inbody}>
             <div id="video-container" className={`${styles.videobox} ${'col-md-12 col-xs-12'}`}>
-              {/* {this.allUsersVideo()} */}
-
               {this.state.isVoteStart && this.state.eventData.voteUserId !== this.state.myUserId
                 ? this.showVoteModal(this.state.eventData)
                 : null}
               {this.state.publisher !== undefined ? (
-                // <div
-                //   className=""
-                //   style={{
-                //     cursor: 'pointer',
-                //     width: '90%',
-                //     height: '100%',
-                //     position: 'relative',
-                //     display: 'flex',
-                //     justifyContent: 'center',
-                // flowFlex: 'column',
-                // alignItems: 'center',
-                //   }}
-                //   title={this.state.myUserName}
-                //   // onClick={() => this.handleMainVideoStream(this.state.publisher)}
-                // >
                 <UserVideoComponent
                   streamManager={this.state.publisher}
                   style={{
@@ -914,22 +863,9 @@ class RoomDetail extends Component {
                   }}
                   title={this.state.myUserName}
                 />
-              ) : // </div>
-              null}
+              ) : null}
               {this.state.subscribers.map((sub, i) => {
                 return (
-                  // <div
-                  //   key={i}
-                  //   className=""
-                  //   style={{
-                  //     cursor: 'pointer',
-                  //     width: '80%',
-                  //     height: 'auto',
-                  //     position: 'relative',
-                  //   }}
-                  //   title={this.state.users[i].userNickname}
-                  // onClick={() => this.handleMainVideoStream(sub)}
-                  // >
                   <UserVideoComponent
                     streamManager={sub}
                     mainVideoStream={this.handleMainVideoStream}
@@ -938,7 +874,6 @@ class RoomDetail extends Component {
                       cursor: 'pointer',
                     }}
                   />
-                  /* </div> */
                 );
               })}
             </div>
