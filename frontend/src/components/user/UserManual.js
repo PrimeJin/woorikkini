@@ -39,10 +39,10 @@ function UserManual() {
             <div className={styles.swiper_wrapper}>
               <div className={styles.manual_slide}>
                 <SwiperSlide>
-                  <img src={'img/사용자매뉴얼/roomlist_1.png'} className={styles.img} />
+                  <img src={'img/사용자매뉴얼/roomList_1.png'} className={styles.img} />
                 </SwiperSlide>
                 <SwiperSlide>
-                  <img src={'img/사용자매뉴얼/roomlist_2.png'} className={styles.img} />
+                  <img src={'img/사용자매뉴얼/roomList_2.png'} className={styles.img} />
                 </SwiperSlide>
                 <SwiperSlide>
                   <img src={'img/사용자매뉴얼/roomDetail_1.png'} className={styles.img} />
