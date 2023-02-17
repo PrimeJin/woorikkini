@@ -1,8 +1,11 @@
-nav {
+.nav {
   width: 180px;
   margin-top: 1%;
   margin-right: 1%;
   align-items: center;
+  position: fixed;
+  right: 0;
+  top: 0;
 }
 
 .navbar {
@@ -10,7 +13,7 @@ nav {
   height: 25px;
   align-items: flex-end;
   line-height: 26px;
-  /* background-color: #fffdfa; */
+  cursor: pointer;
 }
 .toggle_menu {
   width: 100%;

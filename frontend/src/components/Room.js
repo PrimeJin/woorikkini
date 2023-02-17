@@ -96,7 +96,12 @@ const Room = () => {
     fullCheck
       ? isPrivate
         ? setFiltered(
-            list.filter((room) => room.roomLimitUser > room.roomRecentUser && JSON.parse(room.roomPrivate) === false),
+            list.filter(
+              (room) =>
+                room.roomLimitUser > room.roomRecentUser &&
+                JSON.parse(room.roomPrivate) === false &&
+                room.roomRecentUser === 0,
+            ),
           )
         : setFiltered(list.filter((room) => room.roomLimitUser > room.roomRecentUser))
       : isPrivate
@@ -132,23 +137,20 @@ const Room = () => {
   }
 
   function refresh() {
-    window.location.replace('room');
-    // window.location.reload();
+    window.location.reload();
   }
 
   return (
     <div>
+      <PageLogo />
+      <Navbar />
       {modal && (
         <div className={styles.roomEnter}>
           <RoomCreate cancel={cancel} keywordList={keywordList} />
         </div>
       )}
       <div>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <PageLogo />
-          <h1 style={{ fontSize: '50px' }}>방 목록</h1>
-          <Navbar />
-        </div>
+        <h1 style={{ fontSize: '50px' }}>방 목록</h1>
         <div
           style={{
             display: 'flex',

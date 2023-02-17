@@ -1,34 +1,30 @@
-import React, { Component } from 'react';
-import styled from 'styled-components';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import styles from './Message.module.css';
 
-const Username = styled.p`
-  color: #42387a;
-  font-size: 0.8rem;
-  font-weight: 600;
-  padding: 5px 0 10px 0;
-`;
+function Message(props) {
+  // store에서 현재 로그인한 사용자의 nickname 가져오기
+  const curUserNickname = useSelector((state) => state.user.nickname);
+  const { text, userName } = props;
 
-const MessageContainer = styled.div`
-  width: 20vw;
+  const [me, setMe] = useState(false);
+  const who = () => {
+    if (userName === curUserNickname) {
+      setMe(true);
+    }
+  };
+  useEffect(() => {
+    who();
+  }, [text]);
 
-  background: #d6ebfc;
-`;
-
-const ChatText = styled.p`
-  font-size: 1rem;
-`;
-
-class Message extends Component {
-  render() {
-    const { text, userName } = this.props;
-
-    return (
-      <MessageContainer>
-        <Username>{userName}</Username>
-        <ChatText>{text}</ChatText>
-      </MessageContainer>
-    );
-  }
+  return (
+    <>
+      <div className={me ? styles.myMsg : styles.yourMsg}>
+        <div className={me ? styles.myNick : styles.yourNick}>{userName}</div>
+        <div className={me ? styles.myContext : styles.yourContext}>{text}</div>
+      </div>
+    </>
+  );
 }
 
 export default Message;

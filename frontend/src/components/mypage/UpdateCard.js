@@ -3,12 +3,10 @@ import { useSelector } from 'react-redux';
 import styles from './UpdateCard.module.css';
 import axios from 'axios';
 import Modal from '../Modal';
-import { object } from 'prop-types';
 
 function UpdateCard(props) {
   // 현재 로그인한 사용자의 닉네임
   const userId = useSelector((state) => state.user.id);
-  console.log('어떤 거 수정할거야?', props.currentCard);
 
   // 부모 CardContainer에서 가져온 값들
   const currentCard = props.currentCard;
@@ -34,24 +32,17 @@ function UpdateCard(props) {
 
   // 기존의 이미지는 그대로 url로 보내고, 새로 넣은 이미지는 multipart로 보내기
 
-  // 사진 파일 수정하고 보낼 때, 기존 정보는 그대로 하고 새로 넣은 이미지는 파일 데이터로 보내야 함...
-
   // 이미지 파일 입력
   const onFile = (event) => {
     // 이거 자체가 filelist
     const file = event.target.files;
-    console.log('업데이트', file);
+
     // 이미지 미리보기
-    const imgList = imgRef.current.files;
-
-    // let fileURLs = [];
-
     Array.from(file).forEach((img) => {
       const reader = new FileReader();
       reader.onloadend = () => {
         // 이미지 띄울 수 있게 변경한 값 넣기
         const imageFile = reader.result;
-        // fileURLs.push(imageFile);
         // 리스트에 추가하기
         setUpdatePreviewData([...updatePreviewData, imageFile]);
       };
@@ -110,11 +101,9 @@ function UpdateCard(props) {
       if (typeof el === 'object') {
         Array.from(el).forEach((img) => {
           formData.append('memoryImgFiles', img);
-          console.log('새로운 거');
         });
       } else {
         originalFile.push(el);
-        console.log('원래 거');
       }
     });
 
@@ -128,12 +117,6 @@ function UpdateCard(props) {
     };
     formData.append('newCardData', new Blob([JSON.stringify(newCardData)], { type: 'application/json' }));
     console.log('수정한 추억', newCardData);
-
-    // setUpdateFileData(updatePreviewData);
-    // Array.from(updateFileData).forEach((el) => {
-    //   formData.append('memoryImgFiles', el);
-    //   console.log('각각', el);
-    // });
 
     // 서버로 전달
     axios

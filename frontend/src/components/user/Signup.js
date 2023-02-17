@@ -18,7 +18,7 @@ function Form() {
   const [nickVisible, setNickVisible] = useState(false);
   const [possible, setPossible] = useState(false);
   const [impossible, setImpossible] = useState(false);
-  const [Date, setDate] = useState('');
+  const [Day, setDay] = useState('');
   const [Gender, setGender] = useState('');
 
   // 이메일 입력
@@ -88,7 +88,7 @@ function Form() {
   const onPassword = (event) => {
     const pwCurrent = event.currentTarget.value;
     setPassword(pwCurrent);
-    const pwRegex = /^[a-zA-z0-9]{8,12}$/;
+    const pwRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,12}$/;
     if (!pwRegex.test(pwCurrent)) {
       setPwVisible(true);
     } else {
@@ -148,8 +148,13 @@ function Form() {
     }
   };
   // 생년월일 입력
-  const onDate = (event) => {
-    setDate(event.currentTarget.value);
+  const onDay = (event) => {
+    const inputDay = event.currentTarget.value;
+    setDay(inputDay);
+
+    // 현재 날짜 구하기
+    // let today = new Date(new Date().toString().split('GMT')[0] + ' UTC').toISOString().slice(0, 10);
+    // console.log(today);
   };
   // 성별 입력
   const onGender = (event) => {
@@ -165,20 +170,19 @@ function Form() {
   const navigate = useNavigate();
   const onSubmit = (event) => {
     console.log('닉네임 중복 확인 ->', possible);
-    if (Email == '' || Password == '' || Name == '' || Nickname == '' || Date == '' || Gender == '') {
+    if (Email == '' || Password == '' || Name == '' || Nickname == '' || Day == '' || Gender == '') {
       alert('빈 칸을 입력해주세요.');
     } else if (emailCheck == false || codeCheck == false || possible == false) {
       alert('인증을 진행해주세요.');
     } else {
       event.preventDefault();
-      const Year = Date.slice(0, 4);
-      console.log(Year);
+      const Birth = Day.split('-').join('');
       const userData = {
         userEmail: Email,
         userPassword: Password,
         userName: Name,
         userNickname: Nickname,
-        userBirth: Year,
+        userBirth: Birth,
         userGender: Gender,
       };
       console.log(userData);
@@ -190,7 +194,8 @@ function Form() {
         .then((res) => {
           console.log(res);
           alert('가입되었습니다.');
-          navigate('/');
+          navigate('/usermanual');
+          // navigate('/');
         })
         .catch((err) => {
           console.log(err);
@@ -239,7 +244,11 @@ function Form() {
         placeholder="비밀번호"
         required
       />
-      {pwVisible ? <span className={styles.impossible}>* 8 ~ 12자의 비밀번호를 입력해야 합니다.</span> : <p></p>}
+      {pwVisible ? (
+        <span className={styles.impossible}>*영문, 숫자, 특수문자를 조합하여 8~12자로 입력해주세요</span>
+      ) : (
+        <p></p>
+      )}
       <input
         type="password"
         value={ConfirmPassword}
@@ -270,8 +279,10 @@ function Form() {
       <p></p>
       <input
         type="date"
-        value={Date}
-        onChange={onDate}
+        value={Day}
+        // 최대 선택 날짜는 오늘까지
+        max={new Date(new Date().toString().split('GMT')[0] + ' UTC').toISOString().slice(0, 10)}
+        onChange={onDay}
         className={styles.date_input}
         data-placeholder="생년월일"
         required

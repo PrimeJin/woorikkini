@@ -10,7 +10,7 @@ export default class UserVideoComponent extends Component {
 
   // 유저의 닉네임 가져오기
   getNicknameTag() {
-    return localStorage.getItem('userNickname');
+    // return this.props.userNickname;
   }
 
   // 비디오 클릭 시 이벤트
@@ -22,14 +22,9 @@ export default class UserVideoComponent extends Component {
 
   render() {
     return (
-      <div>
+      <div style={{ height: '100%', display: 'flex', justifyContent: 'center' }}>
         {this.props.streamManager !== undefined ? (
-          <div className={styles.streamcomponent}>
-            <OpenViduVideoComponent streamManager={this.props.streamManager} />
-            <div className={styles.streamcomponentDiv}>
-              <p>{this.getNicknameTag()}</p>
-            </div>
-          </div>
+          <OpenViduVideoComponent streamManager={this.props.streamManager} />
         ) : null}
       </div>
     );

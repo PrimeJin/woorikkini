@@ -8,7 +8,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import CenterLogo from '../styles/CenterLogo';
 import axios from 'axios';
 import styles from '../styles/ModifyPage.module.css';
 
@@ -24,48 +23,50 @@ function ModifyPage() {
   const [isConfirmPassword, setIsConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
-  //가능하다면 처음 화면 렌더링할때 기존 유저의 닉네임을 띄워놓는것도
-  useEffect(() => {});
-
   //store에 저장되어있는 user State의 id(email)가져오기
   const nickname = useSelector((state) => state.user.nickname);
   const userId = useSelector((state) => state.user.id);
+
   //닉네임 중복확인
   const checkNickname = (e) => {
     e.preventDefault();
-
-    console.log(nickname);
-    axios({
-      method: 'GET',
-      url: `https://i8a804.p.ssafy.io/api/user/userNickname=${nickname}`,
-      headers: {
-        'Content-type': 'application/json',
-      },
-    }).then((response) => {
-      if (response.data.messsage === 'success') {
-        alert('사용 가능한 닉네임입니다.');
-        console.log(response);
-        setIsNickname(true);
-      } else {
-        alert('사용 불가능한 닉네임입니다.');
-        console.log(response);
-        setIsNickname(false);
-      }
-    });
+    userNickname
+      ? axios({
+          method: 'GET',
+          url: `https://i8a804.p.ssafy.io/api/user/${userNickname}`,
+          headers: {
+            'Content-type': 'application/json',
+          },
+          data: {
+            userNickname: userNickname,
+          },
+        })
+          .then((response) => {
+            if (response.data.message === 'success') {
+              alert('사용 가능한 닉네임입니다.');
+              setIsNickname(true);
+            }
+          })
+          .catch((err) => {
+            alert('사용 불가능한 닉네임입니다.');
+            setIsNickname(false);
+            console.log('닉네임 중복 확인 에러', err);
+          })
+      : alert('변경할 닉네임을 입력해주세요');
   };
 
   //비밀번호 폼에 입력된 비밀번호 감지
   const onChangeNewPassword = useCallback((e) => {
-    const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,25}$/;
+    const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,12}$/;
     const passwordCurrent = e.target.value;
     setNewPassword(passwordCurrent);
 
     //주어진 문자열이 정규표현식을 만족하지 못하면
     if (!passwordRegex.test(passwordCurrent)) {
-      setPasswordMsg('숫자+영문자+특수문자 조합으로 8자리 이상 입력해주세요');
+      setPasswordMsg('영문, 숫자, 특수문자를 조합하여 8~12자로 입력해주세요');
       setIsPassword(false);
     } else {
-      setPasswordMsg('안전한 비밀번호입니다');
+      setPasswordMsg('안전한 비밀번호 입니다');
       setIsPassword(true);
     }
   }, []);
@@ -87,61 +88,78 @@ function ModifyPage() {
     [newPassword],
   );
 
-  //회원정보 수정 요청
+  // 닉네임 변경
+  function changeNickname(e) {
+    e.preventDefault();
+    isNickname
+      ? axios({
+          url: `https://i8a804.p.ssafy.io/api/user/${userId}/nickname`,
+          method: 'PATCH',
+          headers: {
+            'Content-type': 'application/json',
+          },
+          data: {
+            userId: userId,
+            userNickname: userNickname,
+          },
+        })
+          .then((res) => {
+            res.data.message === 'success' && alert('닉네임 변경이 완료되었습니다');
+            localStorage.removeItem('userNickname');
+            localStorage.setItem('userNickname', userNickname);
+          })
+          .catch((err) => {
+            console.log('닉네임 변경 에러', err);
+          })
+      : alert('닉네임 중복확인을 해주세요');
+  }
+
+  //비밀번호 변경
   const changeUserInfo = (e) => {
     e.preventDefault();
-    const nickNameData = { userId: userId, userNickname: nickname };
-    const passwordData = { userId: userId, userPassword: newPassword };
-    if (!isNickname) {
-      alert('닉네임 중복확인을 해주세요');
-    } else if (!isPassword) {
-      alert('비밀번호를 확인해주세요');
-    } else {
-      axios({
-        url: `https://i8a804.p.ssafy.io/api/user/${userId}/nickname`,
-        method: 'PATCH',
-        headers: {
-          'Content-type': 'application/json',
-        },
-        data: nickNameData,
-      })
-        .then((response) => {
-          if (response.status === 202) {
-            axios({
-              url: `https://i8a804.p.ssafy.io/api/user/${userId}/password`,
-              method: 'PATCH',
-              headers: {
-                'Content-type': 'application/json',
-              },
-              data: passwordData,
-            })
-              .then((response) => {
-                if (response.status === 202) {
-                  window.confirm('정보가 수정되었습니다.');
-                }
-              })
-              .catch((err) => {
-                console.log('비밀번호 오류' + err);
-              });
-          }
+    isPassword && isConfirmPassword
+      ? axios({
+          url: `https://i8a804.p.ssafy.io/api/user/${userId}/password`,
+          method: 'PATCH',
+          headers: {
+            'Content-type': 'application/json',
+          },
+          data: {
+            userId: userId,
+            userPassword: newPassword,
+          },
         })
-        .catch((err) => {
-          console.log('닉네임 오류' + err);
-        });
-    }
+          .then((res) => {
+            res.data.message === 'success' && alert('비밀번호 변경이 완료되었습니다');
+          })
+          .catch((err) => {
+            console.log('비밀번호 변경 오류', err);
+          })
+      : alert('비밀번호를 확인해주세요');
   };
+
+  function goToMain() {
+    navigate('/room');
+  }
 
   return (
     <div className={styles.modify}>
-      <div className={styles.logo_box}>
-        <CenterLogo />
-      </div>
+      <img className={styles.logo} src={`${process.env.PUBLIC_URL}/logo.png`} alt="이미지없음" onClick={goToMain} />
       <form className={styles.modifyform}>
-        <h2>회원정보 수정</h2>
+        <p className={styles.userInfoChange}>회원정보 변경</p>
         <div className={styles.nicknameForm}>
-          <input type="text" id={styles.changeNickname} onChange={setUserNickname} placeholder="닉네임"></input>
-          <button className={styles.checkButton} onClick={checkNickname}>
+          <input
+            value={userNickname}
+            type="text"
+            id={styles.changeNickname}
+            onChange={(e) => setUserNickname(e.target.value)}
+            placeholder={nickname}
+          ></input>
+          <button className={styles.check} onClick={checkNickname}>
             중복확인
+          </button>
+          <button className={styles.checkButton} onClick={changeNickname}>
+            변경
           </button>
         </div>
         <div className={styles.passwordForm}>
@@ -153,7 +171,7 @@ function ModifyPage() {
               placeholder="새 비밀번호"
             />
             {newPassword.length > 0 && (
-              <span className={`message ${isPassword ? 'success' : 'error'}`}>{passwordMsg}</span>
+              <div className={`${isPassword ? styles.messageSuccess : styles.messageError}`}>{passwordMsg}</div>
             )}
             <input
               type="password"
@@ -162,15 +180,25 @@ function ModifyPage() {
               placeholder="새 비밀번호 확인"
             />
             {confirmPasswordMsg.length > 0 && (
-              <span className={`message ${isConfirmPassword ? 'success' : 'error'}`}>{confirmPasswordMsg}</span>
+              <div className={`${isConfirmPassword ? styles.messageSuccess : styles.messageError}`}>
+                {confirmPasswordMsg}
+              </div>
             )}
           </div>
           <button className={styles.modifyButton} onClick={changeUserInfo}>
-            수정
+            변경
           </button>
         </div>
 
-        <Link to="/user/delete" style={{ color: 'gray', textDecoration: 'none', textAlign: 'left', marginLeft: '12%' }}>
+        <Link
+          to="/user/delete"
+          style={{
+            color: 'gray',
+            textDecoration: 'none',
+            textAlign: 'left',
+            marginLeft: '14%',
+          }}
+        >
           <small>회원 탈퇴</small>
         </Link>
       </form>
