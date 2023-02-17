@@ -351,7 +351,9 @@ class RoomDetail extends Component {
             if (result.voteUserNickname === userName) {
               alert('추방되었습니다!');
               this.leaveSession();
-            } else alert(`${result.voteUserNickname}님이 추방되었습니다`);
+            } else {
+              alert(`${result.voteUserNickname}님이 추방되었습니다`);
+            }
           });
         });
       });
@@ -550,21 +552,34 @@ class RoomDetail extends Component {
   }
 
   deleteSubscriber(streamManager) {
+    // const remoteUsers = this.state.subscribers;
+    // const users = this.state.users;
+    // const subStream = remoteUsers.filter((user) => user === streamManager)[0];
+    // const index = remoteUsers.indexOf(subStream, 0);
+
+    // const userStream = this.state.users.filter(
+    //   (user) => user.userId === JSON.parse(subStream.stream.connection.data).userId,
+    // );
+    // const uindex = users.indexOf(userStream, 0);
+
+    // console.log('subscriber 삭제');
+    // console.log(index, uindex);
+    // if (index > -1 && uindex > -1) {
+    //   remoteUsers.splice(index, 1);
+    //   users.splice(uindex, 1);
+    //   this.setState({
+    //     subscribers: remoteUsers,
+    //     users: users,
+    //   });
+    // }
     const remoteUsers = this.state.subscribers;
     const users = this.state.users;
     const subStream = remoteUsers.filter((user) => user === streamManager)[0];
     const index = remoteUsers.indexOf(subStream, 0);
 
-    const userStream = this.state.users.filter(
-      (user) => user.userId === JSON.parse(subStream.stream.connection.data).userId,
-    );
-    const uindex = users.indexOf(userStream, 0);
-
-    console.log('subscriber 삭제');
-    console.log(index, uindex);
-    if (index > -1 && uindex > -1) {
+    if (index > -1) {
       remoteUsers.splice(index, 1);
-      users.splice(uindex, 1);
+      users.splice(index, 1);
       this.setState({
         subscribers: remoteUsers,
         users: users,
@@ -719,7 +734,7 @@ class RoomDetail extends Component {
 
     const roomId = localStorage.getItem('roomId');
     const accessToken = localStorage.getItem('accessToken');
-    if (result.agree / result.total > 0.5) {
+    if (result.agree > result.disagree) {
       if (this.state.eventData.start === myName) {
         // 백엔드 및 openvidu 서버에 추방 요청을 보냄
         this.state.session.signal({
