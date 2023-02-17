@@ -83,7 +83,6 @@ class RoomDetail extends Component {
       banModalOpen: false,
       reportedUserId: '',
       eventData: {},
-      allUsers: [],
 
       //투표 관련 state
       isVoteStart: false, //투표가 시작했는지
@@ -99,7 +98,7 @@ class RoomDetail extends Component {
       myAudio: true,
       othersAudio: true,
       // 설정바
-      barOpen: true,
+      barOpen: false,
     };
 
     //method
@@ -121,9 +120,6 @@ class RoomDetail extends Component {
     this.clickMic = this.clickMic.bind(this);
     this.clickMsg = this.clickMsg.bind(this);
     this.settingBarOpen = this.settingBarOpen.bind(this);
-
-    // 화상 화면 구성하기 위해 참여자 비디오 목록 재구성하는 함수
-    this.allUsersVideo = this.allUsersVideo.bind(this);
 
     //chat
     this.handleChangeChatMessage = this.handleChangeChatMessage.bind(this);
@@ -257,7 +253,7 @@ class RoomDetail extends Component {
                   publishAudio: true,
                   publishVideo: true,
                   insertMode: 'APPEND',
-                  mirror: false, //좌우반전 옵션
+                  mirror: true, //좌우반전 옵션
                 });
                 this.state.session.publish(newPublisher);
 
@@ -439,17 +435,6 @@ class RoomDetail extends Component {
     this.setState({
       barOpen: !this.state.barOpen,
     });
-  }
-
-  // 방 참여자들의 영상 정보 (subscribers) 리스트를 변경하는 함수
-  allUsersVideo() {
-    if (this.state.subscribers.length >= 5) {
-      this.state.users =
-        this.state.users.splice(0, 4) + 'none' + this.state.users.splice(4, this.state.users.length + 1);
-      this.state.subscribers =
-        this.state.subscribers.splice(0, 4) + 'none' + this.state.subscribers.splice(4, this.state.users.length + 1);
-      console.log('>>>', this.state.users);
-    }
   }
 
   //메소드
