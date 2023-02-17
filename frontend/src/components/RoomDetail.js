@@ -576,10 +576,12 @@ class RoomDetail extends Component {
     const users = this.state.users;
     const subStream = remoteUsers.filter((user) => user === streamManager)[0];
     const index = remoteUsers.indexOf(subStream, 0);
+    const userStream = users.filter((user) => user.userId === JSON.parse(subStream.stream.connection.data).userId);
+    const uindex = users.indexOf(userStream, 0);
 
     if (index > -1) {
       remoteUsers.splice(index, 1);
-      users.splice(index, 1);
+      users.splice(uindex, 1);
       this.setState({
         subscribers: remoteUsers,
         users: users,
@@ -749,9 +751,7 @@ class RoomDetail extends Component {
             'Content-Type': 'application/json; charset=UTF-8',
             authorization: `Bearer ${accessToken}`,
           },
-        })
-          .then(() => {})
-          .catch((err) => alert('연결에 실패했습니다. 다시 시도해주세요'));
+        }).then(() => {});
       }
     } else {
       alert(`추방 투표가 부결되었습니다`);
